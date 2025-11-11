@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { Twitter, Linkedin } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import logo from '../assets/dopalive_logo.png'
@@ -194,12 +195,12 @@ const Hero = () => {
             animate="visible"
             className="flex items-center gap-6 justify-end"
           >
-            <a 
-              href="#how-it-works" 
+            <Link 
+              to="/nasil-calisir" 
               className="text-sm font-inter text-off-white/90 hover:text-white transition-colors duration-300"
             >
               Nasıl Çalışır
-            </a>
+            </Link>
             <span className="text-off-white/30">|</span>
             <a 
               href="#story" 

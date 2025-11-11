@@ -1,4 +1,6 @@
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import logo from '../assets/dopalive_logo.png'
 
 const NasilCalisir = () => {
   // Fade-in animations (staggered)
@@ -16,7 +18,32 @@ const NasilCalisir = () => {
   })
 
   return (
-    <div id="how-it-works" className="w-full">
+    <div className="w-full min-h-screen bg-night-blue">
+      {/* Navigation Bar */}
+      <nav className="relative z-10 w-full px-4 sm:px-6 lg:px-8 py-6">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-3">
+            <img 
+              src={logo} 
+              alt="DopaLive Logo" 
+              className="h-8 w-8 sm:h-10 sm:w-10 object-contain"
+            />
+            <span className="text-xl sm:text-2xl font-satoshi font-bold text-off-white">
+              dopalive
+            </span>
+          </Link>
+
+          {/* Back to Home Link */}
+          <Link 
+            to="/" 
+            className="text-sm font-inter text-off-white/90 hover:text-white transition-colors duration-300"
+          >
+            Ana Sayfa
+          </Link>
+        </div>
+      </nav>
+
       {/* Section 1: Hero / Introduction */}
       <section className="relative w-full py-20 sm:py-24 md:py-32 overflow-hidden">
         {/* Gradient Background */}
@@ -209,18 +236,17 @@ const NasilCalisir = () => {
             <p className="text-lg sm:text-xl md:text-2xl font-inter text-off-white/90">
               Hazır mısın?
             </p>
-            <motion.a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault()
-                window.scrollTo({ top: 0, behavior: 'smooth' })
-              }}
-              className="inline-block px-8 py-4 rounded-full glass-button text-off-white font-inter font-semibold hover:bg-lavender/30 focus:outline-none focus:ring-2 focus:ring-lavender/50 transition-all duration-300 text-base sm:text-lg"
+            <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              Listeye Katıl
-            </motion.a>
+              <Link
+                to="/"
+                className="inline-block px-8 py-4 rounded-full glass-button text-off-white font-inter font-semibold hover:bg-lavender/30 focus:outline-none focus:ring-2 focus:ring-lavender/50 transition-all duration-300 text-base sm:text-lg"
+              >
+                Listeye Katıl
+              </Link>
+            </motion.div>
           </motion.div>
         </div>
       </section>
