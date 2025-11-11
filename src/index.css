@@ -13,6 +13,10 @@
     @apply border-gray-300;
   }
   
+  html {
+    scroll-behavior: smooth;
+  }
+  
   body {
     @apply bg-night-blue text-off-white font-inter antialiased;
   }
