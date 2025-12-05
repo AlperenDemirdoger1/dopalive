@@ -77,15 +77,3 @@ export {
   Skeleton,
 } from './spinner';
 export type { SpinnerProps, PulseDotsProps, SkeletonProps } from './spinner';
-
-// Feature Card
-export {
-  FeatureCard,
-  FeatureCardCompact,
-  FeatureCardLarge,
-  FeatureGrid,
-} from './feature-card';
-
-// Testimonial Card
-export { TestimonialCard, TestimonialGrid } from './testimonial-card';
-
