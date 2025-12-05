@@ -714,7 +714,7 @@ const IdentityStep = ({
     },
     {
       key: 'fearJudgment',
-      statement: '"I'm afraid of what people will think if I actually ship this."',
+      statement: '"I\'m afraid of what people will think if I actually ship this."',
     },
   ];
   
