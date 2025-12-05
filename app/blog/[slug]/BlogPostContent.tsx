@@ -6,6 +6,7 @@ import { ArrowLeft, Calendar, Clock, Tag } from 'lucide-react';
 import { BlogPost, categoryLabels, categoryColors } from '@/lib/blog-data';
 import { ShareButtons, RelatedPosts, NewsletterSignup } from '@/components/blog';
 import { cn } from '@/lib/utils';
+import { ReactElement } from 'react';
 
 interface BlogPostContentProps {
   post: BlogPost;
@@ -29,7 +30,7 @@ export default function BlogPostContent({ post, relatedPosts }: BlogPostContentP
   const renderContent = (content: string) => {
     // This is a simple implementation - in production, use a proper MDX parser
     const lines = content.split('\n');
-    const elements: JSX.Element[] = [];
+    const elements: ReactElement[] = [];
     let inList = false;
     let listItems: string[] = [];
 
