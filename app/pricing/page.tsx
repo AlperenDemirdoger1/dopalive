@@ -6,139 +6,116 @@ import Link from 'next/link';
 import { 
   Check, X, Sparkles, Users, Zap, ArrowRight, ChevronDown, 
   Star, Brain, Target, Clock, MessageCircle, Headphones,
-  Activity, Heart, Eye, Flame, Coffee, Radio
+  Activity, Heart, Eye, Flame, Coffee, Radio, Cpu,
+  Shield, Award, TrendingUp, Calendar, Lock
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// Nörokimyasal değer önerisi için ikonlar ve açıklamalar
-const neurochemicalBenefits = [
-  {
-    icon: Flame,
-    title: "Dopamin Döngüsü",
-    description: "Küçük kazanımlarla sürekli dopamin salgısı",
-    color: "#f5d4a0"
-  },
-  {
-    icon: Heart,
-    title: "Oksitosin Bağı",
-    description: "Body Doubling ile sosyal bağlantı hissi",
-    color: "#ff6b9d"
-  },
-  {
-    icon: Activity,
-    title: "Norepinefrin Odağı",
-    description: "AI koçluk ile anlık dikkat desteği",
-    color: "#4ecdc4"
-  }
-];
-
-// Plan yapısı - AI Araçları ve Body Doubling net ayrımı
+// Plan yapısı - Coaching odaklı gerçekçi fiyatlandırma
 const plans = [
   {
-    id: "free",
-    name: "Başlangıç",
-    tagline: "AI ile tanış",
+    id: "explorer",
+    name: "Keşfet",
+    tagline: "AI araçlarını dene",
     monthlyPrice: 0,
     annualPrice: 0,
-    category: "ai",
+    description: "Dopamin odaklı AI araçlarını keşfet, topluluğu tanı.",
     highlight: false,
-    features: {
-      ai: [
-        { text: "AI Odak Koçu", detail: "Günde 10 mesaj", included: true },
-        { text: "Temel odak araçları", detail: "Pomodoro, görev listesi", included: true },
-        { text: "Günlük check-in hatırlatıcı", detail: "", included: true },
-        { text: "3 proje takibi", detail: "", included: true },
-      ],
-      bodyDoubling: [
-        { text: "Topluluk erişimi", detail: "Salt okunur", included: "limited" },
-        { text: "Canlı odak oturumları", detail: "", included: false },
-        { text: "Body Doubling eşleşme", detail: "", included: false },
-        { text: "Grup accountability", detail: "", included: false },
-      ]
-    },
+    features: [
+      { text: "AI Dopamin Koçu", detail: "Günde 5 mesaj", included: true },
+      { text: "Temel odak araçları", included: true },
+      { text: "Topluluk erişimi", detail: "Salt okunur", included: "limited" },
+      { text: "Body Doubling seansları", included: false },
+      { text: "Akran Pod grubu", included: false },
+      { text: "1:1 İnsan koçluk", included: false },
+    ],
     cta: "Ücretsiz Başla",
     ctaVariant: "outline"
   },
   {
     id: "focus",
     name: "Odak",
-    tagline: "Sınırsız AI gücü",
-    monthlyPrice: 149,
-    annualPrice: 99,
-    category: "ai",
+    tagline: "AI + Body Doubling",
+    monthlyPrice: 1190,
+    annualPrice: 990,
+    description: "Sınırsız AI desteği ve canlı Body Doubling seanslarıyla odaklan.",
     highlight: false,
-    badge: "En Popüler",
-    features: {
-      ai: [
-        { text: "Sınırsız AI Koç erişimi", detail: "7/24 destek", included: true },
-        { text: "Tüm odak araçları", detail: "20+ şablon dahil", included: true },
-        { text: "Akıllı görev parçalama", detail: "AI destekli", included: true },
-        { text: "Sınırsız proje", detail: "", included: true },
-        { text: "İlerleme analitiği", detail: "Haftalık raporlar", included: true },
-        { text: "Kişiselleştirilmiş öneriler", detail: "DEHB profiline göre", included: true },
-      ],
-      bodyDoubling: [
-        { text: "Topluluk erişimi", detail: "Tam erişim", included: true },
-        { text: "Canlı odak oturumları", detail: "Haftalık 2 saat", included: "limited" },
-        { text: "Body Doubling eşleşme", detail: "", included: false },
-        { text: "Grup accountability", detail: "", included: false },
-      ]
-    },
+    features: [
+      { text: "Sınırsız AI Dopamin Koçu", detail: "7/24", included: true },
+      { text: "Tüm odak araçları & şablonlar", included: true },
+      { text: "Topluluk erişimi", detail: "Tam", included: true },
+      { text: "Body Doubling seansları", detail: "Günlük 4+ seans", included: true },
+      { text: "Akran Pod grubu", included: false },
+      { text: "1:1 İnsan koçluk", included: false },
+    ],
     cta: "7 Gün Ücretsiz Dene",
-    ctaVariant: "primary"
+    ctaVariant: "secondary"
   },
   {
-    id: "together",
-    name: "Birlikte",
-    tagline: "AI + İnsan gücü",
-    monthlyPrice: 349,
-    annualPrice: 249,
-    category: "hybrid",
+    id: "coaching",
+    name: "Koçluk",
+    tagline: "Tam sistem",
+    monthlyPrice: 3900,
+    annualPrice: 3900,
+    description: "DEHB uzmanı koç + AI + Body Doubling + Pod. Projeni bitirmenin garantisi.",
     highlight: true,
-    badge: "Maksimum Etki",
-    features: {
-      ai: [
-        { text: "Odak planındaki her şey", detail: "", included: true },
-        { text: "Öncelikli AI yanıtları", detail: "Hızlı response", included: true },
-        { text: "Gelişmiş analitik", detail: "Nörokimyasal içgörüler", included: true },
-      ],
-      bodyDoubling: [
-        { text: "Sınırsız canlı odak oturumları", detail: "Her gün", included: true },
-        { text: "1:1 Body Doubling eşleşme", detail: "Kişiselleştirilmiş", included: true },
-        { text: "4 kişilik Pod grubu", detail: "Haftalık check-in", included: true },
-        { text: "Aylık 1:1 koçluk", detail: "İnsan koç ile", included: true },
-        { text: "Öncelikli destek", detail: "24 saat içinde yanıt", included: true },
-      ]
-    },
-    cta: "Pod'uma Katıl",
-    ctaVariant: "accent"
+    badge: "En Etkili",
+    features: [
+      { text: "Haftalık 1:1 koç seansları", detail: "45 dakika", included: true, premium: true },
+      { text: "DEHB sertifikalı uzman koç", included: true, premium: true },
+      { text: "Sınırsız AI Dopamin Koçu", included: true },
+      { text: "Sınırsız Body Doubling", included: true },
+      { text: "Eşleştirilmiş Pod grubu", detail: "4-5 kişi", included: true, premium: true },
+      { text: "Öncelikli destek", detail: "24 saat", included: true },
+      { text: "Dopamin haritası analizi", included: true, premium: true },
+      { text: "İstediğin zaman iptal", included: true },
+    ],
+    cta: "Koçunla Eşleş",
+    ctaVariant: "primary",
+    savings: "₺8.000-12.000 geleneksel koçluktan %70 tasarruf"
   }
 ];
 
 // Feature karşılaştırma tablosu
 const featureCategories = [
   {
-    name: "🤖 AI Odak Araçları",
-    description: "Dopamin optimizasyonu için AI destekli araçlar",
+    name: "👤 İnsan Koçluk",
+    description: "ADHD uzmanı sertifikalı koçlarla 1:1 çalışma",
     features: [
-      { name: "AI Odak Koçu", free: "10/gün", focus: "Sınırsız", together: "Sınırsız + Öncelik" },
-      { name: "Akıllı görev parçalama", free: false, focus: true, together: true },
-      { name: "Kişiselleştirilmiş öneriler", free: false, focus: true, together: true },
-      { name: "İlerleme analitiği", free: "Temel", focus: "Gelişmiş", together: "Nörokimyasal" },
-      { name: "Odak şablonları", free: "5", focus: "20+", together: "20+ Özel" },
-      { name: "Proje takibi", free: "3", focus: "Sınırsız", together: "Sınırsız" },
+      { name: "Haftalık 1:1 koç seansları", explorer: false, focus: false, coaching: "45 dk/hafta" },
+      { name: "ADHD sertifikalı koç", explorer: false, focus: false, coaching: true },
+      { name: "Kişisel dopamin haritası", explorer: false, focus: false, coaching: true },
+      { name: "Özelleştirilmiş strateji planı", explorer: false, focus: false, coaching: true },
     ]
   },
   {
-    name: "👥 Body Doubling & İnsan Bağlantısı",
-    description: "Oksitosin ve sosyal hesap verebilirlik",
+    name: "🤖 AI Dopamin Koçu",
+    description: "7/24 yanınızda olan akıllı asistan",
     features: [
-      { name: "Topluluk erişimi", free: "Salt okunur", focus: "Tam", together: "Tam + VIP" },
-      { name: "Canlı odak oturumları", free: false, focus: "2 saat/hafta", together: "Sınırsız" },
-      { name: "Body Doubling eşleşme", free: false, focus: false, together: "1:1 Eşleşme" },
-      { name: "Accountability Pod", free: false, focus: false, together: "4 kişi" },
-      { name: "İnsan koçluk", free: false, focus: false, together: "Aylık 1:1" },
-      { name: "Öncelikli destek", free: false, focus: false, together: "24 saat" },
+      { name: "AI koç mesajları", explorer: "5/gün", focus: "Sınırsız", coaching: "Sınırsız + Öncelik" },
+      { name: "Akıllı görev parçalama", explorer: false, focus: true, coaching: true },
+      { name: "Düşük enerji desteği", explorer: false, focus: true, coaching: true },
+      { name: "Kişiselleştirilmiş öneriler", explorer: "Temel", focus: "Gelişmiş", coaching: "Premium" },
+    ]
+  },
+  {
+    name: "👥 Body Doubling & Pod",
+    description: "Birlikte çalışmanın gücü",
+    features: [
+      { name: "Canlı Body Doubling seansları", explorer: false, focus: "Günlük 4+", coaching: "Sınırsız" },
+      { name: "Akran Pod grubu", explorer: false, focus: false, coaching: "4-5 kişi" },
+      { name: "Haftalık Pod check-in", explorer: false, focus: false, coaching: true },
+      { name: "Topluluk erişimi", explorer: "Salt okunur", focus: "Tam", coaching: "Tam + VIP" },
+    ]
+  },
+  {
+    name: "📊 Araçlar & Analitik",
+    description: "Odak ve ilerleme takibi",
+    features: [
+      { name: "Odak araçları & şablonlar", explorer: "Temel", focus: "Tümü", coaching: "Tümü + Özel" },
+      { name: "İlerleme dashboard'u", explorer: false, focus: true, coaching: true },
+      { name: "Haftalık raporlar", explorer: false, focus: true, coaching: "Detaylı" },
+      { name: "Dopamin analitikleri", explorer: false, focus: false, coaching: true },
     ]
   }
 ];
@@ -146,108 +123,69 @@ const featureCategories = [
 // SSS
 const faqs = [
   {
-    question: "Body Doubling tam olarak nedir?",
-    answer: "Body Doubling, başka birinin yanında çalışarak odaklanmayı kolaylaştıran bir tekniktir. DEHB'li bireyler için özellikle etkilidir çünkü sosyal varlık, beynin dikkat sistemini aktive eder ve oksitosin salınımını tetikler. DopaLive'da hem canlı video oturumları hem de eşleştirilmiş çalışma arkadaşları ile bu deneyimi yaşarsınız."
+    question: "İnsan koç ile AI koç arasındaki fark nedir?",
+    answer: "AI Dopamin Koçumuz 7/24 erişilebilir, anlık görev parçalama ve motivasyon desteği sağlar. İnsan koçunuz ise ADHD sertifikalı bir uzman olup haftalık 45 dakikalık 1:1 seanslarla derin strateji çalışması, duygusal destek ve uzun vadeli hedef belirleme sunar. Koçluk planında ikisini birlikte kullanırsınız."
   },
   {
-    question: "AI Koç ile insan koç arasındaki fark nedir?",
-    answer: "AI Koçumuz 7/24 erişilebilir, anlık görev parçalama ve motivasyon desteği sağlar - dopamin döngünüzü optimize eder. İnsan koçumuz ise daha derin stratejik planlama, duygusal destek ve uzun vadeli hedef belirleme için aylık 1:1 seanslar sunar. Birlikte planında ikisinin gücünü birleştirirsiniz."
+    question: "Koçlar gerçekten ADHD uzmanı mı?",
+    answer: "Evet. Tüm koçlarımız en az 3 yıl koçluk deneyimine sahip, akredite sertifikalı profesyonellerdir. Ek olarak 40 saatlik ADHD uzmanlık programımızı tamamlarlar. Başvuranların sadece %8'ini kabul ediyoruz. Çoğunun kendisi de ADHD deneyimi var."
   },
   {
-    question: "Nörokimyasal içgörüler ne anlama geliyor?",
-    answer: "Birlikte planında, çalışma paternlerinizi analiz ederek dopamin, norepinefrin ve oksitosin seviyelerinizi optimize edecek öneriler sunuyoruz. Örneğin: en verimli saatleriniz, ideal mola süreleri, Body Doubling'in sizde yarattığı etki gibi içgörüler."
+    question: "Body Doubling nedir ve nasıl çalışır?",
+    answer: "Body Doubling, başka birinin yanında çalışarak odaklanmayı kolaylaştıran kanıtlanmış bir ADHD tekniğidir. Canlı video seanslarımızda dünya genelinden insanlarla birlikte çalışırsınız. Günde 4+ seans (sabah, öğle, akşam, gece), 30-60-90 dakikalık bloklar halinde."
   },
   {
     question: "Pod grubu nasıl çalışıyor?",
-    answer: "4 kişilik Pod grubunuz, benzer hedefler ve çalışma tarzına sahip kişilerle eşleştirilir. Haftalık check-in'lerde birbirinize hesap verirsiniz, kazanımları kutlarsınız ve zorluklarda destek olursunuz. Bu sosyal bağ, beynin ödül sistemini aktive ederek motivasyonu artırır."
+    answer: "Koçluk planında 4-5 kişilik bir Pod grubuna atanırsınız. Benzer hedefler ve çalışma tarzına sahip kişilerle eşleştirilirsiniz. Haftalık check-in'lerde birbirinize hesap verirsiniz, kazanımları kutlarsınız ve zorluklarda destek olursunuz."
+  },
+  {
+    question: "Geleneksel koçluktan neden bu kadar uygun?",
+    answer: "Geleneksel 1:1 ADHD koçluğu seans başına ₺2.000-3.000, ayda ₺8.000-12.000 tutar. Biz uzman koçluğu AI desteği, body doubling ve akran hesap verebilirliğiyle birleştirerek maliyeti düşürüyor, etkinliği artırıyoruz. Üstelik sadece 1:1 değil, tam bir ekosistem alıyorsunuz."
   },
   {
     question: "Ücretsiz deneme nasıl işliyor?",
-    answer: "Odak ve Birlikte planları için 7 günlük ücretsiz deneme sunuyoruz. Kredi kartı bilgisi istiyoruz ancak deneme süresince ücret almıyoruz. İptal etmezseniz, 7. günden sonra seçtiğiniz plan başlar."
+    answer: "Odak planı için 7 günlük ücretsiz deneme sunuyoruz. Kredi kartı bilgisi istiyoruz ancak deneme süresince ücret almıyoruz. İptal etmezseniz, 7. günden sonra seçtiğiniz plan başlar. Koçluk planında deneme yerine 30 gün para iade garantisi var."
   },
   {
-    question: "Planlar arasında geçiş yapabilir miyim?",
-    answer: "Evet! İstediğiniz zaman yükseltme veya düşürme yapabilirsiniz. Değişiklik bir sonraki fatura döneminde geçerli olur. Yıllık plandan aylığa geçerseniz, kalan süre için kredi alırsınız."
-  },
-  {
-    question: "Para iade garantisi var mı?",
-    answer: "Evet, tüm ücretli planlar için 30 gün para iade garantisi sunuyoruz. DopaLive sizin için çalışmıyorsa, soru sormadan paranızı iade ediyoruz."
+    question: "İstediğim zaman iptal edebilir miyim?",
+    answer: "Evet. Tüm planlar aylık faturalandırılır ve bir sonraki fatura döngünüzden önce istediğiniz zaman iptal edebilirsiniz. Koçluk planında ayrıca 30 gün para iade garantisi var — memnun kalmazsanız soru sormadan iade."
   }
 ];
 
-// Testimonials
+// Testimonials - Koçluk odaklı
 const testimonials = [
   {
-    quote: "AI Koç beni anlıyor, Body Doubling ise yalnız olmadığımı hissettiriyor. 2 yıldır ertelediğim projeyi 3 haftada bitirdim.",
-    author: "Ayşe K.",
-    role: "Freelance Tasarımcı",
-    plan: "Birlikte",
-    avatar: "A",
-    metric: "3 hafta"
-  },
-  {
-    quote: "Sabah Pod arkadaşlarımla check-in yapmak, kahvemden bile önce geliyor artık. Bu hesap verebilirlik hissi inanılmaz.",
-    author: "Mehmet T.",
-    role: "Yazılım Geliştirici",
-    plan: "Birlikte",
+    quote: "Elif koçum olmadan bu uygulamayı asla çıkaramazdım. 2 yıldır erteliyordum, 8 haftada production'a çıktı.",
+    author: "Mert K.",
+    role: "Indie Developer",
+    plan: "Koçluk",
     avatar: "M",
-    metric: "%94 görev tamamlama"
+    result: "Uygulama lansmanı"
   },
   {
-    quote: "Sınırsız AI erişimi tek başına bile çok değerli. Görevlerimi parçalayınca her şey yapılabilir hale geliyor.",
-    author: "Zeynep A.",
-    role: "İçerik Üreticisi",
-    plan: "Odak",
-    avatar: "Z",
-    metric: "10x verimlilik"
+    quote: "Body Doubling seansları tek başına bile buna değer. Ama AI + koç kombinasyonu bambaşka bir seviye.",
+    author: "Selin A.",
+    role: "UX Designer",
+    plan: "Koçluk",
+    avatar: "S",
+    result: "3 freelance proje"
+  },
+  {
+    quote: "Pod grubum artık gerçek arkadaşlarım. Birbirimizi her hafta sorumlu tutuyoruz.",
+    author: "Can T.",
+    role: "Content Creator",
+    plan: "Koçluk",
+    avatar: "C",
+    result: "YouTube kanalı açıldı"
   }
 ];
 
 // Components
-const BillingToggle = ({ isAnnual, setIsAnnual }: { isAnnual: boolean; setIsAnnual: (v: boolean) => void }) => (
-  <div className="flex items-center justify-center gap-4">
-    <span className={cn(
-      "text-sm transition-colors duration-300",
-      !isAnnual ? "text-white" : "text-white/40"
-    )}>Aylık</span>
-    
-    <button
-      onClick={() => setIsAnnual(!isAnnual)}
-      className={cn(
-        "relative w-16 h-8 rounded-full transition-all duration-300",
-        "bg-white/[0.06] border border-white/[0.08]",
-        isAnnual && "bg-[#4ecdc4]/20 border-[#4ecdc4]/30"
-      )}
-    >
-      <motion.div
-        layout
-        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-        className={cn(
-          "absolute top-1 w-6 h-6 rounded-full shadow-lg",
-          isAnnual 
-            ? "left-[34px] bg-[#4ecdc4]" 
-            : "left-1 bg-white/80"
-        )}
-      />
-    </button>
-    
-    <div className="flex items-center gap-2">
-      <span className={cn(
-        "text-sm transition-colors duration-300",
-        isAnnual ? "text-white" : "text-white/40"
-      )}>Yıllık</span>
-      <span className="text-xs px-2 py-0.5 rounded-full bg-[#4ecdc4]/20 text-[#4ecdc4] border border-[#4ecdc4]/30">
-        %33 Tasarruf
-      </span>
-    </div>
-  </div>
-);
-
-const FeatureItem = ({ text, detail, included }: { text: string; detail?: string; included: boolean | string }) => {
+const FeatureItem = ({ text, detail, included, premium }: { text: string; detail?: string; included: boolean | string; premium?: boolean }) => {
   const getIcon = () => {
-    if (included === true) return <Check className="w-4 h-4 text-[#4ecdc4]" />;
-    if (included === "limited") return <Check className="w-4 h-4 text-[#f5d4a0]" />;
-    return <X className="w-4 h-4 text-white/20" />;
+    if (included === true) return <Check className={cn("w-4 h-4", premium ? "text-primary" : "text-emerald-400")} />;
+    if (included === "limited") return <Check className="w-4 h-4 text-warning" />;
+    return <X className="w-4 h-4 text-muted-foreground" />;
   };
 
   return (
@@ -255,12 +193,13 @@ const FeatureItem = ({ text, detail, included }: { text: string; detail?: string
       <span className="mt-0.5 flex-shrink-0">{getIcon()}</span>
       <div>
         <span className={cn(
-          included ? "text-white/80" : "text-white/30"
+          included ? "text-foreground/80" : "text-muted-foreground",
+          premium && "font-medium"
         )}>{text}</span>
         {detail && (
           <span className={cn(
             "ml-1 text-xs",
-            included ? "text-white/40" : "text-white/20"
+            included ? (premium ? "text-primary/60" : "text-muted-foreground") : "text-muted-foreground"
           )}>({detail})</span>
         )}
       </div>
@@ -268,8 +207,8 @@ const FeatureItem = ({ text, detail, included }: { text: string; detail?: string
   );
 };
 
-const PricingCard = ({ plan, isAnnual, index }: { plan: typeof plans[0]; isAnnual: boolean; index: number }) => {
-  const price = isAnnual ? plan.annualPrice : plan.monthlyPrice;
+const PricingCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => {
+  const price = plan.monthlyPrice;
   const isFree = plan.monthlyPrice === 0;
   
   return (
@@ -278,141 +217,106 @@ const PricingCard = ({ plan, isAnnual, index }: { plan: typeof plans[0]; isAnnua
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       className={cn(
-        "relative group rounded-2xl transition-all duration-500",
+        "relative group rounded-2xl transition-all duration-500 flex flex-col",
         "border backdrop-blur-xl overflow-hidden",
         plan.highlight
-          ? "bg-gradient-to-b from-[#4ecdc4]/[0.08] via-[#f5d4a0]/[0.04] to-transparent border-[#4ecdc4]/30"
-          : "bg-white/[0.02] border-white/[0.06] hover:border-white/[0.12]"
+          ? "bg-gradient-to-b from-primary/[0.08] via-accent/[0.04] to-transparent border-primary/40 md:scale-105"
+          : "bg-card border-border hover:border-primary/30"
       )}
     >
-      {/* Category indicator */}
-      <div className={cn(
-        "absolute top-0 left-0 right-0 h-1",
-        plan.category === "ai" && "bg-gradient-to-r from-[#f5d4a0] to-[#f5d4a0]/50",
-        plan.category === "hybrid" && "bg-gradient-to-r from-[#f5d4a0] via-[#ff6b9d] to-[#4ecdc4]"
-      )} />
+      {/* Top accent */}
+      {plan.highlight && (
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-accent" />
+      )}
       
       {/* Badge */}
       {plan.badge && (
-        <div className={cn(
-          "absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-medium",
-          plan.highlight
-            ? "bg-[#4ecdc4] text-[#0a0a0a]"
-            : "bg-[#f5d4a0]/20 text-[#f5d4a0] border border-[#f5d4a0]/20"
-        )}>
+        <div className="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-medium bg-gradient-warm text-white">
           {plan.badge}
         </div>
       )}
       
-      <div className="p-6 md:p-8">
+      <div className="p-6 md:p-8 flex-1 flex flex-col">
         {/* Header */}
-        <div className="mb-6">
-          <p className="text-xs text-white/40 uppercase tracking-wider mb-1">{plan.tagline}</p>
+        <div className="mb-4">
+          <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{plan.tagline}</p>
           <h3 className={cn(
-            "text-2xl font-bold",
-            plan.highlight ? "text-[#4ecdc4]" : "text-white"
+            "text-2xl font-semibold",
+            plan.highlight ? "text-foreground" : "text-foreground"
           )}>{plan.name}</h3>
         </div>
         
         {/* Price */}
-        <div className="mb-8">
+        <div className="mb-4">
           <div className="flex items-baseline gap-1">
-            {!isFree && <span className="text-white/40 text-lg">₺</span>}
+            {!isFree && <span className="text-muted-foreground text-lg">₺</span>}
             <motion.span
               key={price}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-5xl font-bold text-white"
+              className={cn(
+                "font-bold text-foreground",
+                plan.highlight ? "text-5xl" : "text-4xl"
+              )}
             >
-              {isFree ? "Ücretsiz" : price}
+              {isFree ? "Ücretsiz" : price.toLocaleString('tr-TR')}
             </motion.span>
-            {!isFree && <span className="text-white/40 text-sm">/ay</span>}
+            {!isFree && <span className="text-muted-foreground text-sm">/ay</span>}
           </div>
-          {isAnnual && !isFree && (
-            <p className="text-xs text-white/40 mt-2">
-              Yıllık ₺{price * 12} · Aylık ₺{plan.monthlyPrice}'den tasarruf
-            </p>
-          )}
         </div>
+        
+        {/* Description */}
+        <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+          {plan.description}
+        </p>
+        
+        {/* Savings badge for coaching */}
+        {plan.savings && (
+          <div className="mb-6 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+            <p className="text-xs text-emerald-400">{plan.savings}</p>
+          </div>
+        )}
         
         {/* CTA */}
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           className={cn(
-            "w-full py-3.5 rounded-xl font-medium text-sm transition-all duration-300 mb-8",
-            plan.ctaVariant === "accent" && "bg-[#4ecdc4] text-[#0a0a0a] hover:bg-[#45b8b0] shadow-lg shadow-[#4ecdc4]/20",
-            plan.ctaVariant === "primary" && "bg-[#f5d4a0] text-[#0a0a0a] hover:bg-[#e8c87a] shadow-lg shadow-[#f5d4a0]/20",
-            plan.ctaVariant === "outline" && "bg-white/5 text-white hover:bg-white/10 border border-white/10"
+            "w-full py-3.5 rounded-xl font-medium text-sm transition-all duration-300 mb-6",
+            plan.ctaVariant === "primary" && "bg-gradient-to-r from-primary to-accent text-foreground shadow-lg shadow-primary/20",
+            plan.ctaVariant === "secondary" && "bg-white/10 text-foreground hover:bg-white/15 border border-white/10",
+            plan.ctaVariant === "outline" && "bg-transparent text-foreground/70 hover:text-foreground border border-white/10 hover:border-white/20"
           )}
         >
           {plan.cta}
         </motion.button>
         
-        {/* AI Features */}
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-3">
-            <Brain className="w-4 h-4 text-[#f5d4a0]" />
-            <span className="text-xs font-medium text-[#f5d4a0] uppercase tracking-wider">AI Araçları</span>
-          </div>
-          <ul className="space-y-2.5">
-            {plan.features.ai.map((feature, i) => (
-              <FeatureItem key={i} {...feature} />
-            ))}
-          </ul>
-        </div>
-        
-        {/* Body Doubling Features */}
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <Users className="w-4 h-4 text-[#ff6b9d]" />
-            <span className="text-xs font-medium text-[#ff6b9d] uppercase tracking-wider">Body Doubling</span>
-          </div>
-          <ul className="space-y-2.5">
-            {plan.features.bodyDoubling.map((feature, i) => (
-              <FeatureItem key={i} {...feature} />
-            ))}
-          </ul>
-        </div>
+        {/* Features */}
+        <ul className="space-y-3 flex-1">
+          {plan.features.map((feature, i) => (
+            <FeatureItem key={i} {...feature} />
+          ))}
+        </ul>
       </div>
     </motion.div>
   );
 };
-
-const NeurochemicalCard = ({ benefit, index }: { benefit: typeof neurochemicalBenefits[0]; index: number }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ delay: index * 0.1 }}
-    className="relative p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] backdrop-blur-xl group hover:border-white/[0.12] transition-all"
-  >
-    <div 
-      className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-      style={{ backgroundColor: `${benefit.color}15`, borderColor: `${benefit.color}30`, borderWidth: 1 }}
-    >
-      <benefit.icon className="w-6 h-6" style={{ color: benefit.color }} />
-    </div>
-    <h3 className="text-lg font-semibold text-white mb-2">{benefit.title}</h3>
-    <p className="text-sm text-white/50">{benefit.description}</p>
-  </motion.div>
-);
 
 const FeatureTable = () => (
   <div className="overflow-x-auto -mx-4 md:mx-0">
     {featureCategories.map((category, catIndex) => (
       <div key={catIndex} className="mb-8">
         <div className="mb-4 px-4 md:px-0">
-          <h3 className="text-lg font-semibold text-white mb-1">{category.name}</h3>
-          <p className="text-sm text-white/40">{category.description}</p>
+          <h3 className="text-lg font-semibold text-foreground mb-1">{category.name}</h3>
+          <p className="text-sm text-muted-foreground">{category.description}</p>
         </div>
-        <table className="w-full min-w-[640px]">
+        <table className="w-full min-w-[700px]">
           <thead>
-            <tr className="border-b border-white/[0.06]">
-              <th className="text-left py-3 px-4 text-sm font-medium text-white/50 w-1/4">Özellik</th>
-              <th className="text-center py-3 px-4 text-sm font-medium text-white/50 w-1/4">Başlangıç</th>
-              <th className="text-center py-3 px-4 text-sm font-medium text-[#f5d4a0] w-1/4">Odak</th>
-              <th className="text-center py-3 px-4 text-sm font-medium text-[#4ecdc4] w-1/4">Birlikte</th>
+            <tr className="border-b border-border">
+              <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground w-2/5">Özellik</th>
+              <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-1/5">Keşfet</th>
+              <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-1/5">Odak</th>
+              <th className="text-center py-3 px-4 text-sm font-medium text-primary w-1/5">Koçluk</th>
             </tr>
           </thead>
           <tbody>
@@ -423,17 +327,17 @@ const FeatureTable = () => (
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.03 }}
-                className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors"
+                className="border-b border-border hover:bg-card transition-colors"
               >
-                <td className="py-3 px-4 text-sm text-white/70">{feature.name}</td>
+                <td className="py-3 px-4 text-sm text-foreground/70">{feature.name}</td>
                 <td className="py-3 px-4 text-center">
-                  <TableValue value={feature.free} />
+                  <TableValue value={feature.explorer} />
                 </td>
-                <td className="py-3 px-4 text-center bg-[#f5d4a0]/[0.02]">
-                  <TableValue value={feature.focus} highlight="gold" />
+                <td className="py-3 px-4 text-center">
+                  <TableValue value={feature.focus} />
                 </td>
-                <td className="py-3 px-4 text-center bg-[#4ecdc4]/[0.02]">
-                  <TableValue value={feature.together} highlight="teal" />
+                <td className="py-3 px-4 text-center bg-gradient-warm/[0.02]">
+                  <TableValue value={feature.coaching} highlight />
                 </td>
               </motion.tr>
             ))}
@@ -444,26 +348,16 @@ const FeatureTable = () => (
   </div>
 );
 
-const TableValue = ({ value, highlight }: { value: boolean | string; highlight?: "gold" | "teal" }) => {
+const TableValue = ({ value, highlight }: { value: boolean | string; highlight?: boolean }) => {
   if (typeof value === 'boolean') {
     return value ? (
-      <Check className={cn(
-        "w-5 h-5 mx-auto",
-        highlight === "gold" && "text-[#f5d4a0]",
-        highlight === "teal" && "text-[#4ecdc4]",
-        !highlight && "text-green-400"
-      )} />
+      <Check className={cn("w-5 h-5 mx-auto", highlight ? "text-primary" : "text-emerald-400")} />
     ) : (
-      <X className="w-5 h-5 mx-auto text-white/20" />
+      <X className="w-5 h-5 mx-auto text-muted-foreground" />
     );
   }
   return (
-    <span className={cn(
-      "text-sm",
-      highlight === "gold" && "text-[#f5d4a0]",
-      highlight === "teal" && "text-[#4ecdc4]",
-      !highlight && "text-white/70"
-    )}>
+    <span className={cn("text-sm", highlight ? "text-primary font-medium" : "text-foreground/70")}>
       {value}
     </span>
   );
@@ -478,20 +372,20 @@ const FAQItem = ({ faq, index }: { faq: typeof faqs[0]; index: number }) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.05 }}
-      className="border-b border-white/[0.06]"
+      className="border-b border-border"
     >
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full py-5 flex items-center justify-between text-left group"
       >
-        <span className="text-white/90 font-medium pr-4 group-hover:text-[#f5d4a0] transition-colors">
+        <span className="text-foreground font-medium pr-4 group-hover:text-primary transition-colors">
           {faq.question}
         </span>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
         >
-          <ChevronDown className="w-5 h-5 text-white/40 flex-shrink-0" />
+          <ChevronDown className="w-5 h-5 text-muted-foreground flex-shrink-0" />
         </motion.div>
       </button>
       
@@ -504,7 +398,7 @@ const FAQItem = ({ faq, index }: { faq: typeof faqs[0]; index: number }) => {
             transition={{ duration: 0.3 }}
             className="overflow-hidden"
           >
-            <p className="pb-5 text-white/50 leading-relaxed">
+            <p className="pb-5 text-muted-foreground leading-relaxed">
               {faq.answer}
             </p>
           </motion.div>
@@ -520,36 +414,31 @@ const TestimonialCard = ({ testimonial, index }: { testimonial: typeof testimoni
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
     transition={{ delay: index * 0.1 }}
-    className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] backdrop-blur-xl"
+    className="p-6 rounded-2xl bg-card border border-border backdrop-blur-xl"
   >
     <div className="flex items-center justify-between mb-4">
       <div className="flex gap-1">
         {[...Array(5)].map((_, i) => (
-          <Star key={i} className="w-4 h-4 fill-[#f5d4a0] text-[#f5d4a0]" />
+          <Star key={i} className="w-4 h-4 fill-primary text-primary" />
         ))}
       </div>
-      <span className={cn(
-        "text-xs px-2 py-1 rounded-full",
-        testimonial.plan === "Birlikte" 
-          ? "bg-[#4ecdc4]/20 text-[#4ecdc4]" 
-          : "bg-[#f5d4a0]/20 text-[#f5d4a0]"
-      )}>
-        {testimonial.plan} Planı
+      <span className="text-xs px-2 py-1 rounded-full bg-gradient-warm/20 text-primary">
+        {testimonial.plan}
       </span>
     </div>
-    <p className="text-white/70 leading-relaxed mb-4 italic">"{testimonial.quote}"</p>
+    <p className="text-foreground/70 leading-relaxed mb-4 italic">"{testimonial.quote}"</p>
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-[#f5d4a0]/10 border border-[#f5d4a0]/20 flex items-center justify-center text-[#f5d4a0] font-medium">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/20 flex items-center justify-center text-primary font-medium">
           {testimonial.avatar}
         </div>
         <div>
-          <p className="text-white/90 text-sm font-medium">{testimonial.author}</p>
-          <p className="text-white/40 text-xs">{testimonial.role}</p>
+          <p className="text-foreground text-sm font-medium">{testimonial.author}</p>
+          <p className="text-muted-foreground text-xs">{testimonial.role}</p>
         </div>
       </div>
       <div className="text-right">
-        <p className="text-[#4ecdc4] text-sm font-semibold">{testimonial.metric}</p>
+        <p className="text-emerald-400 text-xs font-medium">{testimonial.result}</p>
       </div>
     </div>
   </motion.div>
@@ -561,73 +450,70 @@ const PricingNav = () => (
     initial={{ opacity: 0, y: -10 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-    className="fixed top-0 left-0 right-0 z-50 px-5 md:px-8 py-5"
+    className="fixed top-0 left-0 right-0 z-50 px-5 md:px-8 py-5 bg-background/80 backdrop-blur-xl border-b border-border"
   >
     <div className="max-w-[1200px] mx-auto flex items-center justify-between">
       <Link href="/hero" className="flex items-center gap-2 group">
         <motion.div 
           whileHover={{ scale: 1.05 }}
-          className="w-8 h-8 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center"
+          className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center"
         >
-          <div className="w-3 h-3 rounded-full border border-[#f5d4a0]/60" />
+          <Flame className="w-5 h-5 text-white" />
         </motion.div>
-        <span className="text-white/80 text-base font-light tracking-tight">dopalive</span>
+        <span className="text-foreground text-lg font-medium tracking-tight">
+          Dopa<span className="text-primary">Live</span>
+        </span>
       </Link>
 
-      <Link href="/hero">
+      <div className="flex items-center gap-3">
+        <Link href="/coaching">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Koçluk Nasıl Çalışır?
+          </motion.button>
+        </Link>
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           className={cn(
-            "group px-4 py-2 rounded-lg",
-            "bg-white/[0.04] border border-white/[0.06]",
-            "hover:border-white/[0.12] transition-all duration-300"
+            "px-5 py-2.5 rounded-xl",
+            "bg-gradient-to-r from-primary to-accent",
+            "text-foreground text-sm font-medium",
+            "shadow-lg shadow-primary/20"
           )}
         >
-          <span className="text-xs text-white/60 group-hover:text-white/80 transition-colors">
-            ← Ana Sayfa
-          </span>
+          Koç Bul
         </motion.button>
-      </Link>
+      </div>
     </div>
   </motion.nav>
 );
 
 // Main Page
 export default function PricingPage() {
-  const [isAnnual, setIsAnnual] = useState(true);
+  const isAnnual = false;
   
   return (
-    <main className="min-h-screen relative overflow-hidden bg-[#0a0a0a]">
+    <main className="min-h-screen relative overflow-hidden bg-background">
       {/* Ambient Background */}
       <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0f0f0f] via-[#0a0a0a] to-[#050505]" />
-        
-        {/* AI glow - gold */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-muted/20" />
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 2 }}
-          className="absolute w-[500px] h-[300px] bg-[#f5d4a0] opacity-[0.03] top-[-100px] left-[20%] rounded-full blur-[120px]"
+          className="absolute w-[800px] h-[400px] bg-gradient-warm opacity-[0.03] top-[-150px] left-1/2 -translate-x-1/2 rounded-full blur-[150px]"
         />
-        
-        {/* Body Doubling glow - pink */}
-        <div className="absolute w-[400px] h-[400px] bg-[#ff6b9d] opacity-[0.02] top-[30%] right-[-100px] rounded-full blur-[100px]" />
-        
-        {/* Hybrid glow - teal */}
-        <div className="absolute w-[600px] h-[300px] bg-[#4ecdc4] opacity-[0.02] bottom-[20%] left-[-200px] rounded-full blur-[100px]" />
-        
-        {/* Subtle grid */}
-        <div className="absolute inset-0 opacity-[0.02]" style={{
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
-          backgroundSize: '80px 80px'
-        }} />
+        <div className="absolute w-[500px] h-[500px] bg-accent opacity-[0.02] top-[40%] left-[-200px] rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-200px] right-[-200px] w-[500px] h-[500px] bg-accent/10 rounded-full blur-[150px]" />
       </div>
       
-      <PricingNav />
+      {/* Navigation provided by global SiteHeader from layout */}
       
       {/* Hero */}
-      <section className="pt-32 pb-12 px-5 md:px-8">
+      <section className="pt-32 pb-8 px-5 md:px-8">
         <div className="max-w-[1200px] mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -635,9 +521,9 @@ export default function PricingPage() {
             transition={{ duration: 0.6 }}
             className="mb-6"
           >
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-xs text-white/60">
-              <Sparkles className="w-3.5 h-3.5 text-[#f5d4a0]" />
-              DEHB beyni için optimize edildi
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-warm/[0.08] border border-primary/15 text-xs text-primary/90">
+              <Activity className="w-3.5 h-3.5" />
+              Dopamin Odaklı Koçluk Sistemi
             </span>
           </motion.div>
           
@@ -645,11 +531,12 @@ export default function PricingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight"
+            className="text-4xl md:text-5xl lg:text-6xl font-light text-foreground mb-6 tracking-tight"
           >
-            Planını seç,{" "}
-            <span className="bg-gradient-to-r from-[#f5d4a0] via-[#ff6b9d] to-[#4ecdc4] bg-clip-text text-transparent">
-              odağını bul.
+            İnsan koç + AI + Body Doubling
+            <br />
+            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent font-medium">
+              tam sistem.
             </span>
           </motion.h1>
           
@@ -657,57 +544,120 @@ export default function PricingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg md:text-xl text-white/50 max-w-2xl mx-auto mb-12 leading-relaxed"
+            className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed font-light"
           >
-            AI araçlarıyla dopamin döngünü optimize et, Body Doubling ile sosyal hesap verebilirlik kazan.
+            Geleneksel ADHD koçluğunun %70 altında fiyatla, 3 kat daha etkili bir sistem.
+            <br />
+            <span className="text-muted-foreground">Projelerini bitirmenin zamanı geldi.</span>
           </motion.p>
           
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            <BillingToggle isAnnual={isAnnual} setIsAnnual={setIsAnnual} />
-          </motion.div>
-        </div>
-      </section>
-      
-      {/* Neurochemical Value Props */}
-      <section className="py-12 px-5 md:px-8">
-        <div className="max-w-[900px] mx-auto">
-          <div className="grid md:grid-cols-3 gap-4">
-            {neurochemicalBenefits.map((benefit, i) => (
-              <NeurochemicalCard key={i} benefit={benefit} index={i} />
-            ))}
-          </div>
         </div>
       </section>
       
       {/* Pricing Cards */}
       <section className="py-12 px-5 md:px-8">
         <div className="max-w-[1100px] mx-auto">
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-6 items-stretch">
             {plans.map((plan, i) => (
               <PricingCard key={plan.id} plan={plan} isAnnual={isAnnual} index={i} />
             ))}
           </div>
-          
-          {/* Legend */}
-          <div className="flex flex-wrap justify-center gap-6 mt-8 text-xs text-white/40">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-1 rounded bg-gradient-to-r from-[#f5d4a0] to-[#f5d4a0]/50" />
-              <span>AI Odak Araçları</span>
+        </div>
+      </section>
+      
+      {/* What's included in Coaching - Highlight */}
+      <section className="py-16 px-5 md:px-8">
+        <div className="max-w-[900px] mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="p-8 md:p-12 rounded-3xl bg-gradient-to-br from-primary/[0.08] to-accent/[0.04] border border-primary/20"
+          >
+            <div className="text-center mb-10">
+              <h2 className="text-2xl md:text-3xl font-light text-foreground mb-3">
+                Koçluk planında neler var?
+              </h2>
+              <p className="text-muted-foreground font-light">
+                ₺3.900/ay — geleneksel koçluğun 3'te 1'i fiyatına
+              </p>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-1 rounded bg-gradient-to-r from-[#f5d4a0] via-[#ff6b9d] to-[#4ecdc4]" />
-              <span>AI + Body Doubling Hibrit</span>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              {[
+                {
+                  icon: Users,
+                  title: "Haftalık 1:1 Koç Seansları",
+                  description: "ADHD sertifikalı uzman koçunuzla 45 dakikalık derin çalışma seansları. Strateji, hesap verebilirlik ve duygusal destek.",
+                  highlight: true
+                },
+                {
+                  icon: Cpu,
+                  title: "7/24 AI Dopamin Koçu",
+                  description: "Anlık görev parçalama, motivasyon desteği ve düşük enerji anlarında yol gösterici. Her zaman yanınızda.",
+                  highlight: false
+                },
+                {
+                  icon: Eye,
+                  title: "Sınırsız Body Doubling",
+                  description: "Günde 4+ canlı odak seansı. Dünya genelinden insanlarla birlikte çalışarak anında hesap verebilirlik.",
+                  highlight: false
+                },
+                {
+                  icon: MessageCircle,
+                  title: "Eşleştirilmiş Pod Grubu",
+                  description: "4-5 kişilik destek grubunuz. Haftalık check-in'ler, zafer kutlamaları ve zorluklarda destek.",
+                  highlight: true
+                },
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className={cn(
+                    "p-5 rounded-xl transition-all",
+                    item.highlight 
+                      ? "bg-gradient-warm/[0.08] border border-primary/20" 
+                      : "bg-card border border-border"
+                  )}
+                >
+                  <div className="flex items-start gap-4">
+                    <div className={cn(
+                      "w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0",
+                      item.highlight ? "bg-gradient-warm/20" : "bg-muted"
+                    )}>
+                      <item.icon className={cn(
+                        "w-5 h-5",
+                        item.highlight ? "text-primary" : "text-muted-foreground"
+                      )} />
+                    </div>
+                    <div>
+                      <h3 className="text-foreground font-medium mb-1">{item.title}</h3>
+                      <p className="text-muted-foreground text-sm font-light leading-relaxed">{item.description}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
+            
+            <div className="mt-8 text-center">
+              <Link
+                href="/start"
+                className="group inline-flex flex-col items-center justify-center px-10 py-5 rounded-2xl bg-gradient-warm text-white hover:opacity-90 transition-all shadow-warm-lg hover:scale-[1.02] mx-auto"
+              >
+                <span className="flex items-center gap-2 text-lg font-bold tracking-wide">
+                  KOÇUNLA EŞLEŞ
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </span>
+                <span className="text-white/80 text-sm font-normal mt-1">
+                  30 gün para iade garantisi
+                </span>
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </section>
       
       {/* Feature Comparison */}
-      <section className="py-24 px-5 md:px-8 border-t border-white/[0.04]">
+      <section className="py-20 px-5 md:px-8 border-t border-border">
         <div className="max-w-[900px] mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -715,11 +665,11 @@ export default function PricingPage() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+            <h2 className="text-2xl md:text-3xl font-light text-foreground mb-4">
               Detaylı Karşılaştırma
             </h2>
-            <p className="text-white/50">
-              AI araçları ve Body Doubling özelliklerini yan yana görün
+            <p className="text-muted-foreground font-light">
+              Her planda tam olarak ne alıyorsun
             </p>
           </motion.div>
           
@@ -728,7 +678,7 @@ export default function PricingPage() {
       </section>
       
       {/* Testimonials */}
-      <section className="py-24 px-5 md:px-8 border-t border-white/[0.04]">
+      <section className="py-20 px-5 md:px-8 border-t border-border">
         <div className="max-w-[900px] mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -736,11 +686,11 @@ export default function PricingPage() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-              Kullanıcılarımız Ne Diyor?
+            <h2 className="text-2xl md:text-3xl font-light text-foreground mb-4">
+              Koçluk üyelerimiz ne diyor?
             </h2>
-            <p className="text-white/50">
-              DEHB'li üreticiler DopaLive ile projelerini bitiriyor
+            <p className="text-muted-foreground font-light">
+              Gerçek projeler, gerçekten bitirilmiş
             </p>
           </motion.div>
           
@@ -749,16 +699,16 @@ export default function PricingPage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="grid grid-cols-3 gap-4 mb-12"
+            className="flex flex-wrap justify-center gap-8 md:gap-16 mb-12"
           >
             {[
-              { value: "2,400+", label: "Tamamlanan proje", color: "#f5d4a0" },
-              { value: "%94", label: "Görev tamamlama", color: "#4ecdc4" },
-              { value: "4.9/5", label: "Kullanıcı puanı", color: "#ff6b9d" },
+              { value: "87%", label: "8 haftada bitirir" },
+              { value: "4.9", label: "Koç puanı" },
+              { value: "2.3x", label: "Tek başına çalışmaktan hızlı" },
             ].map((stat, i) => (
-              <div key={i} className="text-center p-6 rounded-xl bg-white/[0.02] border border-white/[0.04]">
-                <p className="text-2xl md:text-3xl font-bold mb-1" style={{ color: stat.color }}>{stat.value}</p>
-                <p className="text-xs md:text-sm text-white/40">{stat.label}</p>
+              <div key={i} className="text-center">
+                <p className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent text-4xl font-light">{stat.value}</p>
+                <p className="text-muted-foreground text-sm font-light mt-1">{stat.label}</p>
               </div>
             ))}
           </motion.div>
@@ -772,7 +722,7 @@ export default function PricingPage() {
       </section>
       
       {/* FAQ */}
-      <section className="py-24 px-5 md:px-8 border-t border-white/[0.04]">
+      <section className="py-20 px-5 md:px-8 border-t border-border">
         <div className="max-w-[700px] mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -780,12 +730,9 @@ export default function PricingPage() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+            <h2 className="text-2xl md:text-3xl font-light text-foreground mb-4">
               Sık Sorulan Sorular
             </h2>
-            <p className="text-white/50">
-              Merak ettiğin her şeyin cevabı burada
-            </p>
           </motion.div>
           
           <div>
@@ -797,51 +744,51 @@ export default function PricingPage() {
       </section>
       
       {/* Final CTA */}
-      <section className="py-24 px-5 md:px-8 border-t border-white/[0.04]">
+      <section className="py-24 px-5 md:px-8 border-t border-border">
         <div className="max-w-[600px] mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-[#f5d4a0]/20 via-[#ff6b9d]/10 to-[#4ecdc4]/20 border border-white/[0.06] flex items-center justify-center">
-              <Target className="w-10 h-10 text-[#f5d4a0]" />
+            <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/20 flex items-center justify-center">
+              <Target className="w-10 h-10 text-primary" />
             </div>
             
-            <h2 className="text-2xl md:text-4xl font-bold text-white mb-4">
+            <h2 className="text-2xl md:text-4xl font-light text-foreground mb-4">
               Projelerini bitirmeye hazır mısın?
             </h2>
-            <p className="text-white/50 mb-8 leading-relaxed">
-              2 dakikalık testimizi çöz, sana en uygun planı önerelim.
+            <p className="text-muted-foreground mb-8 leading-relaxed font-light">
+              5 dakikalık eşleştirme testini çöz, 48 saat içinde koçunla tanış.
             </p>
             
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-[#f5d4a0] to-[#4ecdc4] text-[#0a0a0a] font-medium hover:opacity-90 transition-all shadow-lg"
+            <Link
+              href="/start"
+              className="group inline-flex flex-col items-center justify-center px-10 py-5 rounded-2xl bg-gradient-warm text-white hover:opacity-90 transition-all shadow-warm-lg hover:scale-[1.02]"
             >
-              Testi Çöz
-              <ArrowRight className="w-5 h-5" />
-            </motion.button>
-            
-            <p className="text-xs text-white/30 mt-4">
-              Kredi kartı gerekmez · 7 gün ücretsiz deneme
-            </p>
+              <span className="flex items-center gap-2 text-lg font-bold tracking-wide">
+                KOÇUNLA EŞLEŞ
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </span>
+              <span className="text-white/80 text-sm font-normal mt-1">
+                30 gün para iade garantisi
+              </span>
+            </Link>
           </motion.div>
         </div>
       </section>
       
       {/* Footer */}
-      <footer className="py-12 px-5 md:px-8 border-t border-white/[0.04]">
+      <footer className="py-12 px-5 md:px-8 border-t border-border">
         <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
-              <div className="w-2 h-2 rounded-full border border-[#f5d4a0]/60" />
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+              <Flame className="w-4 h-4 text-white" />
             </div>
-            <span className="text-white/40 text-sm">dopalive</span>
+            <span className="text-muted-foreground text-sm font-medium">DopaLive</span>
           </div>
-          <p className="text-white/30 text-sm">
-            © {new Date().getFullYear()} DopaLive. DEHB beyni için tasarlandı.
+          <p className="text-muted-foreground text-xs font-light">
+            © {new Date().getFullYear()} DopaLive. ADHD beyni için tasarlandı.
           </p>
         </div>
       </footer>

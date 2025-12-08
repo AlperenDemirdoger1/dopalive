@@ -77,3 +77,5 @@ export default async function BlogPostPage({ params }: Props) {
   return <BlogPostContent post={post} relatedPosts={relatedPosts} />;
 }
 
+
+

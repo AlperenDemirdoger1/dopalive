@@ -5,33 +5,31 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { 
-  Rocket, 
   ArrowRight, 
   ArrowLeft,
-  Clock,
   Brain,
+  Flame,
   Sparkles,
-  Heart,
   Target,
   CheckCircle2,
   ChevronDown,
   Zap,
-  Users,
+  Clock,
+  Heart,
+  Battery,
+  Globe,
+  BookOpen,
   Shield
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import {
   QuizAnswers,
-  ProjectType,
-  StuckStage,
-  ADHDPatterns,
-  PROJECT_TYPE_OPTIONS,
-  STUCK_STAGE_OPTIONS,
-  EMOTION_OPTIONS,
+  QUIZ_SECTIONS,
   saveQuizProgress,
   loadQuizProgress,
   clearQuizProgress,
-  mapQuizToProfile,
+  calculateDopamineProfile,
   saveProfile,
   trackQuizEvent,
 } from '@/lib/quiz';
@@ -41,94 +39,110 @@ import {
 // ============================================
 
 const pageVariants = {
-  initial: { opacity: 0, x: 20 },
-  animate: { opacity: 1, x: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] as const } },
-  exit: { opacity: 0, x: -20, transition: { duration: 0.3 } }
+  initial: { opacity: 0, x: 30 },
+  animate: { opacity: 1, x: 0, transition: { duration: 0.4, ease: "easeOut" as const } },
+  exit: { opacity: 0, x: -30, transition: { duration: 0.3 } }
 };
 
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.08, delayChildren: 0.1 }
+    transition: { staggerChildren: 0.06, delayChildren: 0.1 }
   }
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const } }
-};
-
-const cardHover = {
-  rest: { scale: 1, y: 0 },
-  hover: { scale: 1.02, y: -4, transition: { duration: 0.2 } },
-  tap: { scale: 0.98 }
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0 }
 };
 
 // ============================================
-// CONFETTI COMPONENT
+// SECTION ICONS
 // ============================================
 
-const Confetti = ({ show }: { show: boolean }) => {
-  if (!show) return null;
-  
-  return (
-    <div className="fixed inset-0 pointer-events-none z-50">
-      {[...Array(50)].map((_, i) => (
-        <motion.div
-          key={i}
-          initial={{ 
-            y: -20, 
-            x: Math.random() * window.innerWidth,
-            rotate: 0,
-            opacity: 1
-          }}
-          animate={{ 
-            y: window.innerHeight + 100,
-            x: Math.random() * window.innerWidth,
-            rotate: Math.random() * 720 - 360,
-            opacity: 0
-          }}
-          transition={{ 
-            duration: 2 + Math.random() * 2,
-            delay: Math.random() * 0.5,
-            ease: "easeOut"
-          }}
-          className={cn(
-            "absolute w-3 h-3 rounded-sm",
-            i % 5 === 0 && "bg-[#FF6B6B]",
-            i % 5 === 1 && "bg-[#FF8E53]",
-            i % 5 === 2 && "bg-[#10B981]",
-            i % 5 === 3 && "bg-[#8B5CF6]",
-            i % 5 === 4 && "bg-[#FBBF24]"
-          )}
-        />
-      ))}
-    </div>
-  );
+const sectionIcons: Record<string, React.ElementType> = {
+  intro: Brain,
+  dopamine: Zap,
+  attention: Target,
+  executive: BookOpen,
+  emotion: Heart,
+  time: Clock,
+  energy: Battery,
+  environment: Globe,
+  context: Sparkles
+};
+
+// ============================================
+// SECTION COMPLETION INFO
+// ============================================
+
+const sectionCompletionInfo: Record<string, { title: string; fact: string; source: string; emoji: string }> = {
+  dopamine: {
+    title: "Dopamin Sistemi Tamamlandı! 🎉",
+    emoji: "🧠",
+    fact: "Dünya genelinde 366 milyon yetişkin DEHB'li var ve çoğu dopamin düzenleme desteğine ihtiyaç duyuyor",
+    source: "WHO, 2023"
+  },
+  attention: {
+    title: "Dikkat ve Odak Bölümü Tamamlandı! 🎯",
+    emoji: "🎯",
+    fact: "Türkiye'de 4 milyon yetişkin DEHB'li var ve yalnızca %10'u profesyonel destek alıyor",
+    source: "TPD, 2024"
+  },
+  executive: {
+    title: "Yürütücü İşlevler Bölümü Tamamlandı! 📚",
+    emoji: "📚",
+    fact: "DEHB'li bireylerin %70'i çocukluktan yetişkinliğe taşınır ve görev yönetimi desteğine ihtiyaç duyar",
+    source: "CHADD, 2023"
+  },
+  emotion: {
+    title: "Duygusal Düzenleme Bölümü Tamamlandı! ❤️",
+    emoji: "❤️",
+    fact: "DEHB'li bireylerin %50'sinden fazlası anksiyete ve depresyon deneyimliyor, destek grupları kritik önem taşıyor",
+    source: "ADDA, 2023"
+  },
+  time: {
+    title: "Zaman Algısı Bölümü Tamamlandı! ⏰",
+    emoji: "⏰",
+    fact: "Zaman körlüğü DEHB'li bireylerin %80'inde görülüyor ve görsel zamanlayıcılar en etkili çözümlerden biri",
+    source: "Barkley, 2020"
+  },
+  energy: {
+    title: "Enerji Yönetimi Bölümü Tamamlandı! 🔋",
+    emoji: "🔋",
+    fact: "DEHB'li bireylerde uyku bozuklukları %75 oranında görülüyor, düzenli rutinler yaşam kalitesini önemli ölçüde artırıyor",
+    source: "Sleep Foundation, 2023"
+  },
+  environment: {
+    title: "Çevresel Faktörler Bölümü Tamamlandı! 🌍",
+    emoji: "🌍",
+    fact: "Body doubling ve sosyal hesap verebilirlik DEHB'li bireylerde proje tamamlama oranını 3 katına çıkarıyor",
+    source: "ADHD Foundation, 2023"
+  }
 };
 
 // ============================================
 // PROGRESS BAR
 // ============================================
 
-const ProgressBar = ({ currentStep, totalSteps }: { currentStep: number; totalSteps: number }) => {
-  const progress = ((currentStep) / totalSteps) * 100;
+const ProgressBar = ({ current, total }: { current: number; total: number }) => {
+  const progress = Math.round((current / total) * 100);
   
   return (
-    <div className="w-full max-w-md mx-auto mb-8">
+    <div className="w-full max-w-lg mx-auto mb-8">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-white/40 text-sm font-medium">
-          Step {currentStep} of {totalSteps}
+        <span className="text-muted-foreground text-sm">
+          Bölüm {current} / {total}
         </span>
-        <span className="text-coral text-sm font-semibold">{Math.round(progress)}%</span>
+        <span className="text-primary text-sm font-semibold">%{progress}</span>
       </div>
-      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+      <div className="h-2 bg-muted rounded-full overflow-hidden">
         <motion.div
-          className="h-full bg-gradient-to-r from-[#FF6B6B] to-[#FF8E53] rounded-full"
+          className="h-full bg-gradient-warm rounded-full"
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] as const }}
+          transition={{ duration: 0.5, ease: "easeOut" as const }}
         />
       </div>
     </div>
@@ -136,105 +150,7 @@ const ProgressBar = ({ currentStep, totalSteps }: { currentStep: number; totalSt
 };
 
 // ============================================
-// OPTION CARD (for single select)
-// ============================================
-
-const OptionCard = ({
-  selected,
-  onClick,
-  emoji,
-  label,
-  description,
-  disabled = false,
-}: {
-  selected: boolean;
-  onClick: () => void;
-  emoji: string;
-  label: string;
-  description?: string;
-  disabled?: boolean;
-}) => (
-  <motion.button
-    variants={cardHover}
-    initial="rest"
-    whileHover={disabled ? "rest" : "hover"}
-    whileTap={disabled ? "rest" : "tap"}
-    onClick={onClick}
-    disabled={disabled}
-    className={cn(
-      "w-full p-4 rounded-2xl border text-left transition-all duration-200",
-      "flex items-start gap-4",
-      selected 
-        ? "bg-[#FF6B6B]/10 border-[#FF6B6B]/40 shadow-lg shadow-[#FF6B6B]/10" 
-        : "bg-white/[0.02] border-white/[0.08] hover:bg-white/[0.04] hover:border-white/[0.12]",
-      disabled && "opacity-50 cursor-not-allowed"
-    )}
-  >
-    <div className={cn(
-      "w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0",
-      selected ? "bg-[#FF6B6B]/20" : "bg-white/[0.05]"
-    )}>
-      {emoji}
-    </div>
-    <div className="flex-1 min-w-0">
-      <p className={cn(
-        "font-semibold text-base",
-        selected ? "text-white" : "text-white/80"
-      )}>
-        {label}
-      </p>
-      {description && (
-        <p className={cn(
-          "text-sm mt-1",
-          selected ? "text-white/70" : "text-white/40"
-        )}>
-          {description}
-        </p>
-      )}
-    </div>
-    <div className={cn(
-      "w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 mt-1",
-      selected ? "border-[#FF6B6B] bg-[#FF6B6B]" : "border-white/20"
-    )}>
-      {selected && <CheckCircle2 className="w-4 h-4 text-white" />}
-    </div>
-  </motion.button>
-);
-
-// ============================================
-// EMOTION CHIP (for multi-select)
-// ============================================
-
-const EmotionChip = ({
-  selected,
-  onClick,
-  emoji,
-  label,
-}: {
-  selected: boolean;
-  onClick: () => void;
-  emoji: string;
-  label: string;
-}) => (
-  <motion.button
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-    onClick={onClick}
-    className={cn(
-      "px-4 py-3 rounded-xl border transition-all duration-200",
-      "flex items-center gap-2",
-      selected 
-        ? "bg-[#FF6B6B]/10 border-[#FF6B6B]/40 text-white" 
-        : "bg-white/[0.02] border-white/[0.08] text-white/60 hover:bg-white/[0.04] hover:border-white/[0.12] hover:text-white/80"
-    )}
-  >
-    <span className="text-lg">{emoji}</span>
-    <span className="text-sm font-medium">{label}</span>
-  </motion.button>
-);
-
-// ============================================
-// LIKERT SCALE
+// LIKERT SCALE COMPONENT
 // ============================================
 
 const LikertScale = ({
@@ -248,39 +164,145 @@ const LikertScale = ({
   leftLabel: string;
   rightLabel: string;
 }) => (
-  <div className="space-y-3">
-    <div className="flex gap-2">
+  <div className="space-y-4">
+    <div className="flex gap-3">
       {[1, 2, 3, 4, 5].map((n) => (
-        <motion.button
+  <motion.button
           key={n}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => onChange(n)}
-          className={cn(
-            "flex-1 h-12 rounded-xl border transition-all duration-200 font-semibold",
+          aria-pressed={value === n}
+    className={cn(
+            "flex-1 h-16 rounded-2xl border-2 transition-all duration-300 font-bold text-xl",
             value === n
-              ? "bg-[#FF6B6B] border-[#FF6B6B] text-white shadow-lg shadow-[#FF6B6B]/30"
-              : "bg-white/[0.02] border-white/[0.08] text-white/60 hover:bg-white/[0.05] hover:border-white/[0.15]"
+              ? "bg-foreground border-foreground text-background shadow-xl scale-110 ring-4 ring-foreground/20"
+              : "bg-card border-border text-muted-foreground hover:bg-muted hover:border-foreground/40 hover:text-foreground"
           )}
         >
           {n}
         </motion.button>
       ))}
     </div>
-    <div className="flex justify-between text-xs text-white/40">
+    <div className="flex justify-between text-sm text-muted-foreground px-2">
       <span>{leftLabel}</span>
       <span>{rightLabel}</span>
     </div>
+    </div>
+);
+
+// ============================================
+// SINGLE SELECT COMPONENT
+// ============================================
+
+const SingleSelect = ({
+  options,
+  value,
+  onChange,
+}: {
+  options: Array<{ id: string; label: string; emoji?: string; description?: string }>;
+  value: string | undefined;
+  onChange: (value: string) => void;
+}) => (
+  <div className="grid gap-3">
+    {options.map((option) => (
+  <motion.button
+        key={option.id}
+        whileHover={{ scale: 1.01, y: -2 }}
+        whileTap={{ scale: 0.99 }}
+        onClick={() => onChange(option.id)}
+    className={cn(
+          "w-full p-4 rounded-2xl border-2 text-left transition-all duration-200",
+          "flex items-center gap-4",
+          value === option.id
+            ? "bg-primary/10 border-primary shadow-warm-sm"
+            : "bg-card border-border hover:bg-muted hover:border-muted-foreground/30"
+        )}
+      >
+        {option.emoji && (
+          <span className="text-2xl">{option.emoji}</span>
+        )}
+        <div className="flex-1">
+          <p className={cn(
+            "font-semibold",
+            value === option.id ? "text-foreground" : "text-foreground/80"
+          )}>
+            {option.label}
+          </p>
+          {option.description && (
+            <p className="text-sm text-muted-foreground mt-0.5">{option.description}</p>
+          )}
+        </div>
+        <div className={cn(
+          "w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0",
+          value === option.id ? "border-primary bg-primary" : "border-muted-foreground/30"
+        )}>
+          {value === option.id && <CheckCircle2 className="w-4 h-4 text-primary-foreground" />}
+        </div>
+  </motion.button>
+    ))}
   </div>
 );
 
 // ============================================
-// STEP COMPONENTS
+// MULTI SELECT COMPONENT
 // ============================================
 
-// Step 0: Welcome Screen
+const MultiSelect = ({
+  options,
+  values,
+  onChange,
+}: {
+  options: Array<{ id: string; label: string; emoji?: string }>;
+  values: string[];
+  onChange: (values: string[]) => void;
+}) => {
+  const toggle = (id: string) => {
+    if (values.includes(id)) {
+      onChange(values.filter(v => v !== id));
+    } else {
+      onChange([...values, id]);
+    }
+  };
+
+  return (
+    <div className="flex flex-wrap gap-3 justify-center">
+      {options.map((option) => {
+        const selected = values.includes(option.id);
+        return (
+        <motion.button
+            key={option.id}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => toggle(option.id)}
+          className={cn(
+              "relative px-5 py-3.5 rounded-xl border-2 transition-all duration-200",
+              "flex items-center gap-2.5",
+              selected
+                ? "bg-primary/15 border-primary text-foreground shadow-lg ring-2 ring-primary/30 scale-105"
+                : "bg-card border-border text-muted-foreground hover:bg-muted hover:border-muted-foreground/30"
+            )}
+          >
+            {selected && (
+              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+              </span>
+            )}
+            {option.emoji && <span className="text-xl">{option.emoji}</span>}
+            <span className={cn("text-sm font-semibold", selected && "text-foreground")}>{option.label}</span>
+        </motion.button>
+        );
+      })}
+  </div>
+);
+};
+
+// ============================================
+// WELCOME SCREEN
+// ============================================
+
 const WelcomeScreen = ({ onStart }: { onStart: () => void }) => {
-  const [showExamples, setShowExamples] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
   
   return (
     <motion.div
@@ -291,87 +313,75 @@ const WelcomeScreen = ({ onStart }: { onStart: () => void }) => {
     >
       {/* Hero Icon */}
       <motion.div variants={itemVariants} className="mb-8">
-        <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#FF6B6B] to-[#FF8E53] flex items-center justify-center mx-auto shadow-2xl shadow-[#FF6B6B]/30">
-          <Brain className="w-10 h-10 text-white" />
+        <div className="w-24 h-24 rounded-3xl bg-gradient-warm flex items-center justify-center mx-auto shadow-warm-lg">
+          <Flame className="w-12 h-12 text-white" />
         </div>
       </motion.div>
       
       {/* Headline */}
       <motion.h1 
         variants={itemVariants}
-        className="font-syne font-bold text-3xl md:text-4xl text-white mb-4"
+        className="font-display font-bold text-3xl md:text-4xl text-foreground mb-4"
       >
-        Let's map how your brain
+        Dopamin Haritanı
         <br />
-        <span className="bg-gradient-to-r from-[#FF6B6B] to-[#FF8E53] bg-clip-text text-transparent">
-          finishes projects.
-        </span>
+        <span className="text-gradient">Keşfet</span>
       </motion.h1>
       
       {/* Subheadline */}
       <motion.p 
         variants={itemVariants}
-        className="text-white/50 text-lg mb-8 max-w-md mx-auto"
+        className="text-muted-foreground text-lg mb-8 max-w-md mx-auto leading-relaxed"
       >
-        Discover your unique project completion patterns and get a personalized plan that works with your brain, not against it.
+        Beyninin motivasyon, dikkat ve enerji sistemlerini anla. 
+        Sana özel stratejiler ve destek planı oluşturalım.
       </motion.p>
       
-      {/* Promises */}
+      {/* Features */}
       <motion.div 
         variants={itemVariants}
-        className="flex flex-wrap justify-center gap-4 mb-8"
+        className="flex flex-wrap justify-center gap-3 mb-8"
       >
         {[
-          { icon: Clock, text: "~3 minutes" },
-          { icon: Brain, text: "Made for ADHD brains" },
-          { icon: Target, text: "Personalized plan" },
+          { icon: Clock, text: "~5 dakika" },
+          { icon: Brain, text: "Nörokimyasal analiz" },
+          { icon: Target, text: "Kişisel profil" },
         ].map((item, i) => (
           <div
             key={i}
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.08]"
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted border border-border"
           >
-            <item.icon className="w-4 h-4 text-[#FF6B6B]" />
-            <span className="text-white/70 text-sm">{item.text}</span>
+            <item.icon className="w-4 h-4 text-primary" />
+            <span className="text-foreground/80 text-sm">{item.text}</span>
           </div>
         ))}
       </motion.div>
       
-      {/* Primary CTA */}
+      {/* CTA */}
       <motion.div variants={itemVariants}>
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.98 }}
+        <Button
+          variant="primary"
+          size="xl"
+          rightIcon={ArrowRight}
           onClick={onStart}
-          className={cn(
-            "px-8 py-4 rounded-full w-full sm:w-auto",
-            "bg-gradient-to-r from-[#FF6B6B] to-[#FF8E53]",
-            "text-white font-semibold text-lg",
-            "shadow-2xl shadow-[#FF6B6B]/30",
-            "hover:shadow-3xl hover:shadow-[#FF6B6B]/40",
-            "transition-all duration-300",
-            "flex items-center justify-center gap-2 mx-auto"
-          )}
+          className="w-full sm:w-auto px-10"
         >
-          Start the quiz
-          <ArrowRight className="w-5 h-5" />
-        </motion.button>
+          Teste Başla
+        </Button>
       </motion.div>
       
-      {/* Secondary link */}
+      {/* Details Toggle */}
       <motion.div variants={itemVariants} className="mt-6">
         <button
-          onClick={() => setShowExamples(!showExamples)}
-          className="text-white/40 hover:text-white/60 text-sm transition-colors inline-flex items-center gap-1"
+          onClick={() => setShowDetails(!showDetails)}
+          className="text-muted-foreground hover:text-foreground text-sm transition-colors inline-flex items-center gap-1"
         >
-          What will you ask?
-          <ChevronDown className={cn(
-            "w-4 h-4 transition-transform",
-            showExamples && "rotate-180"
-          )} />
+          Ne sorulacak?
+          <ChevronDown className={cn("w-4 h-4 transition-transform", showDetails && "rotate-180")} />
         </button>
         
         <AnimatePresence>
-          {showExamples && (
+          {showDetails && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
@@ -379,13 +389,33 @@ const WelcomeScreen = ({ onStart }: { onStart: () => void }) => {
               transition={{ duration: 0.3 }}
               className="overflow-hidden"
             >
-              <div className="mt-4 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] text-left">
-                <p className="text-white/60 text-sm mb-3">Example questions:</p>
-                <ul className="space-y-2 text-white/40 text-sm">
-                  <li>• What type of project are you working on?</li>
-                  <li>• Where do you typically get stuck?</li>
-                  <li>• How do you feel about this project?</li>
-                  <li>• What kind of support works best for you?</li>
+              <div className="mt-4 p-5 rounded-2xl bg-card border border-border text-left">
+                <p className="text-muted-foreground text-sm mb-3 font-medium">Test bölümleri:</p>
+                <ul className="space-y-2 text-foreground/70 text-sm">
+                  <li className="flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-primary" />
+                    Dopamin sistemi - motivasyon ve ödül
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Target className="w-4 h-4 text-primary" />
+                    Dikkat düzenleme - odaklanma kalıpları
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <BookOpen className="w-4 h-4 text-primary" />
+                    Yürütücü işlevler - planlama ve organize olma
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Heart className="w-4 h-4 text-primary" />
+                    Duygusal düzenleme - duygu yönetimi
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-primary" />
+                    Zaman algısı - zaman körlüğü
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Battery className="w-4 h-4 text-primary" />
+                    Enerji kalıpları - günlük ritim
+                  </li>
                 </ul>
               </div>
             </motion.div>
@@ -393,716 +423,94 @@ const WelcomeScreen = ({ onStart }: { onStart: () => void }) => {
         </AnimatePresence>
       </motion.div>
       
-      {/* Safety copy */}
+      {/* Safety Note */}
       <motion.p 
         variants={itemVariants}
-        className="mt-8 text-white/30 text-xs flex items-center justify-center gap-2"
+        className="mt-8 text-muted-foreground text-xs flex items-center justify-center gap-2"
       >
         <Shield className="w-4 h-4" />
-        This is not a diagnosis. It's a tool to help you finish what you start.
+        Bu bir tanı değildir. Kendini anlamak için tasarlanmış bir araçtır.
       </motion.p>
     </motion.div>
   );
 };
 
-// Step 1: Project Type
-const ProjectTypeStep = ({
-  value,
-  onChange,
-}: {
-  value?: ProjectType;
-  onChange: (value: ProjectType) => void;
-}) => (
-  <motion.div
-    variants={containerVariants}
-    initial="hidden"
-    animate="visible"
-    className="max-w-xl mx-auto"
-  >
-    <motion.div variants={itemVariants} className="text-center mb-8">
-      <h2 className="font-syne font-bold text-2xl md:text-3xl text-white mb-3">
-        What are you trying to finish?
-      </h2>
-      <p className="text-white/50">
-        Pick the project that's been weighing on you most.
-      </p>
-    </motion.div>
-    
-    <motion.div variants={containerVariants} className="grid gap-3">
-      {PROJECT_TYPE_OPTIONS.map((option) => (
-        <motion.div key={option.id} variants={itemVariants}>
-          <OptionCard
-            selected={value === option.id}
-            onClick={() => onChange(option.id as ProjectType)}
-            emoji={option.emoji}
-            label={option.label}
-            description={option.description}
-          />
-        </motion.div>
-      ))}
-    </motion.div>
-  </motion.div>
-);
+// ============================================
+// QUESTION STEP COMPONENT
+// ============================================
 
-// Step 2: Time Stuck
-const TimeStuckStep = ({
-  value,
-  onChange,
-  projectType,
+const QuestionStep = ({
+  section,
+  answers,
+  onAnswer,
 }: {
-  value?: number;
-  onChange: (value: number) => void;
-  projectType?: ProjectType;
+  section: typeof QUIZ_SECTIONS[number];
+  answers: Record<string, number | string | string[]>;
+  onAnswer: (questionId: string, value: number | string | string[]) => void;
 }) => {
-  const projectLabel = PROJECT_TYPE_OPTIONS.find(p => p.id === projectType)?.label?.toLowerCase() || "project";
-  
-  const timeOptions = [
-    { value: 1, label: "Less than a month", emoji: "🌱", description: "Just getting stuck" },
-    { value: 3, label: "1-3 months", emoji: "🌿", description: "Stuck for a while" },
-    { value: 6, label: "3-6 months", emoji: "🌳", description: "Getting serious" },
-    { value: 12, label: "6-12 months", emoji: "🏔️", description: "Long-term struggle" },
-    { value: 24, label: "Over a year", emoji: "⛰️", description: "Deeply rooted" },
-  ];
+  const Icon = sectionIcons[section.id] || Brain;
   
   return (
     <motion.div
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="max-w-xl mx-auto"
+      className="max-w-2xl mx-auto"
     >
-      <motion.div variants={itemVariants} className="text-center mb-8">
-        <h2 className="font-syne font-bold text-2xl md:text-3xl text-white mb-3">
-          How long have you been stuck on your {projectLabel}?
+      {/* Section Header */}
+      <motion.div variants={itemVariants} className="text-center mb-10">
+        <div className="w-16 h-16 rounded-2xl bg-gradient-warm flex items-center justify-center mx-auto mb-4 shadow-warm-md">
+          <Icon className="w-8 h-8 text-white" />
+        </div>
+        <h2 className="font-display font-bold text-2xl md:text-3xl text-foreground mb-2">
+          {section.title}
         </h2>
-        <p className="text-white/50">
-          No judgment—just helps us understand where you're at.
-        </p>
+        <p className="text-muted-foreground">{section.subtitle}</p>
       </motion.div>
       
-      <motion.div variants={containerVariants} className="grid gap-3">
-        {timeOptions.map((option) => (
-          <motion.div key={option.value} variants={itemVariants}>
-            <OptionCard
-              selected={value === option.value}
-              onClick={() => onChange(option.value)}
-              emoji={option.emoji}
-              label={option.label}
-              description={option.description}
-            />
-          </motion.div>
-        ))}
-      </motion.div>
-    </motion.div>
-  );
-};
-
-// Step 3: Stuck Stage
-const StuckStageStep = ({
-  value,
-  onChange,
-}: {
-  value?: StuckStage;
-  onChange: (value: StuckStage) => void;
-}) => (
-  <motion.div
-    variants={containerVariants}
-    initial="hidden"
-    animate="visible"
-    className="max-w-xl mx-auto"
-  >
-    <motion.div variants={itemVariants} className="text-center mb-8">
-      <h2 className="font-syne font-bold text-2xl md:text-3xl text-white mb-3">
-        Where do you usually get stuck?
-      </h2>
-      <p className="text-white/50">
-        Think about your pattern across projects, not just this one.
-      </p>
-    </motion.div>
-    
-    <motion.div variants={containerVariants} className="grid gap-3">
-      {STUCK_STAGE_OPTIONS.map((option) => (
-        <motion.div key={option.id} variants={itemVariants}>
-          <OptionCard
-            selected={value === option.id}
-            onClick={() => onChange(option.id)}
-            emoji={option.emoji}
-            label={option.label}
-            description={option.detail}
-          />
-        </motion.div>
-      ))}
-    </motion.div>
-  </motion.div>
-);
-
-// Step 4: ADHD Patterns
-const ADHDPatternsStep = ({
-  value,
-  onChange,
-}: {
-  value?: ADHDPatterns;
-  onChange: (value: ADHDPatterns) => void;
-}) => {
-  const patterns = value || {
-    taskInitiation: 3,
-    timeBlindness: 3,
-    boredomThreshold: 3,
-    perfectionism: 3,
-    contextSwitching: 3,
-  };
-  
-  const updatePattern = (key: keyof ADHDPatterns, newValue: number) => {
-    onChange({ ...patterns, [key]: newValue });
-  };
-  
-  const questions = [
-    {
-      key: 'taskInitiation' as keyof ADHDPatterns,
-      question: "Starting tasks feels hard, even when I know what to do.",
-      leftLabel: "Rarely",
-      rightLabel: "Almost always"
-    },
-    {
-      key: 'timeBlindness' as keyof ADHDPatterns,
-      question: "I often lose track of time or underestimate how long things take.",
-      leftLabel: "Rarely",
-      rightLabel: "Almost always"
-    },
-    {
-      key: 'boredomThreshold' as keyof ADHDPatterns,
-      question: "I get bored quickly and crave something new.",
-      leftLabel: "Rarely",
-      rightLabel: "Almost always"
-    },
-    {
-      key: 'perfectionism' as keyof ADHDPatterns,
-      question: "I delay things until I can do them 'right.'",
-      leftLabel: "Rarely",
-      rightLabel: "Almost always"
-    },
-    {
-      key: 'contextSwitching' as keyof ADHDPatterns,
-      question: "Once interrupted, it's hard to get back into a task.",
-      leftLabel: "Rarely",
-      rightLabel: "Almost always"
-    },
-  ];
-  
-  return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="max-w-xl mx-auto"
-    >
-      <motion.div variants={itemVariants} className="text-center mb-8">
-        <h2 className="font-syne font-bold text-2xl md:text-3xl text-white mb-3">
-          How does your brain work?
-        </h2>
-        <p className="text-white/50">
-          Rate how strongly these resonate with you.
-        </p>
-      </motion.div>
-      
+      {/* Questions */}
       <motion.div variants={containerVariants} className="space-y-8">
-        {questions.map((q) => (
+        {section.questions.map((question, idx) => (
           <motion.div 
-            key={q.key} 
+            key={question.id}
             variants={itemVariants}
-            className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06]"
+            className="p-6 rounded-2xl bg-card border border-border"
           >
-            <p className="text-white/80 text-base mb-4">{q.question}</p>
+            <div className="mb-4">
+              <p className="text-foreground font-medium text-lg mb-1">
+                {idx + 1}. {question.text}
+              </p>
+              {question.subtext && (
+                <p className="text-muted-foreground text-sm">{question.subtext}</p>
+              )}
+            </div>
+
+            {question.type === "scale" && (
             <LikertScale
-              value={patterns[q.key]}
-              onChange={(v) => updatePattern(q.key, v)}
-              leftLabel={q.leftLabel}
-              rightLabel={q.rightLabel}
-            />
-          </motion.div>
+                value={(answers[question.id] as number) || 0}
+                onChange={(v) => onAnswer(question.id, v)}
+                leftLabel={question.scaleLabels?.left || "Az"}
+                rightLabel={question.scaleLabels?.right || "Çok"}
+              />
+            )}
+
+            {question.type === "single" && question.options && (
+              <SingleSelect
+                options={question.options}
+                value={answers[question.id] as string | undefined}
+                onChange={(v) => onAnswer(question.id, v)}
+              />
+            )}
+
+            {question.type === "multi" && question.options && (
+              <MultiSelect
+                options={question.options}
+                values={(answers[question.id] as string[]) || []}
+                onChange={(v) => onAnswer(question.id, v)}
+              />
+            )}
+        </motion.div>
         ))}
-      </motion.div>
-    </motion.div>
-  );
-};
-
-// Step 5: Emotions
-const EmotionsStep = ({
-  value,
-  onChange,
-}: {
-  value?: string[];
-  onChange: (value: string[]) => void;
-}) => {
-  const emotions = value || [];
-  
-  const toggleEmotion = (emotionId: string) => {
-    if (emotions.includes(emotionId)) {
-      onChange(emotions.filter(e => e !== emotionId));
-    } else {
-      onChange([...emotions, emotionId]);
-    }
-  };
-  
-  return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="max-w-xl mx-auto"
-    >
-      <motion.div variants={itemVariants} className="text-center mb-8">
-        <h2 className="font-syne font-bold text-2xl md:text-3xl text-white mb-3">
-          How do you feel about this project?
-        </h2>
-        <p className="text-white/50">
-          Select all that apply. It's okay to feel contradictory things.
-        </p>
-      </motion.div>
-      
-      <motion.div 
-        variants={containerVariants} 
-        className="flex flex-wrap gap-3 justify-center"
-      >
-        {EMOTION_OPTIONS.map((emotion) => (
-          <motion.div key={emotion.id} variants={itemVariants}>
-            <EmotionChip
-              selected={emotions.includes(emotion.id)}
-              onClick={() => toggleEmotion(emotion.id)}
-              emoji={emotion.emoji}
-              label={emotion.label}
-            />
-          </motion.div>
-        ))}
-      </motion.div>
-      
-      {emotions.length > 0 && (
-        <motion.p 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center text-white/40 text-sm mt-6"
-        >
-          {emotions.length} emotion{emotions.length !== 1 ? 's' : ''} selected
-        </motion.p>
-      )}
-    </motion.div>
-  );
-};
-
-// Step 6: Identity Statements
-const IdentityStep = ({
-  value,
-  onChange,
-}: {
-  value?: { trailOfUnfinished: number; startStrongFadeOut: number; fearJudgment: number };
-  onChange: (value: { trailOfUnfinished: number; startStrongFadeOut: number; fearJudgment: number }) => void;
-}) => {
-  const statements = value || {
-    trailOfUnfinished: 3,
-    startStrongFadeOut: 3,
-    fearJudgment: 3,
-  };
-  
-  const questions = [
-    {
-      key: 'trailOfUnfinished',
-      statement: '"I leave a trail of half-finished things behind me."',
-    },
-    {
-      key: 'startStrongFadeOut',
-      statement: '"I start strong but fade out before the finish line."',
-    },
-    {
-      key: 'fearJudgment',
-      statement: '"I\'m afraid of what people will think if I actually ship this."',
-    },
-  ];
-  
-  return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="max-w-xl mx-auto"
-    >
-      <motion.div variants={itemVariants} className="text-center mb-8">
-        <h2 className="font-syne font-bold text-2xl md:text-3xl text-white mb-3">
-          How much do these resonate?
-        </h2>
-        <p className="text-white/50">
-          Be honest—there's no wrong answer.
-        </p>
-      </motion.div>
-      
-      <motion.div variants={containerVariants} className="space-y-6">
-        {questions.map((q) => (
-          <motion.div 
-            key={q.key} 
-            variants={itemVariants}
-            className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06]"
-          >
-            <p className="text-white/80 text-base mb-4 italic">{q.statement}</p>
-            <LikertScale
-              value={statements[q.key as keyof typeof statements]}
-              onChange={(v) => onChange({ ...statements, [q.key]: v })}
-              leftLabel="Not me"
-              rightLabel="So me"
-            />
-          </motion.div>
-        ))}
-      </motion.div>
-    </motion.div>
-  );
-};
-
-// Step 7: Environment
-const EnvironmentStep = ({
-  value,
-  onChange,
-}: {
-  value?: { hoursPerWeek: number; stabilityLevel: number; hasSupportNetwork: boolean };
-  onChange: (value: { hoursPerWeek: number; stabilityLevel: number; hasSupportNetwork: boolean }) => void;
-}) => {
-  const environment = value || {
-    hoursPerWeek: 10,
-    stabilityLevel: 3,
-    hasSupportNetwork: false,
-  };
-  
-  const hourOptions = [
-    { value: 2, label: "1-2 hours", emoji: "⏰" },
-    { value: 5, label: "3-5 hours", emoji: "🕐" },
-    { value: 10, label: "5-10 hours", emoji: "🕑" },
-    { value: 20, label: "10-20 hours", emoji: "🕒" },
-    { value: 30, label: "20+ hours", emoji: "🕓" },
-  ];
-  
-  return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="max-w-xl mx-auto"
-    >
-      <motion.div variants={itemVariants} className="text-center mb-8">
-        <h2 className="font-syne font-bold text-2xl md:text-3xl text-white mb-3">
-          Let's understand your situation
-        </h2>
-        <p className="text-white/50">
-          This helps us recommend realistic goals and support.
-        </p>
-      </motion.div>
-      
-      <motion.div variants={containerVariants} className="space-y-8">
-        {/* Hours per week */}
-        <motion.div variants={itemVariants}>
-          <p className="text-white/80 text-base mb-4">
-            How many hours per week can you realistically dedicate to this project?
-          </p>
-          <div className="grid grid-cols-5 gap-2">
-            {hourOptions.map((option) => (
-              <motion.button
-                key={option.value}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => onChange({ ...environment, hoursPerWeek: option.value })}
-                className={cn(
-                  "py-3 px-2 rounded-xl border text-center transition-all",
-                  environment.hoursPerWeek === option.value
-                    ? "bg-[#FF6B6B]/10 border-[#FF6B6B]/40 text-white"
-                    : "bg-white/[0.02] border-white/[0.08] text-white/60 hover:bg-white/[0.04]"
-                )}
-              >
-                <div className="text-lg mb-1">{option.emoji}</div>
-                <div className="text-xs">{option.label}</div>
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
-        
-        {/* Life stability */}
-        <motion.div 
-          variants={itemVariants}
-          className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06]"
-        >
-          <p className="text-white/80 text-base mb-4">
-            How stable is your life right now? (work, health, caregiving, etc.)
-          </p>
-          <LikertScale
-            value={environment.stabilityLevel}
-            onChange={(v) => onChange({ ...environment, stabilityLevel: v })}
-            leftLabel="Chaotic"
-            rightLabel="Very stable"
-          />
-        </motion.div>
-        
-        {/* Support network */}
-        <motion.div variants={itemVariants}>
-          <p className="text-white/80 text-base mb-4">
-            Do you have people who support your creative work?
-          </p>
-          <div className="grid grid-cols-2 gap-3">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => onChange({ ...environment, hasSupportNetwork: true })}
-              className={cn(
-                "py-4 px-4 rounded-xl border transition-all",
-                environment.hasSupportNetwork
-                  ? "bg-[#FF6B6B]/10 border-[#FF6B6B]/40 text-white"
-                  : "bg-white/[0.02] border-white/[0.08] text-white/60 hover:bg-white/[0.04]"
-              )}
-            >
-              <Users className="w-6 h-6 mx-auto mb-2" />
-              <span className="text-sm">Yes, I have support</span>
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => onChange({ ...environment, hasSupportNetwork: false })}
-              className={cn(
-                "py-4 px-4 rounded-xl border transition-all",
-                !environment.hasSupportNetwork
-                  ? "bg-[#FF6B6B]/10 border-[#FF6B6B]/40 text-white"
-                  : "bg-white/[0.02] border-white/[0.08] text-white/60 hover:bg-white/[0.04]"
-              )}
-            >
-              <Heart className="w-6 h-6 mx-auto mb-2" />
-              <span className="text-sm">Not really</span>
-            </motion.button>
-          </div>
-        </motion.div>
-      </motion.div>
-    </motion.div>
-  );
-};
-
-// Step 8: Support Preferences
-const SupportPreferencesStep = ({
-  value,
-  onChange,
-}: {
-  value?: {
-    wantsPod: boolean;
-    wantsCoach: boolean;
-    preferredStyle: "gentle" | "direct";
-    communicationMode: "written" | "spoken" | "visual";
-    aiIntensity: "low" | "medium" | "high";
-  };
-  onChange: (value: {
-    wantsPod: boolean;
-    wantsCoach: boolean;
-    preferredStyle: "gentle" | "direct";
-    communicationMode: "written" | "spoken" | "visual";
-    aiIntensity: "low" | "medium" | "high";
-  }) => void;
-}) => {
-  const prefs = value || {
-    wantsPod: false,
-    wantsCoach: false,
-    preferredStyle: "gentle" as const,
-    communicationMode: "written" as const,
-    aiIntensity: "medium" as const,
-  };
-  
-  return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="max-w-xl mx-auto"
-    >
-      <motion.div variants={itemVariants} className="text-center mb-8">
-        <h2 className="font-syne font-bold text-2xl md:text-3xl text-white mb-3">
-          How do you like to be supported?
-        </h2>
-        <p className="text-white/50">
-          We'll customize your experience based on this.
-        </p>
-      </motion.div>
-      
-      <motion.div variants={containerVariants} className="space-y-8">
-        {/* Communication style */}
-        <motion.div variants={itemVariants}>
-          <p className="text-white/80 text-base mb-4">
-            What communication style works best for you?
-          </p>
-          <div className="grid grid-cols-2 gap-3">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => onChange({ ...prefs, preferredStyle: "gentle" })}
-              className={cn(
-                "py-4 px-4 rounded-xl border transition-all text-left",
-                prefs.preferredStyle === "gentle"
-                  ? "bg-[#FF6B6B]/10 border-[#FF6B6B]/40 text-white"
-                  : "bg-white/[0.02] border-white/[0.08] text-white/60 hover:bg-white/[0.04]"
-              )}
-            >
-              <Heart className="w-6 h-6 mb-2" />
-              <div className="font-semibold text-sm">Gentle & Supportive</div>
-              <div className="text-xs mt-1 opacity-70">Encouragement over pressure</div>
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => onChange({ ...prefs, preferredStyle: "direct" })}
-              className={cn(
-                "py-4 px-4 rounded-xl border transition-all text-left",
-                prefs.preferredStyle === "direct"
-                  ? "bg-[#FF6B6B]/10 border-[#FF6B6B]/40 text-white"
-                  : "bg-white/[0.02] border-white/[0.08] text-white/60 hover:bg-white/[0.04]"
-              )}
-            >
-              <Zap className="w-6 h-6 mb-2" />
-              <div className="font-semibold text-sm">Direct & Honest</div>
-              <div className="text-xs mt-1 opacity-70">Tell it like it is</div>
-            </motion.button>
-          </div>
-        </motion.div>
-        
-        {/* Pod interest */}
-        <motion.div variants={itemVariants}>
-          <p className="text-white/80 text-base mb-4">
-            Would you like to be part of an accountability pod?
-          </p>
-          <p className="text-white/40 text-sm mb-4">
-            Small groups of 3-5 ADHD creators matched by project type.
-          </p>
-          <div className="grid grid-cols-2 gap-3">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => onChange({ ...prefs, wantsPod: true })}
-              className={cn(
-                "py-4 px-4 rounded-xl border transition-all",
-                prefs.wantsPod
-                  ? "bg-[#10B981]/10 border-[#10B981]/40 text-white"
-                  : "bg-white/[0.02] border-white/[0.08] text-white/60 hover:bg-white/[0.04]"
-              )}
-            >
-              <Users className="w-6 h-6 mx-auto mb-2" />
-              <span className="text-sm">Yes, I want a pod</span>
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => onChange({ ...prefs, wantsPod: false })}
-              className={cn(
-                "py-4 px-4 rounded-xl border transition-all",
-                !prefs.wantsPod
-                  ? "bg-white/[0.05] border-white/[0.15] text-white"
-                  : "bg-white/[0.02] border-white/[0.08] text-white/60 hover:bg-white/[0.04]"
-              )}
-            >
-              <Brain className="w-6 h-6 mx-auto mb-2" />
-              <span className="text-sm">Solo is fine for now</span>
-            </motion.button>
-          </div>
-        </motion.div>
-        
-        {/* AI intensity */}
-        <motion.div variants={itemVariants}>
-          <p className="text-white/80 text-base mb-4">
-            How much AI coaching do you want?
-          </p>
-          <div className="grid grid-cols-3 gap-2">
-            {[
-              { value: "low", label: "Light touch", emoji: "🌱" },
-              { value: "medium", label: "Balanced", emoji: "⚖️" },
-              { value: "high", label: "Intensive", emoji: "🔥" },
-            ].map((option) => (
-              <motion.button
-                key={option.value}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => onChange({ ...prefs, aiIntensity: option.value as "low" | "medium" | "high" })}
-                className={cn(
-                  "py-4 px-3 rounded-xl border transition-all text-center",
-                  prefs.aiIntensity === option.value
-                    ? "bg-[#FF6B6B]/10 border-[#FF6B6B]/40 text-white"
-                    : "bg-white/[0.02] border-white/[0.08] text-white/60 hover:bg-white/[0.04]"
-                )}
-              >
-                <div className="text-2xl mb-2">{option.emoji}</div>
-                <div className="text-xs">{option.label}</div>
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
-      </motion.div>
-    </motion.div>
-  );
-};
-
-// Step 9: Commitment
-const CommitmentStep = ({
-  value,
-  onChange,
-  projectType,
-}: {
-  value?: { commitmentStatement?: string; flagshipProject?: string };
-  onChange: (value: { commitmentStatement?: string; flagshipProject?: string }) => void;
-  projectType?: ProjectType;
-}) => {
-  const commitment = value || { commitmentStatement: '', flagshipProject: '' };
-  const projectLabel = PROJECT_TYPE_OPTIONS.find(p => p.id === projectType)?.label?.toLowerCase() || "project";
-  
-  return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="max-w-xl mx-auto"
-    >
-      <motion.div variants={itemVariants} className="text-center mb-8">
-        <h2 className="font-syne font-bold text-2xl md:text-3xl text-white mb-3">
-          Let's make it real
-        </h2>
-        <p className="text-white/50">
-          These are optional, but they help anchor your commitment.
-        </p>
-      </motion.div>
-      
-      <motion.div variants={containerVariants} className="space-y-6">
-        <motion.div variants={itemVariants}>
-          <label className="block text-white/80 text-base mb-3">
-            What's the name of your {projectLabel}?
-          </label>
-          <input
-            type="text"
-            value={commitment.flagshipProject || ''}
-            onChange={(e) => onChange({ ...commitment, flagshipProject: e.target.value })}
-            placeholder={`e.g., "My productivity app" or "The novel I've been writing"`}
-            className="w-full px-4 py-4 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white placeholder:text-white/30 focus:outline-none focus:border-[#FF6B6B]/50 focus:bg-white/[0.05] transition-all"
-          />
-        </motion.div>
-        
-        <motion.div variants={itemVariants}>
-          <label className="block text-white/80 text-base mb-3">
-            In the next 4-8 weeks, finishing this would mean...
-          </label>
-          <textarea
-            value={commitment.commitmentStatement || ''}
-            onChange={(e) => onChange({ ...commitment, commitmentStatement: e.target.value })}
-            placeholder="e.g., I could finally show it to people, launch my business, prove to myself I can finish things..."
-            rows={4}
-            className="w-full px-4 py-4 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white placeholder:text-white/30 focus:outline-none focus:border-[#FF6B6B]/50 focus:bg-white/[0.05] transition-all resize-none"
-          />
-        </motion.div>
-        
-        <motion.div 
-          variants={itemVariants}
-          className="p-4 rounded-2xl bg-[#10B981]/5 border border-[#10B981]/20"
-        >
-          <p className="text-[#10B981] text-sm flex items-start gap-2">
-            <Sparkles className="w-4 h-4 shrink-0 mt-0.5" />
-            <span>
-              Writing this down increases your chances of completing by 42%. 
-              Your brain responds to clarity.
-            </span>
-          </p>
-        </motion.div>
       </motion.div>
     </motion.div>
   );
@@ -1112,125 +520,144 @@ const CommitmentStep = ({
 // MAIN QUIZ COMPONENT
 // ============================================
 
-const TOTAL_STEPS = 9;
+// Intro ekranını çıkararak quiz bölümlerini al
+const QUIZ_STEP_SECTIONS = QUIZ_SECTIONS.filter(s => s.id !== "intro");
+const TOTAL_STEPS = QUIZ_STEP_SECTIONS.length;
 
 export default function StartPage() {
   const router = useRouter();
-  const [step, setStep] = useState(0);
-  const [showConfetti, setShowConfetti] = useState(false);
+  const [step, setStep] = useState(0); // 0 = welcome, 1+ = quiz sections
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [quizStartTime] = useState(Date.now());
-  
-  const [answers, setAnswers] = useState<Partial<QuizAnswers>>({
-    adhdPatterns: {
-      taskInitiation: 3,
-      timeBlindness: 3,
-      boredomThreshold: 3,
-      perfectionism: 3,
-      contextSwitching: 3,
-    },
-    emotions: [],
-    identityStatements: {
-      trailOfUnfinished: 3,
-      startStrongFadeOut: 3,
-      fearJudgment: 3,
-    },
-    environment: {
-      hoursPerWeek: 10,
-      stabilityLevel: 3,
-      hasSupportNetwork: false,
-    },
-    supportPreference: {
-      wantsPod: false,
-      wantsCoach: false,
-      preferredStyle: "gentle",
-      communicationMode: "written",
-      aiIntensity: "medium",
-    },
-  });
-  
-  // Load saved progress on mount
+  const [quizStartTime, setQuizStartTime] = useState<number | null>(null);
+  const [answers, setAnswers] = useState<Record<string, number | string | string[]>>({});
+  const [showCompletionInfo, setShowCompletionInfo] = useState(false);
+  const [completedSectionId, setCompletedSectionId] = useState<string | null>(null);
+
+  // Load saved progress
   useEffect(() => {
     const saved = loadQuizProgress();
     if (saved && saved.step > 0) {
       setStep(saved.step);
-      setAnswers(prev => ({ ...prev, ...saved.answers }));
+      setAnswers(saved.answers as Record<string, number | string | string[]>);
     }
   }, []);
   
-  // Save progress on changes
+  // Save progress
   useEffect(() => {
     if (step > 0) {
-      saveQuizProgress(step, answers);
+      saveQuizProgress(step, answers as Partial<QuizAnswers>);
     }
   }, [step, answers]);
   
-  // Track quiz start
-  useEffect(() => {
-    if (step === 1) {
+  const handleStart = useCallback(() => {
+    clearQuizProgress();
+    setAnswers({});
+    setQuizStartTime(Date.now());
       trackQuizEvent({ type: "quiz_started", timestamp: new Date() });
-    }
-  }, [step]);
+    setStep(1);
+  }, []);
+
+  const handleAnswer = useCallback((questionId: string, value: number | string | string[]) => {
+    setAnswers(prev => ({ ...prev, [questionId]: value }));
+  }, []);
+
+  const currentSection = step > 0 ? QUIZ_STEP_SECTIONS[step - 1] : null;
   
   const canProceed = useCallback(() => {
-    switch (step) {
-      case 0: return true;
-      case 1: return !!answers.projectType;
-      case 2: return !!answers.timeStuckMonths;
-      case 3: return !!answers.stuckStage;
-      case 4: return !!answers.adhdPatterns;
-      case 5: return (answers.emotions?.length || 0) > 0;
-      case 6: return !!answers.identityStatements;
-      case 7: return !!answers.environment;
-      case 8: return !!answers.supportPreference;
-      case 9: return true;
-      default: return false;
-    }
-  }, [step, answers]);
+    if (step === 0) return true;
+    if (!currentSection) return false;
+    
+    // Tüm sorular cevaplanmış mı kontrol et
+    return currentSection.questions.every(q => {
+      const answer = answers[q.id];
+      if (q.type === "scale") return typeof answer === "number" && answer > 0;
+      if (q.type === "single") return typeof answer === "string" && answer.length > 0;
+      if (q.type === "multi") return Array.isArray(answer) && answer.length > 0;
+      return false;
+    });
+  }, [step, currentSection, answers]);
   
-  const handleNext = useCallback(() => {
+  const handleNext = useCallback(async () => {
     if (!canProceed()) return;
     
     if (step === TOTAL_STEPS) {
-      // Complete quiz and analyze
+      // Quiz tamamlandı - profil hesapla
       setIsAnalyzing(true);
       
-      trackQuizEvent({ 
-        type: "quiz_completed", 
-        duration: Date.now() - quizStartTime,
-        timestamp: new Date() 
-      });
-      
-      // Simulate brief analysis time for anticipation
-      setTimeout(() => {
-        const fullAnswers = answers as QuizAnswers;
-        const profile = mapQuizToProfile(fullAnswers);
+      const duration = quizStartTime ? Date.now() - quizStartTime : 0;
+      trackQuizEvent({ type: "quiz_completed", duration, timestamp: new Date() });
+
+      // Cevapları QuizAnswers formatına dönüştür
+      const quizAnswers: Partial<QuizAnswers> = {
+        noveltySeekingScore: (answers.novelty_seeking as number) || 3,
+        rewardSensitivityScore: (answers.reward_sensitivity as number) || 3,
+        boredomThresholdScore: (answers.boredom_threshold as number) || 3,
+        delayedGratificationScore: (answers.delayed_gratification as number) || 3,
+        sustainedAttentionScore: (answers.sustained_attention as number) || 3,
+        selectiveAttentionScore: (answers.selective_attention as number) || 3,
+        attentionShiftingScore: (answers.attention_shifting as number) || 3,
+        hyperfocusFrequency: (answers.hyperfocus as number) || 3,
+        taskInitiationScore: (answers.task_initiation as number) || 3,
+        planningScore: (answers.planning as number) || 3,
+        workingMemoryScore: (answers.working_memory as number) || 3,
+        inhibitionScore: (answers.inhibition as number) || 3,
+        cognitiveFlexibilityScore: (answers.flexibility as number) || 3,
+        emotionalReactivityScore: (answers.emotional_intensity as number) || 3,
+        frustrationToleranceScore: (answers.frustration_tolerance as number) || 3,
+        rejectionSensitivityScore: (answers.rejection_sensitivity as number) || 3,
+        emotionalRecoveryScore: (answers.emotional_recovery as number) || 3,
+        timeBlindnessScore: (answers.time_blindness as number) || 3,
+        urgencyDependenceScore: (answers.urgency_dependence as number) || 3,
+        estimationAccuracyScore: (answers.estimation as number) || 3,
+        energyConsistencyScore: (answers.energy_consistency as number) || 3,
+        externalStructureNeed: (answers.external_structure as number) || 3,
+        socialAccountabilityScore: (answers.accountability as number) || 3,
+        environmentSensitivityScore: (answers.environment_sensitivity as number) || 3,
+        diagnosisStatus: (answers.diagnosis_status as "diagnosed" | "suspected" | "exploring" | "none") || "exploring",
+        ageRange: (answers.age_range as string) || "25-34",
+        currentChallenges: (answers.main_challenges as string[]) || [],
+        goals: (answers.goals as string[]) || [],
+      };
+
+      const profile = calculateDopamineProfile(quizAnswers);
+
+      try {
+        await fetch("/api/quiz/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            archetype: profile.archetype,
+            scores: profile.scores,
+            insights: profile.insights,
+            recommendedPlan: profile.recommendedPlan,
+            planReasoning: profile.planReasoning,
+            userId: profile.userId || null,
+          }),
+        });
+      } catch (err) {
+        console.error("quiz submit failed", err);
+      }
+
         saveProfile(profile);
         clearQuizProgress();
         
-        trackQuizEvent({ 
-          type: "profile_shown", 
-          archetypeKey: profile.archetypeKey,
-          timestamp: new Date() 
-        });
-        
-        setShowConfetti(true);
-        
-        setTimeout(() => {
-          router.push('/start/result');
-        }, 1500);
-      }, 2000);
-    } else {
-      // Show mini celebration on completing sections
-      if ([3, 6, 8].includes(step)) {
-        setShowConfetti(true);
-        setTimeout(() => setShowConfetti(false), 2000);
-      }
+      trackQuizEvent({ type: "profile_shown", archetypeKey: profile.archetypeKey, timestamp: new Date() });
       
-      trackQuizEvent({ type: "quiz_step_completed", step, timestamp: new Date() });
+          router.push('/start/result');
+    } else {
+      if (currentSection) {
+        trackQuizEvent({ type: "section_completed", sectionId: currentSection.id, timestamp: new Date() });
+        
+        // Show completion info for sections (except intro)
+        if (currentSection.id !== 'intro' && sectionCompletionInfo[currentSection.id]) {
+          setCompletedSectionId(currentSection.id);
+          setShowCompletionInfo(true);
+          return;
+        }
+      }
       setStep(step + 1);
     }
-  }, [step, answers, canProceed, router, quizStartTime]);
+  }, [step, canProceed, answers, quizStartTime, currentSection, router]);
   
   const handleBack = useCallback(() => {
     if (step > 1) {
@@ -1240,98 +667,16 @@ export default function StartPage() {
     }
   }, [step]);
   
-  const handleStartQuiz = useCallback(() => {
+  const handleReset = useCallback(() => {
     clearQuizProgress();
-    setStep(1);
+    setStep(0);
+    setAnswers({});
   }, []);
-  
-  // Render current step
-  const renderStep = () => {
-    switch (step) {
-      case 0:
-        return <WelcomeScreen onStart={handleStartQuiz} />;
-      case 1:
-        return (
-          <ProjectTypeStep
-            value={answers.projectType}
-            onChange={(v) => setAnswers(prev => ({ ...prev, projectType: v }))}
-          />
-        );
-      case 2:
-        return (
-          <TimeStuckStep
-            value={answers.timeStuckMonths}
-            onChange={(v) => setAnswers(prev => ({ ...prev, timeStuckMonths: v }))}
-            projectType={answers.projectType}
-          />
-        );
-      case 3:
-        return (
-          <StuckStageStep
-            value={answers.stuckStage}
-            onChange={(v) => setAnswers(prev => ({ ...prev, stuckStage: v }))}
-          />
-        );
-      case 4:
-        return (
-          <ADHDPatternsStep
-            value={answers.adhdPatterns}
-            onChange={(v) => setAnswers(prev => ({ ...prev, adhdPatterns: v }))}
-          />
-        );
-      case 5:
-        return (
-          <EmotionsStep
-            value={answers.emotions}
-            onChange={(v) => setAnswers(prev => ({ ...prev, emotions: v }))}
-          />
-        );
-      case 6:
-        return (
-          <IdentityStep
-            value={answers.identityStatements}
-            onChange={(v) => setAnswers(prev => ({ ...prev, identityStatements: v }))}
-          />
-        );
-      case 7:
-        return (
-          <EnvironmentStep
-            value={answers.environment}
-            onChange={(v) => setAnswers(prev => ({ ...prev, environment: v }))}
-          />
-        );
-      case 8:
-        return (
-          <SupportPreferencesStep
-            value={answers.supportPreference}
-            onChange={(v) => setAnswers(prev => ({ ...prev, supportPreference: v }))}
-          />
-        );
-      case 9:
-        return (
-          <CommitmentStep
-            value={{ 
-              commitmentStatement: answers.commitmentStatement, 
-              flagshipProject: answers.flagshipProject 
-            }}
-            onChange={(v) => setAnswers(prev => ({ 
-              ...prev, 
-              commitmentStatement: v.commitmentStatement,
-              flagshipProject: v.flagshipProject
-            }))}
-            projectType={answers.projectType}
-          />
-        );
-      default:
-        return null;
-    }
-  };
   
   // Analyzing state
   if (isAnalyzing) {
     return (
-      <main className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-5">
-        <Confetti show={showConfetti} />
+      <main className="min-h-screen bg-background flex items-center justify-center px-5">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -1339,14 +684,14 @@ export default function StartPage() {
         >
           <motion.div
             animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="w-16 h-16 rounded-full border-4 border-white/10 border-t-[#FF6B6B] mx-auto mb-6"
+            transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+            className="w-16 h-16 rounded-full border-4 border-muted border-t-primary mx-auto mb-6"
           />
-          <h2 className="font-syne font-bold text-2xl text-white mb-2">
-            Mapping your patterns...
+          <h2 className="font-display font-bold text-2xl text-foreground mb-2">
+            Dopamin haritanı oluşturuyoruz...
           </h2>
-          <p className="text-white/50">
-            Finding your project completion archetype
+          <p className="text-muted-foreground">
+            Nörokimyasal profilin hesaplanıyor
           </p>
         </motion.div>
       </main>
@@ -1354,52 +699,95 @@ export default function StartPage() {
   }
   
   return (
-    <main className="min-h-screen bg-[#0a0a0a] relative overflow-hidden">
-      {/* Background effects */}
+    <main className="min-h-screen bg-background relative overflow-hidden">
+      {/* Background Effects */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-[-200px] left-[-200px] w-[600px] h-[600px] bg-[#FF6B6B]/10 rounded-full blur-[150px]" />
-        <div className="absolute bottom-[-100px] right-[-200px] w-[500px] h-[500px] bg-[#10B981]/10 rounded-full blur-[150px]" />
+        <div className="absolute top-[-200px] left-[-200px] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[150px]" />
+        <div className="absolute bottom-[-200px] right-[-200px] w-[500px] h-[500px] bg-accent/10 rounded-full blur-[150px]" />
       </div>
       
-      {/* Confetti */}
-      <Confetti show={showConfetti} />
-      
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-40 py-4 px-5 md:px-8">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#FF6B6B] to-[#FF8E53] flex items-center justify-center shadow-lg shadow-[#FF6B6B]/20">
-              <Rocket className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-syne font-bold text-xl text-white tracking-tight">
-              Launch<span className="text-[#FF6B6B]">Pod</span>
-            </span>
-          </Link>
-          
+      {/* Reset Button (Global SiteHeader is used from layout) */}
           {step > 0 && (
+        <div className="fixed top-6 right-5 md:right-8 z-50">
             <button
-              onClick={() => {
-                clearQuizProgress();
-                setStep(0);
-                setAnswers({});
-              }}
-              className="text-white/40 hover:text-white/60 text-sm transition-colors"
-            >
-              Start over
+            onClick={handleReset}
+            className="text-muted-foreground hover:text-foreground text-sm transition-colors bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-border"
+          >
+            Baştan Başla
             </button>
-          )}
         </div>
-      </header>
+      )}
       
-      {/* Main content */}
+      {/* Main Content */}
       <div className="relative z-10 min-h-screen flex flex-col pt-24 pb-32 px-5 md:px-8">
-        {/* Progress bar */}
+        {/* Progress Bar */}
         {step > 0 && (
-          <ProgressBar currentStep={step} totalSteps={TOTAL_STEPS} />
+          <ProgressBar current={step} total={TOTAL_STEPS} />
         )}
         
-        {/* Step content */}
-        <div className="flex-1 flex items-center justify-center">
+        {/* Section Completion Info Modal */}
+        <AnimatePresence>
+          {showCompletionInfo && completedSectionId && sectionCompletionInfo[completedSectionId] && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-white/80 backdrop-blur-md z-50 flex items-center justify-center p-4"
+              onClick={() => {
+                setShowCompletionInfo(false);
+                setStep(step + 1);
+              }}
+            >
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white rounded-2xl border-2 border-border p-6 md:p-8 max-w-lg w-full shadow-2xl"
+              >
+                <div className="text-center mb-6">
+                  <div className="text-6xl mb-4">{sectionCompletionInfo[completedSectionId].emoji}</div>
+                  <h3 className="text-2xl font-display font-bold text-foreground mb-2">
+                    {sectionCompletionInfo[completedSectionId].title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    Harika ilerliyorsun! İşte bu bölümle ilgili ilginç bir bilgi:
+                  </p>
+                </div>
+                
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="mb-6 p-5 rounded-xl bg-gradient-to-br from-primary/10 via-accent/5 to-primary/10 border-2 border-primary/20"
+                >
+                  <p className="text-base text-foreground leading-relaxed font-medium mb-2">
+                    {sectionCompletionInfo[completedSectionId].fact}
+                  </p>
+                  <p className="text-xs text-muted-foreground italic">
+                    Kaynak: {sectionCompletionInfo[completedSectionId].source}
+                  </p>
+                </motion.div>
+                
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onClick={() => {
+                    setShowCompletionInfo(false);
+                    setStep(step + 1);
+                  }}
+                  className="w-full"
+                >
+                  Devam Et
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        {/* Step Content */}
+        <div className="flex-1 flex items-center justify-center py-8">
           <AnimatePresence mode="wait">
             <motion.div
               key={step}
@@ -1409,54 +797,47 @@ export default function StartPage() {
               exit="exit"
               className="w-full"
             >
-              {renderStep()}
+              {step === 0 ? (
+                <WelcomeScreen onStart={handleStart} />
+              ) : currentSection ? (
+                <QuestionStep
+                  section={currentSection}
+                  answers={answers}
+                  onAnswer={handleAnswer}
+                />
+              ) : null}
             </motion.div>
           </AnimatePresence>
         </div>
       </div>
       
-      {/* Navigation buttons */}
+      {/* Navigation Buttons */}
       {step > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 z-40 py-6 px-5 md:px-8 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/95 to-transparent">
-          <div className="max-w-xl mx-auto flex items-center gap-4">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+        <div className="fixed bottom-0 left-0 right-0 z-40 py-5 px-5 md:px-8">
+          <div className="max-w-2xl mx-auto flex items-center gap-4 rounded-2xl bg-card/95 border border-border shadow-lg shadow-primary/10 backdrop-blur-lg px-4 py-3">
+            <Button
+              variant="ghost"
+              size="lg"
+              leftIcon={ArrowLeft}
               onClick={handleBack}
-              className="px-6 py-3 rounded-full bg-white/5 border border-white/10 text-white/70 font-medium hover:bg-white/10 hover:text-white transition-all flex items-center gap-2"
+              className="px-6"
             >
-              <ArrowLeft className="w-4 h-4" />
-              Back
-            </motion.button>
-            
-            <motion.button
-              whileHover={canProceed() ? { scale: 1.02 } : {}}
-              whileTap={canProceed() ? { scale: 0.98 } : {}}
+              Geri
+            </Button>
+
+            <Button
+              variant="primary"
+              size="xl"
+              rightIcon={step === TOTAL_STEPS ? Sparkles : ArrowRight}
               onClick={handleNext}
               disabled={!canProceed()}
-              className={cn(
-                "flex-1 px-6 py-3 rounded-full font-semibold transition-all flex items-center justify-center gap-2",
-                canProceed()
-                  ? "bg-gradient-to-r from-[#FF6B6B] to-[#FF8E53] text-white shadow-lg shadow-[#FF6B6B]/25 hover:shadow-xl"
-                  : "bg-white/10 text-white/30 cursor-not-allowed"
-              )}
+              className="flex-1 px-10 py-4 text-lg font-semibold bg-gradient-to-r from-primary to-orange-400 shadow-warm-lg"
             >
-              {step === TOTAL_STEPS ? (
-                <>
-                  See my results
-                  <Sparkles className="w-4 h-4" />
-                </>
-              ) : (
-                <>
-                  Continue
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </motion.button>
+              {step === TOTAL_STEPS ? "Sonuçlarımı Gör" : "Devam Et"}
+            </Button>
           </div>
         </div>
       )}
     </main>
   );
 }
-

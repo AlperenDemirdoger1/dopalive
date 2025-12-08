@@ -10,11 +10,11 @@ interface CategoryFilterProps {
 }
 
 const categories: Array<{ value: BlogCategory | 'all'; label: string }> = [
-  { value: 'all', label: 'All' },
-  { value: 'advice', label: 'Advice' },
-  { value: 'case-studies', label: 'Case Studies' },
-  { value: 'research', label: 'Research' },
-  { value: 'tools', label: 'Tools' },
+  { value: 'all', label: 'Tümü' },
+  { value: 'science', label: 'Bilim' },
+  { value: 'experience', label: 'Deneyim' },
+  { value: 'insight', label: 'İçgörü' },
+  { value: 'focus-tools', label: 'Odak Araçları' },
 ];
 
 export default function CategoryFilter({ selectedCategory, onSelectCategory }: CategoryFilterProps) {
@@ -40,9 +40,9 @@ export default function CategoryFilter({ selectedCategory, onSelectCategory }: C
               "border backdrop-blur-sm",
               isSelected 
                 ? category.value === 'all'
-                  ? "bg-[#f5d4a0]/20 border-[#f5d4a0]/40 text-[#f5d4a0]"
+                  ? "bg-primary/10 border-primary/30 text-primary"
                   : `${categoryStyle?.bg} ${categoryStyle?.border} ${categoryStyle?.text}`
-                : "bg-white/[0.03] border-white/[0.08] text-white/50 hover:text-white/70 hover:border-white/[0.15]"
+                : "bg-card border-border/60 text-muted-foreground hover:text-foreground hover:border-border"
             )}
           >
             {/* Active indicator */}
@@ -76,4 +76,5 @@ export default function CategoryFilter({ selectedCategory, onSelectCategory }: C
     </motion.div>
   );
 }
+
 

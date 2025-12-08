@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Uzman başvuruları - sadece backend yazabilir
+    match /expert_applications/{docId} {
+      allow read: if false;
+      allow write: if false;
+    }
+
+    // Erken erişim kayıtları - sadece backend yazabilir
+    match /early_access_signups/{docId} {
+      allow read: if false;
+      allow write: if false;
+    }
+
+    // Quiz sonuçları - sadece backend yazabilir
+    match /quiz_profiles/{docId} {
+      allow read: if false;
+      allow write: if false;
+    }
+
+    // Eşleşme istekleri - sadece backend yazabilir
+    match /matches/{docId} {
+      allow read: if false;
+      allow write: if false;
+    }
+
+    // Kullanıcı profilleri - auth ile erişim
+    match /users/{userId} {
+      allow read, update, delete: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
+

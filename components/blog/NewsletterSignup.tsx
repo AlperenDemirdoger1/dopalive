@@ -36,14 +36,14 @@ export default function NewsletterSignup({ variant = 'sidebar' }: NewsletterSign
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#f5d4a0]/10 via-[#f5d4a0]/5 to-purple-500/5 border border-[#f5d4a0]/10 p-8 md:p-12"
+        className="relative overflow-hidden rounded-2xl glass p-8 md:p-12"
       >
         {/* Background decoration */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-[#f5d4a0]/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent/10 rounded-full blur-3xl" />
         
         <div className="relative z-10 max-w-2xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#f5d4a0]/10 border border-[#f5d4a0]/20 text-[#f5d4a0] text-xs font-medium mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium mb-6">
             <Sparkles className="w-3 h-3" />
             Weekly ADHD Insights
           </div>
@@ -65,9 +65,9 @@ export default function NewsletterSignup({ variant = 'sidebar' }: NewsletterSign
                 placeholder="your@email.com"
                 disabled={status === 'loading' || status === 'success'}
                 className={cn(
-                  "w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/[0.05] border transition-all duration-300",
-                  "text-white placeholder:text-white/30 focus:outline-none",
-                  isFocused ? "border-[#f5d4a0]/30" : "border-white/[0.08]"
+                  "w-full pl-12 pr-4 py-3.5 rounded-xl bg-background/60 border transition-all duration-300",
+                  "text-foreground placeholder:text-muted-foreground focus:outline-none",
+                  isFocused ? "border-primary/40" : "border-border/60"
                 )}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
@@ -82,8 +82,8 @@ export default function NewsletterSignup({ variant = 'sidebar' }: NewsletterSign
                 "px-6 py-3.5 rounded-xl font-medium transition-all duration-300",
                 "flex items-center justify-center gap-2",
                 status === 'success'
-                  ? "bg-emerald-500/20 border border-emerald-500/30 text-emerald-400"
-                  : "bg-[#f5d4a0]/20 border border-[#f5d4a0]/30 text-[#f5d4a0] hover:bg-[#f5d4a0]/30"
+                  ? "bg-success/15 border border-success/30 text-success"
+                  : "bg-primary/15 border border-primary/30 text-primary hover:bg-primary/20"
               )}
             >
               {status === 'loading' ? (
@@ -102,7 +102,7 @@ export default function NewsletterSignup({ variant = 'sidebar' }: NewsletterSign
             </motion.button>
           </form>
 
-          <p className="text-white/30 text-xs mt-4">
+            <p className="text-muted-foreground text-xs mt-4">
             No spam. Unsubscribe anytime.
           </p>
         </div>
@@ -120,11 +120,11 @@ export default function NewsletterSignup({ variant = 'sidebar' }: NewsletterSign
     >
       <div className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-6 overflow-hidden relative">
         {/* Subtle glow */}
-        <div className="absolute top-0 left-0 w-32 h-32 bg-[#f5d4a0]/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+        <div className="absolute top-0 left-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
         
         <div className="relative">
-          <div className="w-10 h-10 rounded-xl bg-[#f5d4a0]/10 border border-[#f5d4a0]/20 flex items-center justify-center mb-4">
-            <Mail className="w-5 h-5 text-[#f5d4a0]" />
+          <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
+            <Mail className="w-5 h-5 text-primary" />
           </div>
 
           <h4 className="text-lg font-semibold text-white mb-2 font-syne">
@@ -141,11 +141,11 @@ export default function NewsletterSignup({ variant = 'sidebar' }: NewsletterSign
               onChange={(e) => setEmail(e.target.value)}
               placeholder="your@email.com"
               disabled={status === 'loading' || status === 'success'}
-              className={cn(
-                "w-full px-4 py-3 rounded-lg bg-white/[0.03] border transition-all duration-300",
-                "text-white text-sm placeholder:text-white/30 focus:outline-none",
-                isFocused ? "border-[#f5d4a0]/30" : "border-white/[0.08]"
-              )}
+                className={cn(
+                  "w-full px-4 py-3 rounded-lg bg-background/60 border transition-all duration-300",
+                  "text-foreground text-sm placeholder:text-muted-foreground focus:outline-none",
+                  isFocused ? "border-primary/40" : "border-border/60"
+                )}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
             />
@@ -158,8 +158,8 @@ export default function NewsletterSignup({ variant = 'sidebar' }: NewsletterSign
                 "w-full py-3 rounded-lg font-medium text-sm transition-all duration-300",
                 "flex items-center justify-center gap-2",
                 status === 'success'
-                  ? "bg-emerald-500/20 border border-emerald-500/30 text-emerald-400"
-                  : "bg-[#f5d4a0]/10 border border-[#f5d4a0]/20 text-[#f5d4a0] hover:bg-[#f5d4a0]/20"
+                  ? "bg-success/15 border border-success/30 text-success"
+                  : "bg-primary/12 border border-primary/25 text-primary hover:bg-primary/20"
               )}
             >
               {status === 'loading' ? (
@@ -175,7 +175,7 @@ export default function NewsletterSignup({ variant = 'sidebar' }: NewsletterSign
             </motion.button>
           </form>
 
-          <p className="text-white/25 text-xs mt-3 text-center">
+          <p className="text-muted-foreground text-xs mt-3 text-center">
             Join 2,000+ ADHD creators
           </p>
         </div>
@@ -183,4 +183,5 @@ export default function NewsletterSignup({ variant = 'sidebar' }: NewsletterSign
     </motion.div>
   );
 }
+
 

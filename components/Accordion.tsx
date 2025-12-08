@@ -108,3 +108,5 @@ const Accordion = ({ items, allowMultiple = false, defaultOpen = [] }: Accordion
 
 export default Accordion;
 
+
+

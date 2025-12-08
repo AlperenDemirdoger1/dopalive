@@ -1,6 +1,11 @@
-# Mindloop Hero Page
+# LaunchPod / DopaLive — Project Readme
 
-Pixel-perfect hero section implementation. Görsele çok yakın, modern ve sofistike tasarım.
+> **📌 Pinned — Her Zaman Başvur:**  
+> - Kurallar: [`AGENTS_RULES.md`](./AGENTS_RULES.md)  
+> - Tasarım Sistemi: [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md)
+> - ⚠️ **Fiyatlandırma: [`docs/PRICING_STRATEGY.md`](./docs/PRICING_STRATEGY.md)** — Pricing bölümü eklerken MUTLAKA oku!
+
+Pixel-perfect, ADHD odaklı landing & funnel sayfaları. Modern, sofistike ve düşük bilişsel yük için optimize edildi.
 
 ## 🎨 Görsele Uygun İyileştirmeler
 
@@ -60,6 +65,18 @@ npm run dev
 3. `public/hero-bg.jpg` ekle → app/hero/page.tsx'te kullan
 4. Social icon SVG'leri ekle (lucide-react veya react-icons)
 
+## 💰 Fiyatlandırma Özeti
+
+> ⚠️ Detaylar için: [`docs/PRICING_STRATEGY.md`](./docs/PRICING_STRATEGY.md)
+
+| Plan | Fiyat | Durum |
+|------|-------|-------|
+| 🌱 **Başlangıç** | ₺0 | ✅ Aktif |
+| ⚡ **Odak** | ₺590/ay | ⏳ Yakında |
+| 🚀 **Dönüşüm** | ₺3.900/ay | ✅ Aktif |
+
+**Tek CTA Kuralı:** Tüm planlarda → `"Testi Çöz"`
+
 ## 🛠️ Tech Stack
 
 - Next.js 14 (App Router)
@@ -67,4 +84,53 @@ npm run dev
 - Tailwind CSS v3
 - Framer Motion
 - Inter Font (Google Fonts)
+
+## 🔥 Firebase (Backend hızlı başlangıç)
+
+- Hizmetler: Firestore (Native), Storage, Auth (email), Functions.
+- Ortam değişkenleri (.env.local):
+  - NEXT_PUBLIC_FIREBASE_API_KEY
+  - NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+  - NEXT_PUBLIC_FIREBASE_PROJECT_ID
+  - NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+  - NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+  - NEXT_PUBLIC_FIREBASE_APP_ID
+  - FIREBASE_PROJECT_ID
+  - FIREBASE_CLIENT_EMAIL
+  - FIREBASE_PRIVATE_KEY (\\n ile kaçışlı)
+  - FIREBASE_STORAGE_BUCKET
+- Admin SDK, `app/api/*` route handler'larında quiz ve başvuru verilerini Firestore'a kaydetmek için kullanılır.
+
+
+| Plan | Fiyat | Durum |
+|------|-------|-------|
+| 🌱 **Başlangıç** | ₺0 | ✅ Aktif |
+| ⚡ **Odak** | ₺590/ay | ⏳ Yakında |
+| 🚀 **Dönüşüm** | ₺3.900/ay | ✅ Aktif |
+
+**Tek CTA Kuralı:** Tüm planlarda → `"Testi Çöz"`
+
+## 🛠️ Tech Stack
+
+- Next.js 14 (App Router)
+- TypeScript
+- Tailwind CSS v3
+- Framer Motion
+- Inter Font (Google Fonts)
+
+## 🔥 Firebase (Backend hızlı başlangıç)
+
+- Hizmetler: Firestore (Native), Storage, Auth (email), Functions.
+- Ortam değişkenleri (.env.local):
+  - NEXT_PUBLIC_FIREBASE_API_KEY
+  - NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+  - NEXT_PUBLIC_FIREBASE_PROJECT_ID
+  - NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+  - NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+  - NEXT_PUBLIC_FIREBASE_APP_ID
+  - FIREBASE_PROJECT_ID
+  - FIREBASE_CLIENT_EMAIL
+  - FIREBASE_PRIVATE_KEY (\\n ile kaçışlı)
+  - FIREBASE_STORAGE_BUCKET
+- Admin SDK, `app/api/*` route handler'larında quiz ve başvuru verilerini Firestore'a kaydetmek için kullanılır.
 

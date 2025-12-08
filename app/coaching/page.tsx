@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { 
   ArrowRight, 
@@ -48,33 +48,19 @@ import {
   Wifi
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-// Animation variants
-const fadeInUp = {
-  initial: { opacity: 0, y: 30 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
-};
-
-const staggerContainer = {
-  animate: {
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-};
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { fadeInUp, staggerContainer, staggerItem, viewportAnimation } from '@/lib/motion';
 
 // Animated section wrapper
 const AnimatedSection = ({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-  
   return (
     <motion.section
       ref={ref}
-      initial={{ opacity: 0, y: 40 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-      transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
+      {...viewportAnimation(fadeInUp, { margin: "-100px" })}
+      transition={{ delay }}
       className={className}
     >
       {children}
@@ -82,57 +68,7 @@ const AnimatedSection = ({ children, className, delay = 0 }: { children: React.R
   );
 };
 
-// Custom Tabs Component
-const TabButton = ({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) => (
-  <button
-    onClick={onClick}
-    className={cn(
-      "px-4 py-2.5 rounded-lg text-sm font-light transition-all duration-300",
-      active 
-        ? "bg-[#FF6B6B]/10 text-[#FF6B6B]" 
-        : "text-white/40 hover:text-white/60"
-    )}
-  >
-    {children}
-  </button>
-);
-
-// Custom Accordion Component
-const AccordionItem = ({ question, answer, isOpen, onClick }: { question: string; answer: string; isOpen: boolean; onClick: () => void }) => (
-  <div className="rounded-xl overflow-hidden bg-white/[0.02] border border-white/[0.05] data-[state=open]:border-white/[0.08] transition-colors">
-    <button
-      onClick={onClick}
-      className="w-full flex items-center justify-between px-5 py-4 text-left group"
-    >
-      <span className="text-white/70 text-sm md:text-base font-light group-hover:text-white/90 transition-colors pr-4">
-        {question}
-      </span>
-      <ChevronDown className={cn(
-        "w-5 h-5 text-white/30 flex-shrink-0 transition-transform duration-300",
-        isOpen && "rotate-180"
-      )} />
-    </button>
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ height: 0, opacity: 0 }}
-          animate={{ height: "auto", opacity: 1 }}
-          exit={{ height: 0, opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          className="overflow-hidden"
-        >
-          <div className="px-5 pb-5">
-            <p className="text-white/40 text-sm font-light leading-relaxed">
-              {answer}
-            </p>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  </div>
-);
-
-// ADHD Challenge pills data - Dopamin odaklı
+// DEHB Challenge pills data - Dopamin odaklı
 const adhdChallenges = [
   { icon: Battery, label: "Düşük enerji döngüleri", color: "from-rose-500/20 to-rose-500/5" },
   { icon: Play, label: "Başlayamama", color: "from-emerald-500/20 to-emerald-500/5" },
@@ -156,7 +92,7 @@ const coachingSteps = [
   {
     step: "02", 
     title: "Uzman Koç Eşleşmesi",
-    description: "ADHD sertifikalı koçunuzla haftalık 45 dakikalık seanslar. Gerçek hesap verebilirlik, sadece tavsiye değil.",
+    description: "DEHB sertifikalı koçunuzla haftalık 45 dakikalık seanslar. Gerçek hesap verebilirlik, sadece tavsiye değil.",
     icon: Users,
     accent: "#FF8E53"
   },
@@ -183,8 +119,8 @@ const coachingSteps = [
   },
   {
     step: "06",
-    title: "Sürdürülebilir Odak",
-    description: "Dopamin dengenizi koruyarak uzun vadeli odak becerileri geliştirin. Sonuçları haftalarca görün.",
+    title: "Aktif Koç Takibi",
+    description: "Koçunuz ilerlemenizi haftalık takip eder, hedeflerinizi güncellersiniz. Sürekli destek, sürekli gelişim.",
     icon: TrendingUp,
     accent: "#f5d4a0"
   }
@@ -205,8 +141,8 @@ const unlockItems = [
 // FAQ items
 const faqItems = [
   {
-    question: "ADHD tanısı olmadan katılabilir miyim?",
-    answer: "Evet. Koçluğumuz odaklanma, erteleme ve projeleri bitirme konusunda zorluk çeken herkes için tasarlandı. Birçok üyemiz süreçte ADHD olabileceğini keşfediyor, ancak tanı hiçbir zaman zorunlu değil."
+    question: "DEHB tanısı olmadan katılabilir miyim?",
+    answer: "Evet. Koçluğumuz odaklanma, erteleme ve projeleri bitirme konusunda zorluk çeken herkes için tasarlandı. Birçok üyemiz süreçte DEHB olabileceğini keşfediyor, ancak tanı hiçbir zaman zorunlu değil."
   },
   {
     question: "Projeyi yarıda değiştirmek istersem ne olur?",
@@ -218,10 +154,10 @@ const faqItems = [
   },
   {
     question: "Body Doubling ne demek?",
-    answer: "Body Doubling, başka birinin yanında çalışarak odaklanmayı kolaylaştıran kanıtlanmış bir ADHD tekniğidir. Canlı seanslarımızda dünya genelinden insanlarla birlikte çalışırsınız — sanki bir kütüphanede oturuyormuşsunuz gibi ama evinizden."
+    answer: "Body Doubling, başka birinin yanında çalışarak odaklanmayı kolaylaştıran kanıtlanmış bir DEHB tekniğidir. Canlı seanslarımızda dünya genelinden insanlarla birlikte çalışırsınız — sanki bir kütüphanede oturuyormuşsunuz gibi ama evinizden."
   },
   {
-    question: "Bu normal ADHD koçluğundan farkı ne?",
+    question: "Bu normal DEHB koçluğundan farkı ne?",
     answer: "Geleneksel koçluk 1:1'dir ve pahalıdır (seans başına $300-500). Biz uzman koçluğu AI desteği, body doubling ve akran hesap verebilirliğiyle birleştiriyoruz — daha etkili ve 3 kat daha uygun fiyatlı."
   },
   {
@@ -277,68 +213,21 @@ const timelineContent = {
 
 export default function CoachingPage() {
   const [selectedChallenge, setSelectedChallenge] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState('today');
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   return (
-    <main className="min-h-screen relative overflow-hidden bg-[#0a0a0a]">
+    <main className="min-h-screen relative overflow-hidden bg-background">
       {/* Ambient Background */}
       <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0f0f0f] via-[#0a0a0a] to-[#050505]" />
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 2 }}
-          className="absolute w-[800px] h-[400px] bg-[#FF6B6B] opacity-[0.03] top-[-150px] left-1/2 -translate-x-1/2 rounded-full blur-[150px]"
-        />
-        <div className="absolute w-[500px] h-[500px] bg-[#FF8E53] opacity-[0.02] top-[40%] left-[-200px] rounded-full blur-[120px]" />
-        <div className="absolute w-[500px] h-[500px] bg-[#f5d4a0] opacity-[0.02] top-[60%] right-[-200px] rounded-full blur-[120px]" />
-        <div className="absolute inset-0 opacity-[0.015]" style={{
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)',
-          backgroundSize: '80px 80px'
-        }} />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-muted/20" />
+        <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/5 rounded-full blur-[150px]" />
+        <div className="absolute bottom-[-200px] right-[-200px] w-[500px] h-[500px] bg-accent/10 rounded-full blur-[150px]" />
       </div>
 
-      {/* Navigation */}
-      <motion.nav
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed top-0 left-0 right-0 z-50 px-5 md:px-8 py-5 bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/[0.03]"
-      >
-        <div className="max-w-[1200px] mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 group">
-            <motion.div 
-              whileHover={{ scale: 1.05 }}
-              className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#FF6B6B] to-[#FF8E53] flex items-center justify-center"
-            >
-              <Flame className="w-5 h-5 text-white" />
-            </motion.div>
-            <span className="text-white/90 text-lg font-medium tracking-tight">
-              Dopa<span className="text-[#FF6B6B]">Live</span>
-            </span>
-          </Link>
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className={cn(
-              "px-5 py-2.5 rounded-xl",
-              "bg-gradient-to-r from-[#FF6B6B] to-[#FF8E53]",
-              "text-white text-sm font-medium",
-              "transition-all duration-300",
-              "flex items-center gap-2",
-              "shadow-lg shadow-[#FF6B6B]/20"
-            )}
-          >
-            <span>Koç Bul</span>
-            <ArrowRight className="w-4 h-4" />
-          </motion.button>
-        </div>
-      </motion.nav>
+      {/* No custom navigation - using global SiteHeader from layout */}
 
       {/* ====== HERO SECTION ====== */}
-      <section className="min-h-screen flex flex-col items-center justify-center px-5 md:px-8 lg:px-16 pt-28 pb-16">
-        <div className="max-w-[900px] w-full flex flex-col items-center text-center">
+      <section className="py-24 lg:py-32 px-5 md:px-8 lg:px-16">
+        <div className="max-w-[900px] w-full mx-auto flex flex-col items-center text-center">
           
           {/* Badge */}
           <motion.div
@@ -347,9 +236,9 @@ export default function CoachingPage() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="mb-6"
           >
-            <div className="rounded-full px-4 py-2 inline-flex items-center gap-2 bg-[#FF6B6B]/[0.08] border border-[#FF6B6B]/15">
-              <Activity className="w-3.5 h-3.5 text-[#FF6B6B]" />
-              <span className="text-[#FF6B6B]/90 text-xs font-medium tracking-wide">
+          <div className="rounded-full px-4 py-2 inline-flex items-center gap-2 bg-primary/10 border border-primary/20">
+            <Activity className="w-3.5 h-3.5 text-primary" />
+            <span className="text-primary text-xs font-medium tracking-wide">
                 Dopamin Odaklı Koçluk Sistemi
               </span>
             </div>
@@ -360,18 +249,18 @@ export default function CoachingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.15 }}
-            className="text-white mb-0"
+            className="text-foreground mb-0 font-display"
             style={{
               fontSize: 'clamp(32px, 6vw, 60px)',
               lineHeight: '1.1',
               letterSpacing: '-0.03em',
-              fontWeight: 300,
+              fontWeight: 700,
             }}
           >
-            AI + İnsan Koçluğu ile
+            Kaosun içinde kaybolma.
             <br />
-            <span className="bg-gradient-to-r from-[#FF6B6B] to-[#FF8E53] bg-clip-text text-transparent">
-              sürdürülebilir odak.
+            <span className="text-primary">
+              Zihninin pilot koltuğuna geç.
             </span>
           </motion.h1>
 
@@ -380,12 +269,12 @@ export default function CoachingPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.25 }}
-            className="text-white/45 max-w-[550px] mt-6 font-light"
+            className="text-muted-foreground max-w-[550px] mt-6 font-light"
             style={{ fontSize: 'clamp(14px, 1.8vw, 17px)', lineHeight: '1.7' }}
           >
-            Dopamin düzenleme bilimi + ADHD uzman koçlar + AI asistan + Body Doubling.
+            Sadece "odaklan" demiyoruz, nasıl yapacağını gösteriyoruz.
             <br />
-            <span className="text-white/60">Projelerini bitirmenin yeni yolu.</span>
+            <span className="text-muted-foreground">Türkçe konuşan odak koçları ve AI asistanla kontrolü geri al.</span>
           </motion.p>
 
           {/* What's Included Checklist */}
@@ -396,17 +285,17 @@ export default function CoachingPage() {
             className="mt-10 flex flex-wrap justify-center gap-3"
           >
             {[
-              { icon: Users, text: "ADHD Uzman Koç" },
+              { icon: Users, text: "DEHB Uzman Koç" },
               { icon: Cpu, text: "AI Dopamin Koçu" },
               { icon: Eye, text: "Body Doubling" },
               { icon: MessageCircle, text: "Akran Pod Grubu" },
             ].map((item, i) => (
               <div
                 key={i}
-                className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:border-[#FF6B6B]/20 transition-colors"
+                className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-card border border-border hover:border-primary/20 transition-colors"
               >
-                <item.icon className="w-4 h-4 text-[#FF6B6B]/70" />
-                <span className="text-white/55 text-sm font-light">{item.text}</span>
+                <item.icon className="w-4 h-4 text-primary" />
+                <span className="text-muted-foreground text-sm font-light">{item.text}</span>
               </div>
             ))}
           </motion.div>
@@ -418,22 +307,18 @@ export default function CoachingPage() {
             transition={{ duration: 0.6, delay: 0.45 }}
             className="mt-10"
           >
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-              className={cn(
-                "px-8 py-4 rounded-xl",
-                "bg-gradient-to-r from-[#FF6B6B] to-[#FF8E53]",
-                "text-white text-base font-medium",
-                "transition-all duration-300",
-                "hover:shadow-xl hover:shadow-[#FF6B6B]/25",
-                "flex items-center gap-3"
-              )}
+            <Link
+              href="/start"
+              className="group inline-flex flex-col items-center justify-center px-10 py-5 rounded-2xl bg-gradient-warm text-white hover:opacity-90 transition-all shadow-warm-lg hover:scale-[1.02]"
             >
-              <span>Koçunla eşleş</span>
-              <ArrowRight className="w-5 h-5" />
-            </motion.button>
-            <p className="text-white/25 text-xs mt-3">5 dakika • 48 saat içinde başla</p>
+              <span className="flex items-center gap-2 text-lg font-bold tracking-wide">
+                TESTİ ÇÖZ
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </span>
+              <span className="text-white/80 text-sm font-normal mt-1">
+                koçluk için erken erişim kazan
+              </span>
+            </Link>
           </motion.div>
 
           {/* Visual: Dopamin Dashboard Mockup */}
@@ -443,67 +328,75 @@ export default function CoachingPage() {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="mt-16 w-full max-w-[750px]"
           >
-            <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/[0.06] p-6 md:p-8">
+            <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-border p-6 md:p-8">
               {/* Mockup Header */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#FF6B6B]/30 to-[#FF8E53]/30 flex items-center justify-center">
-                    <Activity className="w-5 h-5 text-[#FF6B6B]" />
+                  <div className="w-11 h-11 rounded-full bg-gradient-warm/30 flex items-center justify-center">
+                    <Activity className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <p className="text-white/80 text-sm font-medium">Dopamin Durumun</p>
-                    <p className="text-white/30 text-xs">Bugün • Optimal bölgede</p>
+                    <p className="text-foreground text-sm font-medium">Dopamin Durumun</p>
+                    <p className="text-muted-foreground text-xs">Bugün • Optimal bölgede</p>
                   </div>
                 </div>
-                <div className="px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                  <span className="text-emerald-400/80 text-xs flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <div className="px-3 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 shadow-sm shadow-emerald-500/20">
+                  <span className="text-emerald-500 text-xs font-medium flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-sm shadow-emerald-400" />
                     Odak modunda
                   </span>
                 </div>
               </div>
               
-              {/* Energy Graph Mockup */}
-              <div className="mb-6 p-4 rounded-xl bg-white/[0.02] border border-white/[0.04]">
-                <div className="flex justify-between text-xs mb-3">
-                  <span className="text-white/40">Enerji Seviyesi</span>
-                  <span className="text-[#FF6B6B]/80">Yüksek</span>
+              {/* Günlük Odak Skoru */}
+              <div className="mb-6 p-4 rounded-xl bg-card border border-border">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-foreground text-sm font-medium">Günlük Odak Skoru</span>
+                  <span className="text-2xl font-bold text-primary">78<span className="text-sm text-muted-foreground font-normal">/100</span></span>
                 </div>
-                <div className="flex items-end gap-1 h-16">
-                  {[40, 55, 35, 70, 85, 90, 75, 88, 92, 85, 78].map((height, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ height: 0 }}
-                      animate={{ height: `${height}%` }}
-                      transition={{ duration: 0.5, delay: 0.8 + i * 0.05 }}
-                      className={cn(
-                        "flex-1 rounded-sm",
-                        i >= 8 ? "bg-gradient-to-t from-[#FF6B6B] to-[#FF8E53]" : "bg-white/10"
-                      )}
-                    />
-                  ))}
+                
+                {/* Progress bar */}
+                <div className="relative h-3 bg-muted rounded-full overflow-hidden mb-3">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: '78%' }}
+                    transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
+                    className="absolute inset-y-0 left-0 bg-gradient-to-r from-orange-400 to-orange-500 rounded-full"
+                  />
                 </div>
-                <div className="flex justify-between text-[10px] text-white/20 mt-2">
-                  <span>9:00</span>
-                  <span>Şimdi</span>
+                
+                {/* Stats */}
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div className="p-2 rounded-lg bg-muted/50">
+                    <p className="text-lg font-semibold text-foreground">3.5</p>
+                    <p className="text-[10px] text-muted-foreground">Saat odak</p>
+                  </div>
+                  <div className="p-2 rounded-lg bg-muted/50">
+                    <p className="text-lg font-semibold text-foreground">4</p>
+                    <p className="text-[10px] text-muted-foreground">Görev tamamlandı</p>
+                  </div>
+                  <div className="p-2 rounded-lg bg-emerald-500/10">
+                    <p className="text-lg font-semibold text-emerald-600">↑12%</p>
+                    <p className="text-[10px] text-muted-foreground">Dünden</p>
+                  </div>
                 </div>
               </div>
 
               {/* Today's Session */}
               <div className="grid md:grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl bg-[#FF6B6B]/[0.05] border border-[#FF6B6B]/10">
+                <div className="p-4 rounded-xl bg-primary/10 border border-primary/20">
                   <div className="flex items-center gap-2 mb-2">
-                    <Users className="w-4 h-4 text-[#FF6B6B]/70" />
-                    <span className="text-white/40 text-xs">14:00 — Koç Seansı</span>
+                    <Users className="w-4 h-4 text-primary" />
+                    <span className="text-muted-foreground text-xs">14:00 — Koç Seansı</span>
                   </div>
-                  <p className="text-white/70 text-sm font-light">Elif ile haftalık check-in</p>
+                  <p className="text-foreground text-sm font-light">Elif ile haftalık check-in</p>
                 </div>
-                <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+                <div className="p-4 rounded-xl bg-card border border-border">
                   <div className="flex items-center gap-2 mb-2">
-                    <Eye className="w-4 h-4 text-white/40" />
-                    <span className="text-white/40 text-xs">16:00 — Body Doubling</span>
+                    <Eye className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-muted-foreground text-xs">16:00 — Body Doubling</span>
                   </div>
-                  <p className="text-white/70 text-sm font-light">Derin çalışma seansı (90dk)</p>
+                  <p className="text-foreground text-sm font-light">Derin çalışma seansı (90dk)</p>
                 </div>
               </div>
             </div>
@@ -511,22 +404,22 @@ export default function CoachingPage() {
         </div>
       </section>
 
-      {/* ====== ADHD CHALLENGES SECTION ====== */}
+      {/* ====== DEHB CHALLENGES SECTION ====== */}
       <AnimatedSection className="py-20 px-5 md:px-8 lg:px-16">
         <div className="max-w-[1000px] mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-white/90 text-2xl md:text-3xl font-light tracking-tight mb-3">
+            <h2 className="text-foreground text-2xl md:text-3xl font-light tracking-tight mb-3">
               Tanıdık geliyor mu?
             </h2>
-            <p className="text-white/40 text-sm md:text-base font-light max-w-[450px] mx-auto">
+            <p className="text-muted-foreground text-sm md:text-base font-light max-w-[450px] mx-auto">
               Düşük dopamin döngüsünün yarattığı günlük zorluklar
             </p>
           </div>
           
           <motion.div 
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="animate"
+            variants={staggerContainer()}
+            initial="hidden"
+            whileInView="visible"
             viewport={{ once: true }}
             className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4"
           >
@@ -543,17 +436,17 @@ export default function CoachingPage() {
                   challenge.color,
                   "border",
                   selectedChallenge === index 
-                    ? "border-[#FF6B6B]/30 bg-[#FF6B6B]/[0.05]" 
-                    : "border-white/[0.06] hover:border-white/10"
+                    ? "border-primary/30 bg-primary/5" 
+                    : "border-border hover:border-white/10"
                 )}
               >
                 <challenge.icon className={cn(
                   "w-5 h-5 md:w-6 md:h-6 mb-3 transition-colors",
-                  selectedChallenge === index ? "text-[#FF6B6B]" : "text-white/40"
+                  selectedChallenge === index ? "text-primary" : "text-muted-foreground"
                 )} />
                 <p className={cn(
                   "text-sm md:text-base font-light transition-colors",
-                  selectedChallenge === index ? "text-white/90" : "text-white/60"
+                  selectedChallenge === index ? "text-foreground" : "text-muted-foreground"
                 )}>
                   {challenge.label}
                 </p>
@@ -561,7 +454,7 @@ export default function CoachingPage() {
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="absolute top-3 right-3 w-2 h-2 rounded-full bg-[#FF6B6B]"
+                    className="absolute top-3 right-3 w-2 h-2 rounded-full bg-primary"
                   />
                 )}
               </motion.button>
@@ -571,19 +464,19 @@ export default function CoachingPage() {
       </AnimatedSection>
 
       {/* ====== DOPAMIN BİLİMİ SECTION ====== */}
-      <AnimatedSection className="py-20 px-5 md:px-8 lg:px-16 bg-gradient-to-b from-transparent via-[#FF6B6B]/[0.02] to-transparent">
+      <AnimatedSection className="py-20 px-5 md:px-8 lg:px-16 bg-gradient-to-b from-transparent via-primary/10 to-transparent">
         <div className="max-w-[900px] mx-auto">
           <div className="text-center mb-14">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FF6B6B]/[0.08] border border-[#FF6B6B]/15 mb-4">
-              <Brain className="w-3.5 h-3.5 text-[#FF6B6B]" />
-              <span className="text-[#FF6B6B]/80 text-xs font-medium">Bilim Destekli</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4">
+              <Brain className="w-3.5 h-3.5 text-primary" />
+              <span className="text-primary text-xs font-medium">Bilim Destekli</span>
             </div>
-            <h2 className="text-white/90 text-2xl md:text-3xl font-light tracking-tight mb-4">
+            <h2 className="text-foreground text-2xl md:text-3xl font-light tracking-tight mb-4">
               Neden çoğu üretkenlik aracı<br />
-              <span className="text-white/50">ADHD için işe yaramıyor?</span>
+              <span className="text-muted-foreground">DEHB için işe yaramıyor?</span>
             </h2>
-            <p className="text-white/40 text-sm md:text-base font-light max-w-[500px] mx-auto">
-              ADHD beyni farklı çalışır. Dopamin düzenleme sistemi farklı ihtiyaçlar taşır.
+            <p className="text-muted-foreground text-sm md:text-base font-light max-w-[500px] mx-auto">
+              DEHB beyni farklı çalışır. Dopamin düzenleme sistemi farklı ihtiyaçlar taşır.
             </p>
           </div>
 
@@ -592,21 +485,21 @@ export default function CoachingPage() {
               {
                 icon: Activity,
                 title: "Dopamin Dalgalanmaları",
-                description: "ADHD'de dopamin seviyeleri gün içinde daha çok dalgalanır. Sistemimiz bu dalgaları öngörür ve planınızı buna göre optimize eder.",
+                description: "DEHB'de dopamin seviyeleri gün içinde daha çok dalgalanır. Sistemimiz bu dalgaları öngörür ve planınızı buna göre optimize eder.",
                 stat: "47%",
                 statLabel: "daha az enerji çöküşü"
               },
               {
                 icon: Eye,
                 title: "Body Doubling Etkisi",
-                description: "Başkalarının varlığında çalışmak ADHD beyninin odaklanmasını %40 artırır. Canlı seanslarımızla bu etkiyi yaratıyoruz.",
+                description: "Başkalarının varlığında çalışmak DEHB beyninin odaklanmasını %40 artırır. Canlı seanslarımızla bu etkiyi yaratıyoruz.",
                 stat: "2.3x",
                 statLabel: "daha uzun odak süreleri"
               },
               {
                 icon: Heart,
                 title: "Duygusal Düzenleme",
-                description: "Başarısızlık korkusu ve utanç, ADHD'de daha yoğun hissedilir. Koçlarımız bu duyguları yönetmenize yardımcı olur.",
+                description: "Başarısızlık korkusu ve utanç, DEHB'de daha yoğun hissedilir. Koçlarımız bu duyguları yönetmenize yardımcı olur.",
                 stat: "89%",
                 statLabel: "üyelerde azalan utanç"
               }
@@ -617,16 +510,16 @@ export default function CoachingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:border-[#FF6B6B]/15 transition-all duration-300"
+                className="p-6 rounded-2xl bg-card border border-border hover:border-primary/15 transition-all duration-300"
               >
-                <div className="w-11 h-11 rounded-xl bg-[#FF6B6B]/[0.08] flex items-center justify-center mb-4">
-                  <item.icon className="w-5 h-5 text-[#FF6B6B]/80" />
+                <div className="w-11 h-11 rounded-xl bg-primary/[0.08] flex items-center justify-center mb-4">
+                  <item.icon className="w-5 h-5 text-primary/80" />
                 </div>
-                <h3 className="text-white/80 text-lg font-light mb-2">{item.title}</h3>
-                <p className="text-white/35 text-sm font-light leading-relaxed mb-4">{item.description}</p>
-                <div className="pt-4 border-t border-white/[0.05]">
-                  <span className="text-[#FF6B6B] text-2xl font-light">{item.stat}</span>
-                  <span className="text-white/30 text-xs ml-2">{item.statLabel}</span>
+                <h3 className="text-foreground text-lg font-light mb-2">{item.title}</h3>
+                <p className="text-muted-foreground text-sm font-light leading-relaxed mb-4">{item.description}</p>
+                <div className="pt-4 border-t border-border">
+                  <span className="text-primary text-2xl font-light">{item.stat}</span>
+                  <span className="text-muted-foreground text-xs ml-2">{item.statLabel}</span>
                 </div>
               </motion.div>
             ))}
@@ -638,10 +531,10 @@ export default function CoachingPage() {
       <AnimatedSection className="py-20 px-5 md:px-8 lg:px-16">
         <div className="max-w-[1100px] mx-auto">
           <div className="text-center mb-14">
-            <h2 className="text-white/90 text-2xl md:text-3xl font-light tracking-tight mb-3">
+            <h2 className="text-foreground text-2xl md:text-3xl font-light tracking-tight mb-3">
               Koçluk nasıl işliyor?
             </h2>
-            <p className="text-white/40 text-sm md:text-base font-light max-w-[500px] mx-auto">
+            <p className="text-muted-foreground text-sm md:text-base font-light max-w-[500px] mx-auto">
               Dopamin dengenizi koruyarak projelerinizi bitirmenin yol haritası
             </p>
           </div>
@@ -655,10 +548,10 @@ export default function CoachingPage() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ y: -4 }}
-                className="relative p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:border-white/[0.08] transition-all duration-300 group"
+                className="relative p-6 rounded-2xl bg-card border border-border hover:border-border transition-all duration-300 group"
               >
                 <div className="flex items-start justify-between mb-4">
-                  <span className="text-white/10 text-3xl font-light">{step.step}</span>
+                  <span className="text-muted-foreground/20 text-3xl font-light">{step.step}</span>
                   <div 
                     className="w-10 h-10 rounded-xl flex items-center justify-center transition-colors"
                     style={{ backgroundColor: `${step.accent}15` }}
@@ -666,10 +559,10 @@ export default function CoachingPage() {
                     <step.icon className="w-5 h-5" style={{ color: step.accent }} />
                   </div>
                 </div>
-                <h3 className="text-white/80 text-lg font-light mb-2 group-hover:text-white/90 transition-colors">
+                <h3 className="text-foreground text-lg font-light mb-2 group-hover:text-foreground transition-colors">
                   {step.title}
                 </h3>
-                <p className="text-white/35 text-sm font-light leading-relaxed">
+                <p className="text-muted-foreground text-sm font-light leading-relaxed">
                   {step.description}
                 </p>
               </motion.div>
@@ -678,99 +571,14 @@ export default function CoachingPage() {
         </div>
       </AnimatedSection>
 
-      {/* ====== BODY DOUBLING SPOTLIGHT ====== */}
-      <AnimatedSection className="py-20 px-5 md:px-8 lg:px-16 bg-gradient-to-b from-transparent via-white/[0.01] to-transparent">
-        <div className="max-w-[1000px] mx-auto">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FF8E53]/[0.1] border border-[#FF8E53]/20 mb-4">
-                <Eye className="w-3.5 h-3.5 text-[#FF8E53]" />
-                <span className="text-[#FF8E53]/90 text-xs font-medium">Premium Özellik</span>
-              </div>
-              <h2 className="text-white/90 text-2xl md:text-3xl font-light tracking-tight mb-4">
-                Body Doubling ile<br />
-                <span className="bg-gradient-to-r from-[#FF6B6B] to-[#FF8E53] bg-clip-text text-transparent">anında odak.</span>
-              </h2>
-              <p className="text-white/40 text-sm md:text-base font-light leading-relaxed mb-6">
-                Başka insanların yanında çalışmak ADHD beyni için güçlü bir motivasyon kaynağıdır. 
-                Canlı video seanslarımızda dünya genelinden insanlarla birlikte çalışın.
-              </p>
-              <ul className="space-y-3">
-                {[
-                  "Günde 4+ canlı seans (sabah, öğle, akşam, gece)",
-                  "30, 60 veya 90 dakikalık odak blokları",
-                  "Sessiz veya müzikli ortam seçenekleri",
-                  "Küçük gruplar (max 12 kişi) — samimi atmosfer"
-                ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-full bg-[#FF6B6B]/10 flex items-center justify-center flex-shrink-0">
-                      <Check className="w-3 h-3 text-[#FF6B6B]" />
-                    </div>
-                    <span className="text-white/55 text-sm font-light">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            
-            {/* Body Doubling Visual */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="relative"
-            >
-              <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/[0.06] p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-[#FF6B6B] animate-pulse" />
-                    <span className="text-white/50 text-xs">Canlı • Derin Çalışma Seansı</span>
-                  </div>
-                  <span className="text-white/30 text-xs">8/12 katılımcı</span>
-                </div>
-                
-                {/* Participant Grid */}
-                <div className="grid grid-cols-4 gap-2 mb-4">
-                  {[...Array(8)].map((_, i) => (
-                    <div 
-                      key={i}
-                      className={cn(
-                        "aspect-square rounded-lg",
-                        i === 0 
-                          ? "bg-gradient-to-br from-[#FF6B6B]/20 to-[#FF8E53]/20 border-2 border-[#FF6B6B]/30" 
-                          : "bg-white/[0.03] border border-white/[0.05]"
-                      )}
-                    >
-                      {i === 0 && (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-white/60 text-xs">Sen</span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Timer */}
-                <div className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.04]">
-                  <div className="flex items-center gap-2">
-                    <Timer className="w-4 h-4 text-[#FF6B6B]/70" />
-                    <span className="text-white/60 text-sm">Kalan süre</span>
-                  </div>
-                  <span className="text-[#FF6B6B] text-lg font-mono">47:23</span>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </AnimatedSection>
-
       {/* ====== WHAT YOU'LL UNLOCK ====== */}
       <AnimatedSection className="py-20 px-5 md:px-8 lg:px-16">
         <div className="max-w-[1100px] mx-auto">
           <div className="text-center mb-14">
-            <h2 className="text-white/90 text-2xl md:text-3xl font-light tracking-tight mb-3">
+            <h2 className="text-foreground text-2xl md:text-3xl font-light tracking-tight mb-3">
               Ne başaracaksın?
             </h2>
-            <p className="text-white/40 text-sm md:text-base font-light max-w-[450px] mx-auto">
+            <p className="text-muted-foreground text-sm md:text-base font-light max-w-[450px] mx-auto">
               Gerçek projeler, gerçekten bitirilmiş. Seninkini seç.
             </p>
           </div>
@@ -784,15 +592,15 @@ export default function CoachingPage() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05 }}
                 whileHover={{ scale: 1.03 }}
-                className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:border-[#FF6B6B]/20 transition-all duration-300 text-center group cursor-pointer"
+                className="p-5 rounded-2xl bg-card border border-border hover:border-primary/20 transition-all duration-300 text-center group cursor-pointer"
               >
-                <div className="w-12 h-12 rounded-xl bg-[#FF6B6B]/[0.06] flex items-center justify-center mx-auto mb-3 group-hover:bg-[#FF6B6B]/10 transition-colors">
-                  <item.icon className="w-6 h-6 text-[#FF6B6B]/70 group-hover:text-[#FF6B6B] transition-colors" />
+                <div className="w-12 h-12 rounded-xl bg-primary/[0.06] flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/10 transition-colors">
+                  <item.icon className="w-6 h-6 text-primary/70 group-hover:text-primary transition-colors" />
                 </div>
-                <h4 className="text-white/70 text-sm font-medium mb-1 group-hover:text-white/90 transition-colors">
+                <h4 className="text-foreground text-sm font-medium mb-1 group-hover:text-foreground transition-colors">
                   {item.label}
                 </h4>
-                <p className="text-white/30 text-xs font-light">
+                <p className="text-muted-foreground text-xs font-light">
                   {item.description}
                 </p>
               </motion.div>
@@ -802,74 +610,52 @@ export default function CoachingPage() {
       </AnimatedSection>
 
       {/* ====== RESULTS & CASE STUDY ====== */}
-      <AnimatedSection className="py-20 px-5 md:px-8 lg:px-16 bg-gradient-to-b from-transparent via-[#FF6B6B]/[0.02] to-transparent">
+      <AnimatedSection className="py-20 px-5 md:px-8 lg:px-16 bg-gradient-to-b from-transparent via-primary/[0.02] to-transparent">
         <div className="max-w-[1000px] mx-auto">
-          
-          {/* Stats */}
-          <div className="flex flex-wrap justify-center gap-8 md:gap-16 mb-16">
-            {[
-              { value: "87%", label: "8 haftada bitirir" },
-              { value: "4.9", label: "Koç puanı" },
-              { value: "2.3x", label: "Tek başına çalışmaktan hızlı" }
-            ].map((stat, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.15 }}
-                className="text-center"
-              >
-                <p className="bg-gradient-to-r from-[#FF6B6B] to-[#FF8E53] bg-clip-text text-transparent text-4xl md:text-5xl font-light tracking-tight">{stat.value}</p>
-                <p className="text-white/40 text-sm font-light mt-1">{stat.label}</p>
-              </motion.div>
-            ))}
-          </div>
-
           {/* Case Study */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="rounded-3xl overflow-hidden bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/[0.06]"
+            className="rounded-3xl overflow-hidden bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-border"
           >
             <div className="p-6 md:p-10">
               <div className="flex items-center gap-3 mb-6">
-                <Star className="w-5 h-5 text-[#FF6B6B]" />
-                <span className="text-[#FF6B6B]/80 text-sm font-medium tracking-wide uppercase">Başarı Hikayesi</span>
+                <Star className="w-5 h-5 text-primary" />
+                <span className="text-primary/80 text-sm font-medium tracking-wide uppercase">Başarı Hikayesi</span>
               </div>
               
-              <h3 className="text-white/90 text-xl md:text-2xl font-light mb-8">
+              <h3 className="text-foreground text-xl md:text-2xl font-light mb-8">
                 Elif'in E-ticaret Lansmanı
               </h3>
 
               <div className="grid md:grid-cols-2 gap-8">
                 {/* Before */}
-                <div className="p-5 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+                <div className="p-5 rounded-xl bg-card border border-border">
                   <div className="flex items-center gap-2 mb-4">
                     <div className="w-2 h-2 rounded-full bg-rose-400/60" />
                     <span className="text-rose-400/70 text-xs font-medium uppercase tracking-wide">Öncesi</span>
                   </div>
-                  <p className="text-white/50 text-sm font-light leading-relaxed">
+                  <p className="text-muted-foreground text-sm font-light leading-relaxed">
                     "2 yıldır aklımda olan bir e-ticaret fikri vardı. 4 kez başladım, hepsinde 2-3 hafta sonra bıraktım. Notion'da planlar vardı ama hiçbiri hayata geçmedi. Kendimi sürekli suçluyordum."
                   </p>
                 </div>
 
                 {/* After */}
-                <div className="p-5 rounded-xl bg-[#FF6B6B]/[0.04] border border-[#FF6B6B]/10">
+                <div className="p-5 rounded-xl bg-primary/[0.04] border border-primary/10">
                   <div className="flex items-center gap-2 mb-4">
                     <div className="w-2 h-2 rounded-full bg-emerald-400" />
                     <span className="text-emerald-400/80 text-xs font-medium uppercase tracking-wide">Sonrası</span>
                   </div>
-                  <p className="text-white/60 text-sm font-light leading-relaxed">
+                  <p className="text-muted-foreground text-sm font-light leading-relaxed">
                     "6 haftada sitemı açtım. Koçum Ayşe, fazla özellik eklememi engelledi. Body Doubling seanslarında ürün fotoğraflarını çektim. Şimdi ayda 23 sipariş alıyorum."
                   </p>
                 </div>
               </div>
 
               {/* How it worked */}
-              <div className="mt-8 p-5 rounded-xl bg-white/[0.02] border border-white/[0.04]">
-                <p className="text-white/30 text-xs font-medium uppercase tracking-wide mb-3">Nasıl başardı?</p>
+              <div className="mt-8 p-5 rounded-xl bg-card border border-border">
+                <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide mb-3">Nasıl başardı?</p>
                 <div className="flex flex-wrap gap-3">
                   {[
                     { icon: Users, text: "Haftalık koç seansları" },
@@ -877,9 +663,9 @@ export default function CoachingPage() {
                     { icon: Cpu, text: "AI görev bölümleme" },
                     { icon: MessageCircle, text: "Pod desteği" }
                   ].map((item, i) => (
-                    <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.03]">
-                      <item.icon className="w-4 h-4 text-[#FF6B6B]/60" />
-                      <span className="text-white/50 text-xs">{item.text}</span>
+                    <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-card">
+                      <item.icon className="w-4 h-4 text-primary/60" />
+                      <span className="text-muted-foreground text-xs">{item.text}</span>
                     </div>
                   ))}
                 </div>
@@ -893,11 +679,11 @@ export default function CoachingPage() {
       <AnimatedSection className="py-20 px-5 md:px-8 lg:px-16">
         <div className="max-w-[1000px] mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-white/90 text-2xl md:text-3xl font-light tracking-tight mb-3">
+            <h2 className="text-foreground text-2xl md:text-3xl font-light tracking-tight mb-3">
               Güvenebileceğin koçlar
             </h2>
-            <p className="text-white/40 text-sm md:text-base font-light max-w-[500px] mx-auto">
-              Titizlikle seçilmiş, ADHD konusunda uzmanlaşmış
+            <p className="text-muted-foreground text-sm md:text-base font-light max-w-[500px] mx-auto">
+              Titizlikle seçilmiş, DEHB konusunda uzmanlaşmış
             </p>
           </div>
 
@@ -911,8 +697,8 @@ export default function CoachingPage() {
               },
               {
                 icon: Brain,
-                title: "ADHD Uzmanlığı",
-                description: "Tüm koçlar 40 saatlik ADHD uzmanlık programımızı tamamlar. Çoğunun kendisi de ADHD deneyimi var.",
+                title: "DEHB Uzmanlığı",
+                description: "Tüm koçlar 40 saatlik DEHB uzmanlık programımızı tamamlar. Çoğunun kendisi de DEHB deneyimi var.",
                 accent: "from-violet-500/20 to-violet-500/5"
               },
               {
@@ -929,78 +715,74 @@ export default function CoachingPage() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
                 className={cn(
-                  "p-6 rounded-2xl border border-white/[0.05]",
+                  "p-6 rounded-2xl border border-border",
                   "bg-gradient-to-br",
                   item.accent
                 )}
               >
-                <div className="w-12 h-12 rounded-xl bg-white/[0.05] flex items-center justify-center mb-4">
-                  <item.icon className="w-6 h-6 text-white/60" />
+                <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mb-4">
+                  <item.icon className="w-6 h-6 text-muted-foreground" />
                 </div>
-                <h3 className="text-white/80 text-lg font-light mb-2">{item.title}</h3>
-                <p className="text-white/40 text-sm font-light leading-relaxed">{item.description}</p>
+                <h3 className="text-foreground text-lg font-light mb-2">{item.title}</h3>
+                <p className="text-muted-foreground text-sm font-light leading-relaxed">{item.description}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </AnimatedSection>
 
-      {/* ====== ACTION PLAN TIMELINE (CUSTOM TABS) ====== */}
+      {/* ====== ACTION PLAN TIMELINE (DESIGN SYSTEM TABS) ====== */}
       <AnimatedSection className="py-20 px-5 md:px-8 lg:px-16 bg-gradient-to-b from-transparent via-white/[0.01] to-transparent">
         <div className="max-w-[800px] mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-white/90 text-2xl md:text-3xl font-light tracking-tight mb-3">
+            <h2 className="text-foreground text-2xl md:text-3xl font-light tracking-tight mb-3">
               Aksiyon planın
             </h2>
-            <p className="text-white/40 text-sm md:text-base font-light max-w-[450px] mx-auto">
+            <p className="text-muted-foreground text-sm md:text-base font-light max-w-[450px] mx-auto">
               Kayıttan ilk projeyi bitirmeye — işte tam olarak ne olacak
             </p>
           </div>
 
-          <div className="w-full">
-            <div className="flex justify-center gap-1 mb-8 p-1.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+          <Tabs defaultValue="today" className="w-full">
+            <TabsList className="flex justify-center gap-1 mb-8 p-1.5 rounded-xl bg-card border border-border">
               {Object.keys(timelineContent).map((key) => (
-                <TabButton 
+                <TabsTrigger
                   key={key}
-                  active={activeTab === key}
-                  onClick={() => setActiveTab(key)}
+                  value={key}
+                  className="text-sm font-light data-[state=active]:text-primary data-[state=active]:bg-primary/10 data-[state=inactive]:text-muted-foreground"
                 >
                   {timelineContent[key as keyof typeof timelineContent].title}
-                </TabButton>
+                </TabsTrigger>
               ))}
-            </div>
+            </TabsList>
 
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeTab}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-                className="p-6 md:p-8 rounded-2xl bg-white/[0.02] border border-white/[0.05]"
+            {Object.entries(timelineContent).map(([key, content]) => (
+              <TabsContent
+                key={key}
+                value={key}
+                className="p-6 md:p-8 rounded-2xl bg-card border border-border text-center"
               >
-                <h3 className="text-white/80 text-lg font-light mb-6">
-                  {timelineContent[activeTab as keyof typeof timelineContent].title}
-                </h3>
-                <div className="space-y-4">
-                  {timelineContent[activeTab as keyof typeof timelineContent].items.map((item, index) => (
+                <h3 className="text-foreground text-lg font-light mb-6">{content.title}</h3>
+                <div className="space-y-4 max-w-[700px] mx-auto flex flex-col items-center">
+                  {content.items.map((item, index) => (
                     <motion.div
                       key={index}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="flex items-start gap-3"
+                      variants={staggerItem}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true }}
+                      className="flex items-start gap-3 justify-center"
                     >
-                      <div className="w-6 h-6 rounded-full bg-[#FF6B6B]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <Check className="w-3.5 h-3.5 text-[#FF6B6B]/80" />
+                      <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <Check className="w-3.5 h-3.5 text-primary" />
                       </div>
-                      <p className="text-white/60 text-sm font-light">{item}</p>
+                      <p className="text-muted-foreground text-sm font-light text-left md:text-center">{item}</p>
                     </motion.div>
                   ))}
                 </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
+              </TabsContent>
+            ))}
+          </Tabs>
         </div>
       </AnimatedSection>
 
@@ -1008,10 +790,10 @@ export default function CoachingPage() {
       <AnimatedSection className="py-20 px-5 md:px-8 lg:px-16">
         <div className="max-w-[1000px] mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-white/90 text-2xl md:text-3xl font-light tracking-tight mb-3">
+            <h2 className="text-foreground text-2xl md:text-3xl font-light tracking-tight mb-3">
               Daha büyük bir ekosistemin parçası
             </h2>
-            <p className="text-white/40 text-sm md:text-base font-light max-w-[500px] mx-auto">
+            <p className="text-muted-foreground text-sm md:text-base font-light max-w-[500px] mx-auto">
               Koçluk sadece başlangıç. Tam ekosisteme erişim kazanıyorsun.
             </p>
           </div>
@@ -1026,8 +808,8 @@ export default function CoachingPage() {
               },
               {
                 icon: Layers,
-                title: "ADHD Araç Kütüphanesi",
-                description: "Şablonlar, iş akışları ve sistemler — ADHD beyni için özel olarak tasarlanmış.",
+                title: "DEHB Araç Kütüphanesi",
+                description: "Şablonlar, iş akışları ve sistemler — DEHB beyni için özel olarak tasarlanmış.",
                 badge: "Dahil"
               },
               {
@@ -1049,18 +831,18 @@ export default function CoachingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:border-white/[0.08] transition-all duration-300"
+                className="p-6 rounded-2xl bg-card border border-border hover:border-border transition-all duration-300"
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className="w-11 h-11 rounded-xl bg-[#FF6B6B]/[0.06] flex items-center justify-center">
-                    <item.icon className="w-5 h-5 text-[#FF6B6B]/70" />
+                  <div className="w-11 h-11 rounded-xl bg-primary/[0.06] flex items-center justify-center">
+                    <item.icon className="w-5 h-5 text-primary/70" />
                   </div>
                   <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400/80 text-xs">
                     {item.badge}
                   </span>
                 </div>
-                <h3 className="text-white/80 text-lg font-light mb-2">{item.title}</h3>
-                <p className="text-white/40 text-sm font-light leading-relaxed">{item.description}</p>
+                <h3 className="text-foreground text-lg font-light mb-2">{item.title}</h3>
+                <p className="text-muted-foreground text-sm font-light leading-relaxed">{item.description}</p>
               </motion.div>
             ))}
           </div>
@@ -1068,133 +850,189 @@ export default function CoachingPage() {
       </AnimatedSection>
 
       {/* ====== PRICE & CTA ====== */}
-      <AnimatedSection className="py-24 px-5 md:px-8 lg:px-16 bg-gradient-to-b from-transparent via-[#FF6B6B]/[0.03] to-transparent">
-        <div className="max-w-[600px] mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="p-8 md:p-12 rounded-3xl bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/[0.06]"
-          >
-            <div className="mb-6">
-              <p className="text-white/40 text-sm font-light mb-2">Koçluk + AI + Body Doubling + Pod</p>
-              <div className="flex items-baseline justify-center gap-2">
-                <span className="text-white/90 text-5xl md:text-6xl font-light">₺2.997</span>
-                <span className="text-white/40 text-lg font-light">/ay</span>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-center gap-3 mb-8">
-              <div className="h-px flex-1 bg-white/[0.06]" />
-              <span className="text-white/30 text-xs">vs ₺8.000-12.000 geleneksel koçluk</span>
-              <div className="h-px flex-1 bg-white/[0.06]" />
-            </div>
-
-            <ul className="space-y-3 text-left mb-8">
-              {[
-                "Haftalık 45 dakika 1:1 koçluk seansları",
-                "7/24 AI Dopamin Koçu desteği",
-                "Sınırsız Body Doubling seansları",
-                "Eşleştirilmiş akran Pod grubu (4-5 kişi)",
-                "Tam ekosistem erişimi",
-                "İstediğin zaman iptal"
-              ].map((item, i) => (
-                <li key={i} className="flex items-center gap-3">
-                  <div className="w-5 h-5 rounded-full bg-[#FF6B6B]/10 flex items-center justify-center flex-shrink-0">
-                    <Check className="w-3 h-3 text-[#FF6B6B]" />
-                  </div>
-                  <span className="text-white/60 text-sm font-light">{item}</span>
-                </li>
-              ))}
-            </ul>
-
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className={cn(
-                "w-full px-8 py-4 rounded-xl",
-                "bg-gradient-to-r from-[#FF6B6B] to-[#FF8E53]",
-                "text-white text-base font-medium",
-                "transition-all duration-300",
-                "hover:shadow-xl hover:shadow-[#FF6B6B]/25",
-                "flex items-center justify-center gap-3"
-              )}
-            >
-              <span>Koçunla eşleş</span>
-              <ArrowRight className="w-5 h-5" />
-            </motion.button>
-
-            <p className="text-white/30 text-xs mt-4 font-light">
-              5 dakika sürer • 48 saat içinde başla
+      <AnimatedSection className="py-24 px-5 md:px-8 lg:px-16">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-foreground text-2xl md:text-3xl lg:text-4xl font-light tracking-tight mb-4">
+              Fiyatlandırma
+            </h2>
+            <p className="text-muted-foreground text-base">
+              Önce testi çöz, sana en uygun planı önerelim.
             </p>
-          </motion.div>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Başlangıç - Free */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="p-6 rounded-3xl bg-card border border-border flex flex-col"
+            >
+              <div className="text-2xl mb-2">🌱</div>
+              <h3 className="text-foreground font-semibold text-xl mb-1">Başlangıç</h3>
+              <p className="text-muted-foreground text-sm mb-4">&quot;Kendini tanı&quot;</p>
+              <div className="mb-6">
+                <span className="text-4xl font-bold text-foreground">₺0</span>
+                <span className="text-muted-foreground text-sm ml-1">sonsuza kadar</span>
+              </div>
+              <ul className="space-y-3 mb-6 flex-grow">
+                {[
+                  "AI Koç (5 mesaj/gün)",
+                  "Temel odak araçları",
+                  "Topluluk erişimi (okuma)",
+                  "Dikkat & Odak testi",
+                  "Kişisel odak profili"
+                ].map((feature, j) => (
+                  <li key={j} className="flex items-center gap-3 text-muted-foreground text-sm">
+                    <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/start"
+                className="group flex flex-col items-center justify-center w-full py-4 rounded-xl bg-muted text-foreground hover:bg-muted/80 border border-border transition-all mt-auto"
+              >
+                <span className="font-bold">TESTİ ÇÖZ</span>
+                <span className="text-muted-foreground text-xs mt-0.5">erken erişim kazan</span>
+              </Link>
+            </motion.div>
+            
+            {/* Odak */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="p-6 rounded-3xl bg-card border border-border flex flex-col"
+            >
+              <div className="text-2xl mb-2">⚡</div>
+              <h3 className="text-foreground font-semibold text-xl mb-1">Odak</h3>
+              <p className="text-muted-foreground text-sm mb-4">&quot;AI ile odaklan&quot;</p>
+              <div className="mb-6">
+                <span className="text-4xl font-bold text-foreground">₺590</span>
+                <span className="text-muted-foreground">/ay</span>
+              </div>
+              <ul className="space-y-3 mb-6 flex-grow">
+                {[
+                  "Sınırsız AI Koç (7/24)",
+                  "Akıllı görev parçalama",
+                  "Günlük body doubling",
+                  "Tam topluluk erişimi",
+                  "Haftalık ilerleme raporu",
+                  "Kişiselleştirilmiş öneriler"
+                ].map((feature, j) => (
+                  <li key={j} className="flex items-center gap-3 text-muted-foreground text-sm">
+                    <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/start"
+                className="group flex flex-col items-center justify-center w-full py-4 rounded-xl bg-muted text-foreground hover:bg-muted/80 border border-border transition-all mt-auto"
+              >
+                <span className="font-bold">TESTİ ÇÖZ</span>
+                <span className="text-muted-foreground text-xs mt-0.5">erken erişim kazan</span>
+              </Link>
+            </motion.div>
+            
+            {/* Dönüşüm - Premium */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="p-6 rounded-3xl bg-gradient-to-b from-primary/15 to-transparent border-2 border-primary/40 relative flex flex-col shadow-lg shadow-primary/10"
+            >
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-gradient-warm text-foreground text-xs font-bold shadow-warm-md">
+                🔥 Gerçek Dönüşüm
+              </div>
+              <div className="text-2xl mb-2">🚀</div>
+              <h3 className="text-foreground font-semibold text-xl mb-1">Dönüşüm</h3>
+              <p className="text-muted-foreground text-sm mb-4">&quot;Uzmanınla bitir&quot;</p>
+              <div className="mb-6">
+                <span className="text-4xl font-bold text-foreground">₺3.900</span>
+                <span className="text-muted-foreground">/ay</span>
+              </div>
+              <ul className="space-y-3 mb-6 flex-grow">
+                {[
+                  "Haftalık 1:1 uzman seansları",
+                  "Eşleştirilmiş pod grubu",
+                  "Kişisel odak haritası",
+                  "Sınırsız AI Koç + öncelik",
+                  "Sınırsız body doubling",
+                  "Öncelikli destek"
+                ].map((feature, j) => (
+                  <li key={j} className="flex items-center gap-3 text-muted-foreground text-sm">
+                    <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/start"
+                className="block w-full py-4 rounded-xl text-center font-bold bg-gradient-warm text-foreground hover:opacity-90 transition-all shadow-warm-md mt-auto"
+              >
+                Testi Çöz
+              </Link>
+            </motion.div>
+          </div>
         </div>
       </AnimatedSection>
 
-      {/* ====== FAQ (CUSTOM ACCORDION) ====== */}
+      {/* ====== FAQ ====== */}
       <AnimatedSection className="py-20 px-5 md:px-8 lg:px-16">
         <div className="max-w-[700px] mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-white/90 text-2xl md:text-3xl font-light tracking-tight mb-3">
+            <h2 className="text-foreground text-2xl md:text-3xl font-light tracking-tight mb-3">
               Sıkça sorulan sorular
             </h2>
           </div>
 
-          <div className="space-y-3">
+          <Accordion type="single" collapsible className="space-y-3">
             {faqItems.map((item, index) => (
-              <AccordionItem
-                key={index}
-                question={item.question}
-                answer={item.answer}
-                isOpen={openFaq === index}
-                onClick={() => setOpenFaq(openFaq === index ? null : index)}
-              />
+              <AccordionItem key={index} value={`item-${index}`}>
+                <AccordionTrigger className="text-foreground text-sm md:text-base font-light">
+                  {item.question}
+                </AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-foreground text-sm font-light leading-relaxed">
+                    {item.answer}
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
             ))}
-          </div>
+          </Accordion>
         </div>
       </AnimatedSection>
 
       {/* ====== FINAL CTA ====== */}
       <AnimatedSection className="py-24 px-5 md:px-8 lg:px-16">
         <div className="max-w-[600px] mx-auto text-center">
-          <h2 className="text-white/90 text-2xl md:text-3xl font-light tracking-tight mb-4">
-            Sonunda bitirmeye hazır mısın?
+          <h2 className="text-foreground text-2xl md:text-4xl font-light tracking-tight mb-4">
+            Odak ve dikkat profilini keşfetmeye hazır mısın?
           </h2>
-          <p className="text-white/40 text-sm md:text-base font-light mb-8 max-w-[400px] mx-auto">
-            Projen yeterince bekledi. Hayata geçirmenin zamanı geldi.
+          <p className="text-muted-foreground text-base mb-10 max-w-[450px] mx-auto">
+            5 dakikalık ücretsiz test ile beyninin motivasyon, dikkat ve enerji sistemlerini anla.
           </p>
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.98 }}
-            className={cn(
-              "px-8 py-4 rounded-xl",
-              "bg-gradient-to-r from-[#FF6B6B] to-[#FF8E53]",
-              "text-white text-base font-medium",
-              "transition-all duration-300",
-              "hover:shadow-xl hover:shadow-[#FF6B6B]/25",
-              "flex items-center gap-3 mx-auto"
-            )}
+          <Link
+            href="/start"
+            className="group inline-flex flex-col items-center justify-center px-10 py-5 rounded-2xl bg-gradient-warm text-white hover:opacity-90 transition-all shadow-warm-lg hover:scale-[1.02]"
           >
-            <span>Koçunla eşleş</span>
-            <ArrowRight className="w-5 h-5" />
-          </motion.button>
+            <span className="flex items-center gap-2 text-lg font-bold tracking-wide">
+              TESTİ ÇÖZ
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </span>
+            <span className="text-white/80 text-sm font-normal mt-1">
+              erken erişim biletini kap
+            </span>
+          </Link>
         </div>
       </AnimatedSection>
 
-      {/* Footer */}
-      <footer className="py-12 px-5 md:px-8 border-t border-white/[0.04]">
-        <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#FF6B6B] to-[#FF8E53] flex items-center justify-center">
-              <Flame className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-white/50 text-sm font-medium">DopaLive</span>
-          </div>
-          <p className="text-white/20 text-xs font-light">
-            © 2024 DopaLive. Anlayan insanlar tarafından yapıldı.
-          </p>
-        </div>
-      </footer>
+      {/* Footer is provided by global SiteFooter from layout */}
     </main>
   );
 }

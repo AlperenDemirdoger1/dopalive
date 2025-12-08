@@ -10,7 +10,7 @@ interface BlogSearchProps {
   placeholder?: string;
 }
 
-export default function BlogSearch({ onSearch, placeholder = 'Search articles, tags, topics...' }: BlogSearchProps) {
+export default function BlogSearch({ onSearch, placeholder = 'Yazı, etiket, konu ara...' }: BlogSearchProps) {
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
 
@@ -41,15 +41,15 @@ export default function BlogSearch({ onSearch, placeholder = 'Search articles, t
       <div
         className={cn(
           "relative flex items-center gap-3 px-5 py-4 rounded-xl",
-          "bg-white/[0.03] border transition-all duration-300",
+          "glass transition-all duration-300",
           isFocused 
-            ? "border-[#f5d4a0]/30 bg-white/[0.05]" 
-            : "border-white/[0.06] hover:border-white/[0.1]"
+            ? "border-primary/40 bg-primary/5" 
+            : "border-border/60 hover:border-border/80"
         )}
       >
         <Search className={cn(
           "w-5 h-5 transition-colors duration-300",
-          isFocused ? "text-[#f5d4a0]/70" : "text-white/30"
+          isFocused ? "text-primary" : "text-muted-foreground"
         )} />
         
         <input
@@ -59,7 +59,7 @@ export default function BlogSearch({ onSearch, placeholder = 'Search articles, t
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder={placeholder}
-          className="flex-1 bg-transparent text-white text-base placeholder:text-white/30 focus:outline-none"
+          className="flex-1 bg-transparent text-foreground text-base placeholder:text-muted-foreground focus:outline-none"
         />
 
         <AnimatePresence>
@@ -69,9 +69,9 @@ export default function BlogSearch({ onSearch, placeholder = 'Search articles, t
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
               onClick={handleClear}
-              className="p-1 rounded-full hover:bg-white/[0.1] transition-colors"
+              className="p-1 rounded-full hover:bg-border/60 transition-colors focus-ring"
             >
-              <X className="w-4 h-4 text-white/50 hover:text-white/70" />
+              <X className="w-4 h-4 text-muted-foreground hover:text-foreground" />
             </motion.button>
           )}
         </AnimatePresence>
@@ -84,7 +84,7 @@ export default function BlogSearch({ onSearch, placeholder = 'Search articles, t
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 -z-10 rounded-xl bg-[#f5d4a0]/5 blur-xl"
+            className="absolute inset-0 -z-10 rounded-xl bg-primary/10 blur-xl"
           />
         )}
       </AnimatePresence>
@@ -103,4 +103,5 @@ function debounce<T extends (...args: Parameters<T>) => void>(
     timeout = setTimeout(() => func(...args), wait);
   };
 }
+
 

@@ -65,8 +65,8 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
           "flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300",
           "border",
           currentPage === 1
-            ? "border-white/[0.05] text-white/20 cursor-not-allowed"
-            : "border-white/[0.08] text-white/60 hover:border-white/[0.15] hover:text-white"
+            ? "border-border/50 text-muted-foreground/40 cursor-not-allowed"
+            : "border-border/70 text-muted-foreground hover:border-primary/40 hover:text-foreground"
         )}
       >
         <ChevronLeft className="w-4 h-4" />
@@ -80,7 +80,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
             return (
               <span
                 key={`ellipsis-${index}`}
-                className="px-2 text-white/30"
+                className="px-2 text-muted-foreground"
               >
                 ···
               </span>
@@ -97,14 +97,14 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
                 "relative w-10 h-10 rounded-lg text-sm font-medium transition-all duration-300",
                 "flex items-center justify-center",
                 isActive
-                  ? "text-[#f5d4a0]"
-                  : "text-white/50 hover:text-white/70"
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
               {isActive && (
                 <motion.div
                   layoutId="activePage"
-                  className="absolute inset-0 rounded-lg bg-[#f5d4a0]/10 border border-[#f5d4a0]/20"
+                  className="absolute inset-0 rounded-lg bg-primary/12 border border-primary/25"
                   transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                 />
               )}
@@ -122,8 +122,8 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
           "flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300",
           "border",
           currentPage === totalPages
-            ? "border-white/[0.05] text-white/20 cursor-not-allowed"
-            : "border-white/[0.08] text-white/60 hover:border-white/[0.15] hover:text-white"
+            ? "border-border/50 text-muted-foreground/40 cursor-not-allowed"
+            : "border-border/70 text-muted-foreground hover:border-primary/40 hover:text-foreground"
         )}
       >
         <span className="hidden sm:inline">Next</span>
@@ -177,4 +177,5 @@ export function LoadMoreButton({ onLoadMore, hasMore, loading = false }: LoadMor
     </motion.div>
   );
 }
+
 

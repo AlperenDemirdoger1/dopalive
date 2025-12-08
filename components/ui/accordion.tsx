@@ -96,7 +96,7 @@ const AccordionContent = React.forwardRef<
     )}
     {...props}
   >
-    <div className={cn("px-5 pb-5 pt-0 text-white/50 text-sm leading-relaxed", className)}>
+    <div className={cn("px-5 pb-5 pt-0 text-foreground text-sm leading-relaxed", className)}>
       {children}
     </div>
   </AccordionPrimitive.Content>
@@ -158,4 +158,5 @@ export {
   AccordionContent,
   FAQAccordion,
 };
+
 

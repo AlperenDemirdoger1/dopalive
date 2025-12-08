@@ -1,591 +1,913 @@
 /**
- * Quiz & Profile Types
- * Data models and logic for the ADHD Project Completion Quiz
+ * DopaLive - DEHB Dopamin Haritası Quiz Sistemi
+ * Nörokimyasal temelli, bilimsel DEHB değerlendirmesi
  * @module lib/quiz
  */
 
 // ============================================
-// TYPE DEFINITIONS
+// DOPAMIN PROFİL TİPLERİ
 // ============================================
 
-export type ProjectType =
-  | "app"
-  | "startup"
-  | "book"
-  | "portfolio"
-  | "course"
-  | "research"
-  | "music"
-  | "art"
-  | "video"
-  | "other";
+export type DopamineProfileType = 
+  | "seeker"      // Dopamin Avcısı - sürekli yenilik arayan
+  | "sprinter"    // Hız Koşucusu - kısa süreli yoğun odak
+  | "diver"       // Derin Dalıcı - hiperfokus eğilimli
+  | "juggler"     // Hokkabaz - çoklu görev seven
+  | "dreamer"     // Hayalci - iç dünyada kaybolabilen
+  | "reactor";    // Reaktör - dışsal uyaranlara duyarlı
 
-export type StuckStage = "start" | "middle" | "finish" | "restart";
+export type EnergyPattern = "morning" | "afternoon" | "evening" | "chaotic" | "unknown";
 
-export type SupportIntensity = "low" | "medium" | "high";
+export type RegulationStyle = "external" | "internal" | "mixed";
 
-export type PlanType = "free" | "membership" | "membership_pod";
+// ============================================
+// QUIZ SORU GRUPLARI
+// ============================================
 
-export interface ADHDPatterns {
-  taskInitiation: number; // 1-5 (1 = rarely struggle, 5 = always struggle)
-  timeBlindness: number; // 1-5
-  boredomThreshold: number; // 1-5 (how quickly you get bored)
-  perfectionism: number; // 1-5
-  contextSwitching: number; // 1-5 (difficulty returning to tasks)
+export interface QuizSection {
+  id: string;
+  title: string;
+  subtitle: string;
+  icon: string;
+  questions: QuizQuestion[];
 }
 
-export interface Environment {
-  hoursPerWeek: number;
-  stabilityLevel: number; // 1-5 (life stability)
-  hasSupportNetwork: boolean;
+export interface QuizQuestion {
+  id: string;
+  text: string;
+  subtext?: string;
+  type: "scale" | "single" | "multi" | "slider";
+  options?: QuizOption[];
+  scaleLabels?: { left: string; right: string };
+  category: "dopamine" | "attention" | "executive" | "emotion" | "time" | "energy" | "social";
 }
 
-export interface SupportPreference {
-  wantsPod: boolean;
-  wantsCoach: boolean;
-  preferredStyle: "gentle" | "direct";
-  communicationMode: "written" | "spoken" | "visual";
-  aiIntensity: SupportIntensity;
+export interface QuizOption {
+  id: string;
+  label: string;
+  emoji?: string;
+  description?: string;
+  value: number;
 }
+
+// ============================================
+// QUIZ CEVAPLARI
+// ============================================
 
 export interface QuizAnswers {
-  // Step 1: Project Context
-  projectType: ProjectType;
-  projectDescription?: string;
-  timeStuckMonths: number;
+  // Dopamin Sistemi
+  noveltySeekingScore: number;        // Yenilik arayışı (1-5)
+  rewardSensitivityScore: number;     // Ödül duyarlılığı (1-5)
+  boredomThresholdScore: number;      // Sıkılma eşiği (1-5)
+  delayedGratificationScore: number;  // Gecikmiş ödül toleransı (1-5)
   
-  // Step 2: Where You Get Stuck
-  stuckStage: StuckStage;
+  // Dikkat Düzenleme
+  sustainedAttentionScore: number;    // Sürdürülebilir dikkat (1-5)
+  selectiveAttentionScore: number;    // Seçici dikkat (1-5)
+  attentionShiftingScore: number;     // Dikkat geçişi (1-5)
+  hyperfocusFrequency: number;        // Hiperfokus sıklığı (1-5)
   
-  // Step 3: ADHD Patterns
-  adhdPatterns: ADHDPatterns;
+  // Yürütücü İşlevler
+  taskInitiationScore: number;        // Göreve başlama (1-5)
+  planningScore: number;              // Planlama (1-5)
+  workingMemoryScore: number;         // İşleyen bellek (1-5)
+  inhibitionScore: number;            // Dürtü kontrolü (1-5)
+  cognitiveFlexibilityScore: number;  // Bilişsel esneklik (1-5)
   
-  // Step 4: Emotional Landscape
-  emotions: string[];
-  identityStatements: {
-    trailOfUnfinished: number; // 1-5 agree/disagree
-    startStrongFadeOut: number;
-    fearJudgment: number;
-  };
+  // Duygusal Düzenleme
+  emotionalReactivityScore: number;   // Duygusal tepkisellik (1-5)
+  frustrationToleranceScore: number;  // Hayal kırıklığı toleransı (1-5)
+  rejectionSensitivityScore: number;  // Reddedilme duyarlılığı (1-5)
+  emotionalRecoveryScore: number;     // Duygusal toparlanma (1-5)
   
-  // Step 5: Environment & Constraints
-  environment: Environment;
+  // Zaman Algısı
+  timeBlindnessScore: number;         // Zaman körlüğü (1-5)
+  urgencyDependenceScore: number;     // Aciliyet bağımlılığı (1-5)
+  estimationAccuracyScore: number;    // Tahmin doğruluğu (1-5)
   
-  // Step 6: Support Preferences
-  supportPreference: SupportPreference;
+  // Enerji Kalıpları
+  energyPattern: EnergyPattern;
+  energyConsistencyScore: number;     // Enerji tutarlılığı (1-5)
+  peakHours: string[];                // En verimli saatler
   
-  // Step 7: Commitment
-  commitmentStatement?: string;
-  flagshipProject?: string;
+  // Sosyal & Çevresel
+  externalStructureNeed: number;      // Dış yapı ihtiyacı (1-5)
+  socialAccountabilityScore: number;  // Sosyal hesap verebilirlik (1-5)
+  environmentSensitivityScore: number;// Çevre duyarlılığı (1-5)
+  
+  // Temel Bilgiler
+  ageRange: string;
+  diagnosisStatus: "diagnosed" | "suspected" | "exploring" | "none";
+  currentChallenges: string[];
+  goals: string[];
 }
 
 // ============================================
-// ARCHETYPE DEFINITIONS
+// QUIZ BÖLÜM TANIMLARI
 // ============================================
 
-export type ArchetypeKey = 
-  | "spark_launcher" 
-  | "deep_diver" 
-  | "last_mile_drifter" 
-  | "multi_tab_juggler"
-  | "perfectionist_paralysis"
-  | "momentum_rider";
+export const QUIZ_SECTIONS: QuizSection[] = [
+  {
+    id: "intro",
+    title: "Hoş Geldin",
+    subtitle: "Dopamin haritanı keşfetmeye hazır mısın?",
+    icon: "🧠",
+    questions: []
+  },
+  {
+    id: "dopamine",
+    title: "Dopamin Sistemi",
+    subtitle: "Beyninin motivasyon ve ödül mekanizmalarını anlayalım",
+    icon: "⚡",
+    questions: [
+      {
+        id: "novelty_seeking",
+        text: "Yeni bir şey keşfetmek bana enerji verir.",
+        subtext: "Yeni hobiler, fikirler, yerler...",
+        type: "scale",
+        scaleLabels: { left: "Nadiren", right: "Her zaman" },
+        category: "dopamine"
+      },
+      {
+        id: "reward_sensitivity",
+        text: "Küçük ödüller bile motivasyonumu artırır.",
+        subtext: "İlerleme çubuğu, rozet, tamamlama hissi...",
+        type: "scale",
+        scaleLabels: { left: "Etkilemez", right: "Çok etkiler" },
+        category: "dopamine"
+      },
+      {
+        id: "boredom_threshold",
+        text: "Monoton işlerde çabuk sıkılırım.",
+        type: "scale",
+        scaleLabels: { left: "Hayır", right: "Çok çabuk" },
+        category: "dopamine"
+      },
+      {
+        id: "delayed_gratification",
+        text: "Uzun vadeli ödüller için beklemek bana zor gelir.",
+        subtext: "Sonucu hemen görmek istiyorum",
+        type: "scale",
+        scaleLabels: { left: "Kolay beklerim", right: "Çok zor" },
+        category: "dopamine"
+      },
+      {
+        id: "interest_intensity",
+        text: "İlgi duyduğum konularda kendimi kaybederim.",
+        type: "scale",
+        scaleLabels: { left: "Nadiren", right: "Sık sık" },
+        category: "dopamine"
+      }
+    ]
+  },
+  {
+    id: "attention",
+    title: "Dikkat Düzenleme",
+    subtitle: "Dikkatini nasıl yönettiğini inceleyelim",
+    icon: "🎯",
+    questions: [
+      {
+        id: "sustained_attention",
+        text: "Sıkıcı ama gerekli işlere uzun süre odaklanabilirim.",
+        type: "scale",
+        scaleLabels: { left: "Çok zor", right: "Kolaylıkla" },
+        category: "attention"
+      },
+      {
+        id: "selective_attention",
+        text: "Çevremdeki dikkat dağıtıcıları kolayca görmezden gelirim.",
+        subtext: "Sesler, bildirimler, insanlar...",
+        type: "scale",
+        scaleLabels: { left: "Çok zor", right: "Kolaylıkla" },
+        category: "attention"
+      },
+      {
+        id: "attention_shifting",
+        text: "Bir işten diğerine geçiş yapmak beni yorar.",
+        type: "scale",
+        scaleLabels: { left: "Hiç yormaz", right: "Çok yorar" },
+        category: "attention"
+      },
+      {
+        id: "hyperfocus",
+        text: "Bazen saatlerce bir şeye odaklanıp zamanı kaybederim.",
+        subtext: "\"Hiperfokus\" deneyimi",
+        type: "scale",
+        scaleLabels: { left: "Hiç olmaz", right: "Çok sık" },
+        category: "attention"
+      },
+      {
+        id: "mind_wandering",
+        text: "Zihinsel olarak başka yerlere kayma sıklığım.",
+        type: "scale",
+        scaleLabels: { left: "Nadiren", right: "Sürekli" },
+        category: "attention"
+      }
+    ]
+  },
+  {
+    id: "executive",
+    title: "Yürütücü İşlevler",
+    subtitle: "Planlama, organize olma ve başlatma becerilerin",
+    icon: "🗂️",
+    questions: [
+      {
+        id: "task_initiation",
+        text: "Bir işe başlamak, yapmaktan daha zor geliyor.",
+        subtext: "Ne yapacağımı bilsem bile başlayamıyorum",
+        type: "scale",
+        scaleLabels: { left: "Hayır", right: "Kesinlikle" },
+        category: "executive"
+      },
+      {
+        id: "planning",
+        text: "Karmaşık projeleri adımlara bölmekte zorlanırım.",
+        type: "scale",
+        scaleLabels: { left: "Kolaylıkla bölerim", right: "Çok zorlanırım" },
+        category: "executive"
+      },
+      {
+        id: "working_memory",
+        text: "Aklımda birden fazla şeyi tutmak zor.",
+        subtext: "Söylenenleri, yapılacakları, tarihleri...",
+        type: "scale",
+        scaleLabels: { left: "Kolay", right: "Çok zor" },
+        category: "executive"
+      },
+      {
+        id: "inhibition",
+        text: "Aklıma geleni hemen söyler/yaparım.",
+        subtext: "Dürtüsellik",
+        type: "scale",
+        scaleLabels: { left: "Önce düşünürüm", right: "Hemen hareket" },
+        category: "executive"
+      },
+      {
+        id: "flexibility",
+        text: "Plan değişiklikleri beni strese sokar.",
+        type: "scale",
+        scaleLabels: { left: "Rahatça uyum sağlarım", right: "Çok zorlanırım" },
+        category: "executive"
+      },
+      {
+        id: "prioritization",
+        text: "Neyin önemli olduğuna karar vermek zor.",
+        subtext: "Her şey acil gibi hissediyorum",
+        type: "scale",
+        scaleLabels: { left: "Kolaylıkla belirlerim", right: "Çok zorlanırım" },
+        category: "executive"
+      }
+    ]
+  },
+  {
+    id: "emotion",
+    title: "Duygusal Düzenleme",
+    subtitle: "Duygularını nasıl deneyimlediğini anlayalım",
+    icon: "💫",
+    questions: [
+      {
+        id: "emotional_intensity",
+        text: "Duygularım yoğun ve ani değişebiliyor.",
+        type: "scale",
+        scaleLabels: { left: "Dengeli hissederim", right: "Çok yoğun" },
+        category: "emotion"
+      },
+      {
+        id: "frustration_tolerance",
+        text: "İşler ters gittiğinde çabuk sinirlenirim.",
+        type: "scale",
+        scaleLabels: { left: "Sakin kalırım", right: "Hemen tepki veririm" },
+        category: "emotion"
+      },
+      {
+        id: "rejection_sensitivity",
+        text: "Eleştiri veya reddedilme beni derinden etkiler.",
+        subtext: "Reddedilme duyarlılığı (RSD)",
+        type: "scale",
+        scaleLabels: { left: "Az etkiler", right: "Çok etkiler" },
+        category: "emotion"
+      },
+      {
+        id: "emotional_recovery",
+        text: "Olumsuz duygulardan toparlanmam uzun sürer.",
+        type: "scale",
+        scaleLabels: { left: "Çabuk toplarım", right: "Uzun sürer" },
+        category: "emotion"
+      },
+      {
+        id: "overwhelm_frequency",
+        text: "Bunalmış hissetme sıklığım.",
+        type: "scale",
+        scaleLabels: { left: "Nadiren", right: "Sık sık" },
+        category: "emotion"
+      }
+    ]
+  },
+  {
+    id: "time",
+    title: "Zaman Algısı",
+    subtitle: "Zamanla ilişkini inceleyelim",
+    icon: "⏰",
+    questions: [
+      {
+        id: "time_blindness",
+        text: "Zaman su gibi akıp gidiyor, fark etmiyorum.",
+        subtext: "\"Zaman körlüğü\" deneyimi",
+        type: "scale",
+        scaleLabels: { left: "Zamanı iyi takip ederim", right: "Sürekli yaşarım" },
+        category: "time"
+      },
+      {
+        id: "urgency_dependence",
+        text: "Son dakikaya kalmadan motive olamıyorum.",
+        subtext: "Aciliyet bağımlılığı",
+        type: "scale",
+        scaleLabels: { left: "Önceden başlarım", right: "Hep son dakika" },
+        category: "time"
+      },
+      {
+        id: "estimation",
+        text: "İşlerin ne kadar süreceğini tahmin etmek zor.",
+        type: "scale",
+        scaleLabels: { left: "İyi tahmin ederim", right: "Hep yanılırım" },
+        category: "time"
+      },
+      {
+        id: "punctuality",
+        text: "Randevulara/toplantılara zamanında yetişirim.",
+        type: "scale",
+        scaleLabels: { left: "Genelde geç kalırım", right: "Her zaman zamanında" },
+        category: "time"
+      }
+    ]
+  },
+  {
+    id: "energy",
+    title: "Enerji Kalıpları",
+    subtitle: "Günlük enerji ritmini keşfedelim",
+    icon: "🔋",
+    questions: [
+      {
+        id: "energy_consistency",
+        text: "Enerji seviyem gün içinde tutarlı.",
+        type: "scale",
+        scaleLabels: { left: "Çok değişken", right: "Tutarlı" },
+        category: "energy"
+      },
+      {
+        id: "energy_pattern",
+        text: "En enerjik olduğum zaman dilimi:",
+        type: "single",
+        options: [
+          { id: "morning", label: "Sabah (06-12)", emoji: "🌅", value: 1 },
+          { id: "afternoon", label: "Öğleden sonra (12-18)", emoji: "☀️", value: 2 },
+          { id: "evening", label: "Akşam/Gece (18-00)", emoji: "🌙", value: 3 },
+          { id: "chaotic", label: "Değişken/Tahmin edilemez", emoji: "🎲", value: 4 },
+          { id: "unknown", label: "Bilmiyorum", emoji: "❓", value: 5 }
+        ],
+        category: "energy"
+      },
+      {
+        id: "crash_frequency",
+        text: "Gün içinde enerji çöküşü yaşama sıklığım.",
+        type: "scale",
+        scaleLabels: { left: "Nadiren", right: "Her gün" },
+        category: "energy"
+      },
+      {
+        id: "sleep_impact",
+        text: "Uyku düzenim enerji seviyemi çok etkiler.",
+        type: "scale",
+        scaleLabels: { left: "Az etkiler", right: "Çok etkiler" },
+        category: "energy"
+      }
+    ]
+  },
+  {
+    id: "environment",
+    title: "Çevre & Sosyal",
+    subtitle: "Çevrenin ve diğerlerinin etkisi",
+    icon: "🌍",
+    questions: [
+      {
+        id: "external_structure",
+        text: "Dış yapı olmadan (deadline, takip) üretken olmam zor.",
+        type: "scale",
+        scaleLabels: { left: "Kendi kendime yaparım", right: "Dış yapı şart" },
+        category: "social"
+      },
+      {
+        id: "accountability",
+        text: "Birine söz verdiğimde daha iyi performans gösteririm.",
+        type: "scale",
+        scaleLabels: { left: "Fark etmez", right: "Çok fark eder" },
+        category: "social"
+      },
+      {
+        id: "environment_sensitivity",
+        text: "Çalışma ortamı (ses, ışık, düzen) performansımı etkiler.",
+        type: "scale",
+        scaleLabels: { left: "Az etkiler", right: "Çok etkiler" },
+        category: "social"
+      },
+      {
+        id: "body_doubling",
+        text: "Yanımda biri varken çalışmak daha kolay.",
+        subtext: "Body doubling etkisi",
+        type: "scale",
+        scaleLabels: { left: "Fark etmez", right: "Çok yardımcı" },
+        category: "social"
+      }
+    ]
+  },
+  {
+    id: "context",
+    title: "Senin Hikayenı",
+    subtitle: "Seni daha iyi anlamamıza yardımcı ol",
+    icon: "📖",
+    questions: [
+      {
+        id: "diagnosis_status",
+        text: "DEHB tanı durumun:",
+        type: "single",
+        options: [
+          { id: "diagnosed", label: "Tanı aldım", emoji: "✅", value: 1 },
+          { id: "suspected", label: "Şüpheleniyorum", emoji: "🤔", value: 2 },
+          { id: "exploring", label: "Araştırıyorum", emoji: "🔍", value: 3 },
+          { id: "none", label: "Sadece merak", emoji: "💭", value: 4 }
+        ],
+        category: "social"
+      },
+      {
+        id: "age_range",
+        text: "Yaş aralığın:",
+        type: "single",
+        options: [
+          { id: "18-24", label: "18-24", emoji: "🎓", value: 1 },
+          { id: "25-34", label: "25-34", emoji: "💼", value: 2 },
+          { id: "35-44", label: "35-44", emoji: "🏠", value: 3 },
+          { id: "45+", label: "45+", emoji: "🌟", value: 4 }
+        ],
+        category: "social"
+      },
+      {
+        id: "main_challenges",
+        text: "En çok zorlandığın alanlar (birden fazla seçebilirsin):",
+        type: "multi",
+        options: [
+          { id: "focus", label: "Odaklanma", emoji: "🎯", value: 1 },
+          { id: "motivation", label: "Motivasyon", emoji: "🔥", value: 2 },
+          { id: "organization", label: "Organizasyon", emoji: "📁", value: 3 },
+          { id: "time", label: "Zaman yönetimi", emoji: "⏰", value: 4 },
+          { id: "emotions", label: "Duygusal düzenleme", emoji: "💫", value: 5 },
+          { id: "relationships", label: "İlişkiler", emoji: "👥", value: 6 },
+          { id: "sleep", label: "Uyku", emoji: "😴", value: 7 },
+          { id: "work", label: "İş/Kariyer", emoji: "💼", value: 8 }
+        ],
+        category: "social"
+      },
+      {
+        id: "goals",
+        text: "DopaLive'dan beklentilerin (birden fazla seçebilirsin):",
+        type: "multi",
+        options: [
+          { id: "understand", label: "Kendimi anlamak", emoji: "🧠", value: 1 },
+          { id: "strategies", label: "Pratik stratejiler", emoji: "🛠️", value: 2 },
+          { id: "coaching", label: "Koçluk desteği", emoji: "🎯", value: 3 },
+          { id: "community", label: "Topluluk/Destek", emoji: "👥", value: 4 },
+          { id: "tools", label: "Dijital araçlar", emoji: "📱", value: 5 },
+          { id: "science", label: "Bilimsel bilgi", emoji: "🔬", value: 6 }
+        ],
+        category: "social"
+      }
+    ]
+  }
+];
 
-export interface Archetype {
-  key: ArchetypeKey;
-  displayName: string;
+// ============================================
+// DOPAMİN PROFİL ARKETİPLERİ
+// ============================================
+
+export interface DopamineArchetype {
+  key: DopamineProfileType;
+  name: string;
   emoji: string;
   tagline: string;
   description: string;
+  neuroscienceInsight: string;
   strengths: string[];
-  traps: string[];
-  whatThisMeans: string[];
-  primaryStuckStage: StuckStage;
-  focusAreas: string[];
+  challenges: string[];
+  strategies: string[];
+  idealCoachingStyle: string;
   recommendedTools: string[];
-  coachingStyle: string;
 }
 
-export const ARCHETYPES: Record<ArchetypeKey, Archetype> = {
-  spark_launcher: {
-    key: "spark_launcher",
-    displayName: "Spark Launcher",
-    emoji: "✨",
-    tagline: "You light fires everywhere—but who's tending the flames?",
-    description: "You're brilliant at starting things. The initial excitement, the vision, the first sprint of creation—that's your superpower. But somewhere between 'great idea!' and 'almost done,' the spark fades and something newer catches your eye.",
+export const DOPAMINE_ARCHETYPES: Record<DopamineProfileType, DopamineArchetype> = {
+  seeker: {
+    key: "seeker",
+    name: "Dopamin Avcısı",
+    emoji: "🔮",
+    tagline: "Yenilik senin yakıtın",
+    description: "Beynin sürekli yeni uyaranlar arıyor. Keşfetmek, öğrenmek ve yenilik seni motive ediyor. Rutin ve monotonluk düşmanın, çeşitlilik en iyi arkadaşın.",
+    neuroscienceInsight: "Dopamin reseptörlerinin yenilik uyaranlarına yüksek duyarlılığı var. Bu, D4 reseptör aktivitesiyle ilişkili olabilir - araştırmalar 'yenilik arayışı' genlerinin DEHB'de daha yaygın olduğunu gösteriyor.",
     strengths: [
-      "Exceptional at generating ideas and seeing possibilities",
-      "High energy in the early creative phases",
-      "Natural ability to inspire others and get buy-in",
-      "Quick learner who picks up new skills fast"
+      "Yaratıcı problem çözme",
+      "Hızlı öğrenme kapasitesi",
+      "Girişimci ruh",
+      "Çok yönlü ilgi alanları",
+      "Değişime uyum sağlama"
     ],
-    traps: [
-      "Chasing the dopamine of 'new' over the satisfaction of 'done'",
-      "Starting 5 projects when 1 is struggling",
-      "Underestimating the 'boring middle' phase",
-      "Confusing motion with progress"
+    challenges: [
+      "Projeleri bitirmek",
+      "Rutin işlere odaklanmak",
+      "Taahhütlere sadık kalmak",
+      "Parlak obje sendromu",
+      "Uzun vadeli planlama"
     ],
-    whatThisMeans: [
-      "Your brain craves novelty—this is neurological, not a character flaw",
-      "You likely have a 'project graveyard' of things that are 10-30% done",
-      "The transition from starting to sustaining is where you need the most support"
+    strategies: [
+      "Rutin görevlere 'yenilik enjeksiyonları' ekle",
+      "Mikro-değişikliklerle monotonluğu kır",
+      "Öğrenme hedeflerini işlere entegre et",
+      "Gamifikasyon kullan"
     ],
-    primaryStuckStage: "start",
-    focusAreas: ["Task Initiation Rituals", "Novelty Injection", "Commitment Devices"],
-    recommendedTools: ["AI State Coach", "Streak Tracking", "Body Doubling"],
-    coachingStyle: "Needs regular novelty injections and milestone celebrations to maintain engagement"
+    idealCoachingStyle: "Dinamik, çeşitli yaklaşımlar; sık geri bildirim; yeni stratejiler denemeye açık",
+    recommendedTools: ["Rastgele görev seçici", "Öğrenme izleyici", "Streak sistemi"]
   },
-  
-  deep_diver: {
-    key: "deep_diver",
-    displayName: "Deep Diver",
+  sprinter: {
+    key: "sprinter",
+    name: "Hız Koşucusu",
+    emoji: "⚡",
+    tagline: "Kısa mesafe şampiyonu",
+    description: "Yoğun, kısa süreli çalışma dönemlerinde parlıyorsun. Uzun maratonlar değil, sprint'ler senin için. Aciliyet seni harekete geçiriyor.",
+    neuroscienceInsight: "Prefrontal korteks aktivasyonu kısa süreli yoğunlukta optimal. Norepinefrin ve dopamin seviyeleri 'aciliyet' durumunda dengeleniyor - bu yüzden deadline'lar motivasyon kaynağı.",
+    strengths: [
+      "Kriz anında performans",
+      "Hızlı karar verme",
+      "Yoğun üretkenlik dönemleri",
+      "Son dakika başarıları",
+      "Baskı altında yaratıcılık"
+    ],
+    challenges: [
+      "Uzun vadeli projeler",
+      "Tutarlı çalışma ritmi",
+      "Erken başlamak",
+      "Enerji yönetimi",
+      "Tükenmişlik riski"
+    ],
+    strategies: [
+      "Yapay deadline'lar oluştur",
+      "Pomodoro tekniği (kısa sprint'ler)",
+      "Büyük görevleri mikro-sprint'lere böl",
+      "Toparlanma süreleri planla"
+    ],
+    idealCoachingStyle: "Kısa, yoğun seanslar; somut hedefler; enerji döngülerini takip",
+    recommendedTools: ["Sprint zamanlayıcı", "Deadline oluşturucu", "Enerji takibi"]
+  },
+  diver: {
+    key: "diver",
+    name: "Derin Dalıcı",
     emoji: "🌊",
-    tagline: "You go deep—sometimes too deep to come back up.",
-    description: "When you're in, you're ALL in. You can spend hours in hyperfocus, making incredible progress. But context switching is your kryptonite, and when you surface from one deep dive, getting back to another project feels impossible.",
+    tagline: "Derinliklerin efendisi",
+    description: "Hiperfokus senin süper gücün. İlgini çeken konularda saatlerce kaybolabiliyorsun. Sorun: yüzeye çıkmak ve geçiş yapmak.",
+    neuroscienceInsight: "Güçlü hiperfokus kapasitesi, prefrontal korteksin belirli uyaranlara 'kilitlenmesiyle' ilişkili. Default mode network ve task-positive network arasındaki geçişlerde zorlanma tipik.",
     strengths: [
-      "Incredible depth of focus when engaged",
-      "Produce high-quality, detailed work",
-      "Can maintain complex systems in your head",
-      "Patient with challenging problems"
+      "Derin uzmanlık geliştirme",
+      "Kaliteli, detaylı iş çıkarma",
+      "Karmaşık problemlerde sebat",
+      "Tutku odaklı öğrenme",
+      "Flow state kolaylığı"
     ],
-    traps: [
-      "Losing track of time during hyperfocus sessions",
-      "Difficulty transitioning between tasks",
-      "Getting lost in details while missing deadlines",
-      "Exhaustion from intense focus cycles"
+    challenges: [
+      "Görevler arası geçiş",
+      "Zaman algısı kayması",
+      "Önceliklendirme",
+      "İhtiyaçları ihmal etme",
+      "Geri çekilme zorluğu"
     ],
-    whatThisMeans: [
-      "Your hyperfocus is a feature, not a bug—but it needs guardrails",
-      "Context switching costs you more mental energy than neurotypical brains",
-      "You need systems for surfacing, not just diving"
+    strategies: [
+      "Geçiş ritüelleri oluştur",
+      "Zamanlayıcı hatırlatmaları",
+      "'Surface break' planla",
+      "Öncelik matrisi kullan"
     ],
-    primaryStuckStage: "middle",
-    focusAreas: ["Energy Management", "Transition Rituals", "Time Scaffolding"],
-    recommendedTools: ["Energy Mapping", "Focus Timer", "Task Batching"],
-    coachingStyle: "Needs help with transitions and energy management, protection from over-diving"
+    idealCoachingStyle: "Derinlik sağlayan ama yüzey çıkışlarını destekleyen; geçiş stratejileri odaklı",
+    recommendedTools: ["Akıllı hatırlatıcılar", "Geçiş zamanlayıcısı", "Öncelik matrisi"]
   },
-  
-  last_mile_drifter: {
-    key: "last_mile_drifter",
-    displayName: "Last-Mile Drifter",
-    emoji: "🏁",
-    tagline: "80% done but might as well be 0.",
-    description: "You can get projects to 80%, 90%, even 95% complete. But that final stretch? It haunts you. The polish, the shipping, the 'putting it out there'—something always blocks you right before the finish line.",
-    strengths: [
-      "Strong ability to build and create substantial work",
-      "Consistent at making progress in the middle phases",
-      "Good at the technical/creative aspects",
-      "Often produce near-complete, high-quality work"
-    ],
-    traps: [
-      "Perfectionism disguised as 'just one more thing'",
-      "Fear of judgment once it's 'real'",
-      "Adding scope instead of finishing",
-      "The emotional weight of 'almost done' paralysis"
-    ],
-    whatThisMeans: [
-      "Finishing triggers vulnerability—your brain is protecting you",
-      "The gap between 90% and 100% is emotional, not technical",
-      "You need accountability and permission to ship 'good enough'"
-    ],
-    primaryStuckStage: "finish",
-    focusAreas: ["Shipping Rituals", "Perfectionism Detox", "Emotional Safety"],
-    recommendedTools: ["Pod Accountability", "Launch Checklists", "Coach Support"],
-    coachingStyle: "Needs permission to ship imperfect work and celebration of completion over perfection"
-  },
-  
-  multi_tab_juggler: {
-    key: "multi_tab_juggler",
-    displayName: "Multi-Tab Juggler",
+  juggler: {
+    key: "juggler",
+    name: "Hokkabaz",
     emoji: "🎪",
-    tagline: "50 tabs open, 50 projects started, 50 reasons why.",
-    description: "Your brain runs on parallel processing. You have multiple projects at various stages, and you're constantly cycling between them. The problem isn't starting or finishing—it's the chaos of managing it all.",
+    tagline: "Çoklu görev virtüözü",
+    description: "Aynı anda birden fazla şeyle uğraşmak seni motive ediyor. Tek bir şeye odaklanmak sıkıcı, çeşitlilik şart. Sorun: hiçbirini bitirememek.",
+    neuroscienceInsight: "Çoklu uyaran işleme kapasitesi yüksek. Ancak bu 'paralel işleme' illüzyonu olabilir - aslında hızlı geçişler yapıyorsun. Bu geçişler bilişsel kaynak tüketiyor.",
     strengths: [
-      "Ability to maintain multiple complex projects",
-      "Flexible and adaptable thinking",
-      "Good at finding connections between different work",
-      "Thrives with variety and stimulation"
+      "Çoklu proje yönetimi",
+      "Esneklik",
+      "Bağlantı kurma yeteneği",
+      "Çeşitli beceriler",
+      "Adaptasyon"
     ],
-    traps: [
-      "Spreading energy too thin across too many projects",
-      "Using switching as avoidance",
-      "Losing track of where you left off",
-      "Everything feels urgent, nothing feels important"
+    challenges: [
+      "Tamamlama oranı",
+      "Derinlik vs genişlik",
+      "Bilişsel yorgunluk",
+      "Önceliklendirme",
+      "Dağılma"
     ],
-    whatThisMeans: [
-      "Your brain needs variety—but it's overshooting",
-      "You need a system for tracking and prioritizing, not more willpower",
-      "Strategic constraint (1-2 flagship projects) could unlock everything"
+    strategies: [
+      "Maksimum 3 aktif proje kuralı",
+      "Tema günleri (aynı tip işler)",
+      "Bilinçli geçiş noktaları",
+      "İlerleme görselleştirmesi"
     ],
-    primaryStuckStage: "restart",
-    focusAreas: ["Project Triage", "Priority Clarity", "Constraint Setting"],
-    recommendedTools: ["Flagship Focus", "Weekly Reviews", "AI Prioritization"],
-    coachingStyle: "Needs help constraining and prioritizing, with variety built into the constraint"
+    idealCoachingStyle: "Yapı sağlayan ama çeşitliliğe izin veren; önceliklendirme desteği",
+    recommendedTools: ["Proje portföyü", "Tema planlayıcı", "İlerleme panosu"]
   },
-  
-  perfectionist_paralysis: {
-    key: "perfectionist_paralysis",
-    displayName: "Perfectionist in Paralysis",
-    emoji: "💎",
-    tagline: "If it can't be perfect, why start?",
-    description: "Your standards are high—sometimes impossibly high. This has produced amazing work in the past, but it also means projects stall because 'not good enough' feels worse than 'not done.'",
+  dreamer: {
+    key: "dreamer",
+    name: "Hayalci",
+    emoji: "💭",
+    tagline: "İç evrenin sonsuz",
+    description: "Zengin bir iç dünyan var. Hayal kurmak, planlamak, düşünmek seni tatmin ediyor. Bazen dış dünyaya dönmek ve eyleme geçmek zorlaşıyor.",
+    neuroscienceInsight: "Default Mode Network (DMN) aktivitesi yüksek. Bu yaratıcılık ve introspeksiyonla ilişkili ama dış görevlere odaklanmayı zorlaştırabilir. Zihin gezintisi sık ve yoğun.",
     strengths: [
-      "High standards that produce quality work",
-      "Attention to detail others miss",
-      "Strong vision for what 'great' looks like",
-      "Take pride in craftsmanship"
+      "Yaratıcı vizyon",
+      "Büyük resmi görme",
+      "İç motivasyon",
+      "Empati ve duyarlılık",
+      "Özgün düşünce"
     ],
-    traps: [
-      "Paralysis from impossibly high standards",
-      "All-or-nothing thinking about progress",
-      "Avoiding starting things you can't do perfectly",
-      "Spending 80% of time on 20% of impact"
+    challenges: [
+      "Eyleme geçmek",
+      "Pratik detaylar",
+      "Dikkat dağılması (içsel)",
+      "Somut çıktılar",
+      "Dış dünyayla bağlantı"
     ],
-    whatThisMeans: [
-      "Perfectionism is often anxiety wearing a productivity mask",
-      "Your brain uses 'not perfect' as protection from judgment",
-      "You need permission and practice shipping 'good enough'"
+    strategies: [
+      "Hayal-eylem köprüleri kur",
+      "Mikro-eylemlerle başla",
+      "Düşünceleri yakalama sistemi",
+      "Dış hesap verebilirlik"
     ],
-    primaryStuckStage: "start",
-    focusAreas: ["Minimum Viable Mindset", "Anxiety Management", "Progress Over Perfection"],
-    recommendedTools: ["Rough Draft Mode", "Time-Boxing", "Pod Reality Checks"],
-    coachingStyle: "Needs gentle but firm encouragement to ship imperfect work and reframe 'good enough'"
+    idealCoachingStyle: "Vizyon destekleyen ama eyleme taşıyan; düşünce-aksiyon bağlantısı kuran",
+    recommendedTools: ["Düşünce yakalayıcı", "Mikro-görev oluşturucu", "Vizyon panosu"]
   },
-  
-  momentum_rider: {
-    key: "momentum_rider",
-    displayName: "Momentum Rider",
-    emoji: "🌀",
-    tagline: "When you're on, you're unstoppable. When you're off, you're stuck.",
-    description: "Your productivity comes in waves. When momentum is there, you can move mountains. But when it's gone, even small tasks feel impossible. The challenge is building systems that work in both states.",
+  reactor: {
+    key: "reactor",
+    name: "Reaktör",
+    emoji: "🎯",
+    tagline: "Tepki gücü yüksek",
+    description: "Dış uyaranlara güçlü tepki veriyorsun. Çevre, insanlar, olaylar seni derinden etkiliyor. Bu duyarlılık hem güç hem zorluk.",
+    neuroscienceInsight: "Amigdala ve duygusal işleme merkezleri daha reaktif. Çevresel uyaranlara ve sosyal ipuçlarına yüksek duyarlılık. Duygusal düzenleme prefrontal korteks desteği gerektiriyor.",
     strengths: [
-      "Incredibly productive during 'on' periods",
-      "Can accomplish huge amounts when conditions are right",
-      "Understand your patterns when you pay attention",
-      "Resilient—you always come back eventually"
+      "Çevresel farkındalık",
+      "Empati kapasitesi",
+      "Hızlı tepki verme",
+      "Sosyal duyarlılık",
+      "Enerji okuma"
     ],
-    traps: [
-      "No systems for 'off' days",
-      "Waiting for motivation instead of creating it",
-      "Boom-bust cycles that burn you out",
-      "Shame spirals when momentum drops"
+    challenges: [
+      "Uyaran yönetimi",
+      "Duygusal düzenleme",
+      "Aşırı uyarılma",
+      "Gürültü/kaos toleransı",
+      "Sınır koyma"
     ],
-    whatThisMeans: [
-      "Your energy is variable—this is ADHD, not laziness",
-      "You need different systems for high and low energy states",
-      "External structure can create momentum when internal drive is low"
+    strategies: [
+      "Çevre optimizasyonu",
+      "Uyaran azaltma protokolleri",
+      "Duygusal düzenleme teknikleri",
+      "Enerji koruyan sınırlar"
     ],
-    primaryStuckStage: "middle",
-    focusAreas: ["Energy State Awareness", "Low-Energy Protocols", "Sustainable Pacing"],
-    recommendedTools: ["Energy Mapping", "State-Based Task Lists", "Body Doubling"],
-    coachingStyle: "Needs state-aware support that adapts to current energy levels"
+    idealCoachingStyle: "Sakin, destekleyici; çevre stratejileri odaklı; duygu düzenleme desteği",
+    recommendedTools: ["Ortam kontrolü", "Duygu izleyici", "Sınır planlayıcı"]
   }
 };
 
 // ============================================
-// EMOTION OPTIONS
+// PROFİL HESAPLAMA
 // ============================================
 
-export const EMOTION_OPTIONS = [
-  { id: "hope", label: "Hope", emoji: "🌱" },
-  { id: "guilt", label: "Guilt", emoji: "😔" },
-  { id: "shame", label: "Shame", emoji: "😞" },
-  { id: "excitement", label: "Excitement", emoji: "✨" },
-  { id: "fear", label: "Fear of failure", emoji: "😰" },
-  { id: "frustration", label: "Frustration", emoji: "😤" },
-  { id: "overwhelm", label: "Overwhelm", emoji: "🌊" },
-  { id: "determination", label: "Determination", emoji: "💪" },
-  { id: "curiosity", label: "Curiosity", emoji: "🤔" },
-  { id: "anxiety", label: "Anxiety", emoji: "😬" },
-  { id: "relief", label: "Relief (it's almost over)", emoji: "😮‍💨" },
-  { id: "pride", label: "Pride (in what you've built)", emoji: "🎯" },
-];
-
-// ============================================
-// PROJECT TYPE OPTIONS
-// ============================================
-
-export const PROJECT_TYPE_OPTIONS = [
-  { id: "app", label: "App or Software", emoji: "📱", description: "Mobile app, web app, or software project" },
-  { id: "startup", label: "Startup / Business", emoji: "🚀", description: "Building a company or side business" },
-  { id: "book", label: "Book / Writing", emoji: "📚", description: "Novel, non-fiction, blog, or content" },
-  { id: "portfolio", label: "Portfolio / Personal Brand", emoji: "💼", description: "Website, portfolio, or personal brand" },
-  { id: "course", label: "Course / Educational", emoji: "🎓", description: "Online course, workshop, or educational content" },
-  { id: "research", label: "Research / Academic", emoji: "🔬", description: "Thesis, paper, or research project" },
-  { id: "music", label: "Music / Audio", emoji: "🎵", description: "Album, EP, podcast, or audio project" },
-  { id: "art", label: "Art / Design", emoji: "🎨", description: "Visual art, design, or creative project" },
-  { id: "video", label: "Video / Film", emoji: "🎬", description: "YouTube, film, documentary, or video content" },
-  { id: "other", label: "Something Else", emoji: "✨", description: "A different kind of creative project" },
-];
-
-// ============================================
-// STUCK STAGE OPTIONS
-// ============================================
-
-export const STUCK_STAGE_OPTIONS = [
-  { 
-    id: "start" as StuckStage, 
-    label: "Starting", 
-    emoji: "🚦",
-    description: "I struggle to begin. The blank page haunts me.",
-    detail: "Great ideas, but getting the first momentum is the hardest part."
-  },
-  { 
-    id: "middle" as StuckStage, 
-    label: "The Messy Middle", 
-    emoji: "🌫️",
-    description: "I start strong but lose steam around 30-60%.",
-    detail: "The initial excitement fades, and the finish line feels too far."
-  },
-  { 
-    id: "finish" as StuckStage, 
-    label: "The Last 10%", 
-    emoji: "🏁",
-    description: "I get to 80-90% but can't seem to ship.",
-    detail: "Almost there, but something keeps me from crossing the finish line."
-  },
-  { 
-    id: "restart" as StuckStage, 
-    label: "Constant Restarting", 
-    emoji: "🔄",
-    description: "I keep pivoting or starting over from scratch.",
-    detail: "New ideas feel better than continuing the current one."
-  },
-];
-
-// ============================================
-// COMPLETION PROFILE
-// ============================================
-
-export interface CompletionProfile {
+export interface DopamineProfile {
   id: string;
-  archetypeKey: ArchetypeKey;
-  archetype: Archetype;
-  quizAnswers: QuizAnswers;
+  archetypeKey: DopamineProfileType;
+  archetype: DopamineArchetype;
   scores: {
-    taskInitiation: number;
-    sustainedFocus: number;
-    completionAbility: number;
+    dopamineSystem: number;      // 0-100
+    attentionRegulation: number;
+    executiveFunction: number;
     emotionalRegulation: number;
+    timePerception: number;
+    energyManagement: number;
     externalSupport: number;
   };
-  recommendedPlan: PlanType;
+  subScores: {
+    noveltySeekingRaw: number;
+    hyperfocusRaw: number;
+    impulsivityRaw: number;
+    timeBlindnessRaw: number;
+    emotionalReactivityRaw: number;
+  };
+  insights: string[];
+  recommendedPlan: "free" | "basic" | "pro" | "coaching";
   planReasoning: string;
   createdAt: Date;
 }
 
-// ============================================
-// ARCHETYPE MAPPING LOGIC
-// ============================================
-
-/**
- * Maps quiz answers to a completion profile with archetype
- * Rule-based logic for determining the best-fit archetype
- */
-export function mapQuizToProfile(answers: QuizAnswers): CompletionProfile {
-  const { adhdPatterns, stuckStage, emotions, identityStatements, environment, supportPreference } = answers;
-  
-  // Calculate component scores
-  const taskInitiationScore = adhdPatterns.taskInitiation;
-  const sustainedFocusScore = (adhdPatterns.boredomThreshold + adhdPatterns.contextSwitching) / 2;
-  const completionScore = identityStatements.trailOfUnfinished;
-  const emotionalScore = identityStatements.fearJudgment;
-  const perfectionism = adhdPatterns.perfectionism;
-  
-  // Determine archetype based on weighted factors
-  let archetypeKey: ArchetypeKey;
-  let confidence = 0;
-  
-  // Strong signals for each archetype
-  const signals = {
-    spark_launcher: 0,
-    deep_diver: 0,
-    last_mile_drifter: 0,
-    multi_tab_juggler: 0,
-    perfectionist_paralysis: 0,
-    momentum_rider: 0,
+export function calculateDopamineProfile(answers: Partial<QuizAnswers>): DopamineProfile {
+  // Varsayılan değerlerle doldur
+  const a = {
+    noveltySeekingScore: 3,
+    rewardSensitivityScore: 3,
+    boredomThresholdScore: 3,
+    delayedGratificationScore: 3,
+    sustainedAttentionScore: 3,
+    selectiveAttentionScore: 3,
+    attentionShiftingScore: 3,
+    hyperfocusFrequency: 3,
+    taskInitiationScore: 3,
+    planningScore: 3,
+    workingMemoryScore: 3,
+    inhibitionScore: 3,
+    cognitiveFlexibilityScore: 3,
+    emotionalReactivityScore: 3,
+    frustrationToleranceScore: 3,
+    rejectionSensitivityScore: 3,
+    emotionalRecoveryScore: 3,
+    timeBlindnessScore: 3,
+    urgencyDependenceScore: 3,
+    estimationAccuracyScore: 3,
+    energyConsistencyScore: 3,
+    externalStructureNeed: 3,
+    socialAccountabilityScore: 3,
+    environmentSensitivityScore: 3,
+    ...answers
   };
+
+  // Kategori skorlarını hesapla (0-100)
+  const dopamineSystem = Math.round(
+    ((a.noveltySeekingScore + a.rewardSensitivityScore + a.boredomThresholdScore + a.delayedGratificationScore) / 20) * 100
+  );
   
-  // Stuck stage is a strong signal
-  if (stuckStage === "start") {
-    signals.spark_launcher += 3;
-    signals.perfectionist_paralysis += 2;
-  } else if (stuckStage === "middle") {
-    signals.deep_diver += 3;
-    signals.momentum_rider += 3;
-  } else if (stuckStage === "finish") {
-    signals.last_mile_drifter += 4;
-    signals.perfectionist_paralysis += 2;
-  } else if (stuckStage === "restart") {
-    signals.multi_tab_juggler += 4;
-    signals.spark_launcher += 2;
+  const attentionRegulation = Math.round(
+    ((6 - a.sustainedAttentionScore) + (6 - a.selectiveAttentionScore) + a.attentionShiftingScore + a.hyperfocusFrequency) / 20 * 100
+  );
+  
+  const executiveFunction = Math.round(
+    ((a.taskInitiationScore + a.planningScore + a.workingMemoryScore + a.inhibitionScore + a.cognitiveFlexibilityScore) / 25) * 100
+  );
+  
+  const emotionalRegulation = Math.round(
+    ((a.emotionalReactivityScore + (6 - a.frustrationToleranceScore) + a.rejectionSensitivityScore + a.emotionalRecoveryScore) / 20) * 100
+  );
+  
+  const timePerception = Math.round(
+    ((a.timeBlindnessScore + a.urgencyDependenceScore + a.estimationAccuracyScore) / 15) * 100
+  );
+  
+  const energyManagement = Math.round(
+    ((6 - a.energyConsistencyScore) / 5) * 100
+  );
+  
+  const externalSupport = Math.round(
+    ((a.externalStructureNeed + a.socialAccountabilityScore + a.environmentSensitivityScore) / 15) * 100
+  );
+
+  // Arketip belirleme
+  const signals: Record<DopamineProfileType, number> = {
+    seeker: 0,
+    sprinter: 0,
+    diver: 0,
+    juggler: 0,
+    dreamer: 0,
+    reactor: 0
+  };
+
+  // Seeker sinyalleri
+  if (a.noveltySeekingScore >= 4) signals.seeker += 3;
+  if (a.boredomThresholdScore >= 4) signals.seeker += 2;
+  if (a.delayedGratificationScore >= 4) signals.seeker += 1;
+
+  // Sprinter sinyalleri
+  if (a.urgencyDependenceScore >= 4) signals.sprinter += 3;
+  if (a.taskInitiationScore >= 4) signals.sprinter += 2;
+  if (a.energyConsistencyScore <= 2) signals.sprinter += 1;
+
+  // Diver sinyalleri
+  if (a.hyperfocusFrequency >= 4) signals.diver += 3;
+  if (a.attentionShiftingScore >= 4) signals.diver += 2;
+  if (a.sustainedAttentionScore <= 2 && a.hyperfocusFrequency >= 4) signals.diver += 2;
+
+  // Juggler sinyalleri
+  if (a.cognitiveFlexibilityScore <= 2) signals.juggler += 2;
+  if (a.boredomThresholdScore >= 4) signals.juggler += 2;
+  if (a.attentionShiftingScore <= 2) signals.juggler += 2;
+
+  // Dreamer sinyalleri
+  if (a.taskInitiationScore >= 4) signals.dreamer += 2;
+  if (a.sustainedAttentionScore <= 2) signals.dreamer += 2;
+  if (a.planningScore >= 4) signals.dreamer += 1;
+
+  // Reactor sinyalleri
+  if (a.emotionalReactivityScore >= 4) signals.reactor += 3;
+  if (a.environmentSensitivityScore >= 4) signals.reactor += 2;
+  if (a.rejectionSensitivityScore >= 4) signals.reactor += 2;
+
+  // En yüksek skoru bul
+  let archetypeKey: DopamineProfileType = "seeker";
+  let maxScore = 0;
+  for (const [key, score] of Object.entries(signals)) {
+    if (score > maxScore) {
+      maxScore = score;
+      archetypeKey = key as DopamineProfileType;
+    }
   }
+
+  const archetype = DOPAMINE_ARCHETYPES[archetypeKey];
+
+  // Insights oluştur
+  const insights: string[] = [];
   
-  // Task initiation struggles
-  if (taskInitiationScore >= 4) {
-    signals.spark_launcher += 2;
-    signals.perfectionist_paralysis += 2;
+  if (dopamineSystem >= 70) {
+    insights.push("Dopamin sisteminiz yüksek aktivite gösteriyor - yenilik ve ödüle güçlü tepki veriyorsunuz.");
   }
-  
-  // Boredom threshold
-  if (adhdPatterns.boredomThreshold >= 4) {
-    signals.spark_launcher += 2;
-    signals.multi_tab_juggler += 2;
+  if (attentionRegulation >= 70) {
+    insights.push("Dikkat düzenlemenizde zorluklar var - hiperfokus ve dikkat dağınıklığı arasında gel-git yaşıyorsunuz.");
   }
-  
-  // Context switching difficulty
-  if (adhdPatterns.contextSwitching >= 4) {
-    signals.deep_diver += 3;
+  if (executiveFunction >= 70) {
+    insights.push("Yürütücü işlevlerde destek gerekiyor - başlama, planlama ve organize olma zorluk alanlarınız.");
   }
-  
-  // Perfectionism
-  if (perfectionism >= 4) {
-    signals.perfectionist_paralysis += 3;
-    signals.last_mile_drifter += 2;
+  if (emotionalRegulation >= 70) {
+    insights.push("Duygusal düzenleme önemli bir çalışma alanı - duygularınız yoğun ve ani değişebiliyor.");
   }
-  
-  // Time blindness combined with context switching = deep diver
-  if (adhdPatterns.timeBlindness >= 4 && adhdPatterns.contextSwitching >= 3) {
-    signals.deep_diver += 2;
+  if (timePerception >= 70) {
+    insights.push("Zaman algınız tipik DEHB örüntüsü gösteriyor - zaman körlüğü ve aciliyet bağımlılığı belirgin.");
   }
+
+  // Plan önerisi
+  let recommendedPlan: "free" | "basic" | "pro" | "coaching" = "basic";
+  let planReasoning = "";
+
+  const overallScore = (dopamineSystem + attentionRegulation + executiveFunction + emotionalRegulation + timePerception) / 5;
   
-  // Identity statement: trail of unfinished
-  if (identityStatements.trailOfUnfinished >= 4) {
-    signals.multi_tab_juggler += 2;
-    signals.spark_launcher += 1;
-  }
-  
-  // Identity statement: start strong fade out
-  if (identityStatements.startStrongFadeOut >= 4) {
-    signals.momentum_rider += 3;
-    signals.spark_launcher += 1;
-  }
-  
-  // Emotions can influence archetype
-  if (emotions.includes("fear") || emotions.includes("anxiety")) {
-    signals.perfectionist_paralysis += 1;
-    signals.last_mile_drifter += 1;
-  }
-  
-  if (emotions.includes("excitement") && emotions.includes("frustration")) {
-    signals.spark_launcher += 1;
-  }
-  
-  if (emotions.includes("overwhelm")) {
-    signals.multi_tab_juggler += 1;
-  }
-  
-  // Find the highest scoring archetype
-  archetypeKey = Object.entries(signals).reduce((a, b) => 
-    signals[a[0] as ArchetypeKey] > signals[b[0] as ArchetypeKey] ? a : b
-  )[0] as ArchetypeKey;
-  
-  const archetype = ARCHETYPES[archetypeKey];
-  
-  // Determine recommended plan
-  let recommendedPlan: PlanType;
-  let planReasoning: string;
-  
-  const needsHighSupport = 
-    answers.timeStuckMonths >= 6 ||
-    emotionalScore >= 4 ||
-    !environment.hasSupportNetwork ||
-    supportPreference.wantsPod;
-  
-  const needsMediumSupport = 
-    answers.timeStuckMonths >= 3 ||
-    sustainedFocusScore >= 3.5 ||
-    supportPreference.wantsCoach;
-  
-  if (needsHighSupport || supportPreference.wantsPod) {
-    recommendedPlan = "membership_pod";
-    planReasoning = generatePlanReasoning("membership_pod", answers, archetype);
-  } else if (needsMediumSupport || supportPreference.aiIntensity === "high") {
-    recommendedPlan = "membership";
-    planReasoning = generatePlanReasoning("membership", answers, archetype);
+  if (overallScore >= 75 || emotionalRegulation >= 80) {
+    recommendedPlan = "coaching";
+    planReasoning = `${archetype.name} profili ve yüksek düzenleme ihtiyacınız göz önüne alındığında, birebir koçluk desteği en etkili olacaktır.`;
+  } else if (overallScore >= 55) {
+    recommendedPlan = "pro";
+    planReasoning = `${archetype.name} profili için kapsamlı araçlar ve stratejiler içeren Pro plan önerilir.`;
+  } else if (overallScore >= 35) {
+    recommendedPlan = "basic";
+    planReasoning = `Temel araçlar ve stratejilerle başlamak için Basic plan uygun görünüyor.`;
   } else {
     recommendedPlan = "free";
-    planReasoning = generatePlanReasoning("free", answers, archetype);
+    planReasoning = `Ücretsiz planla başlayıp ihtiyaçlarınızı keşfedebilirsiniz.`;
   }
-  
+
   return {
-    id: generateProfileId(),
+    id: `profile_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     archetypeKey,
     archetype,
-    quizAnswers: answers,
     scores: {
-      taskInitiation: taskInitiationScore,
-      sustainedFocus: sustainedFocusScore,
-      completionAbility: completionScore,
-      emotionalRegulation: emotionalScore,
-      externalSupport: environment.hasSupportNetwork ? 3 : 1,
+      dopamineSystem,
+      attentionRegulation,
+      executiveFunction,
+      emotionalRegulation,
+      timePerception,
+      energyManagement,
+      externalSupport
     },
+    subScores: {
+      noveltySeekingRaw: a.noveltySeekingScore,
+      hyperfocusRaw: a.hyperfocusFrequency,
+      impulsivityRaw: a.inhibitionScore,
+      timeBlindnessRaw: a.timeBlindnessScore,
+      emotionalReactivityRaw: a.emotionalReactivityScore
+    },
+    insights,
     recommendedPlan,
     planReasoning,
-    createdAt: new Date(),
+    createdAt: new Date()
   };
 }
 
-function generatePlanReasoning(plan: PlanType, answers: QuizAnswers, archetype: Archetype): string {
-  const projectLabel = PROJECT_TYPE_OPTIONS.find(p => p.id === answers.projectType)?.label || "project";
-  const stuckLabel = STUCK_STAGE_OPTIONS.find(s => s.id === answers.stuckStage)?.label || "stuck";
-  
-  if (plan === "membership_pod") {
-    return `As a ${archetype.displayName} who's been stuck for ${answers.timeStuckMonths} months, you'll benefit most from human accountability. Your Pod will help you stay consistent with your ${projectLabel}, especially when you hit the "${stuckLabel}" phase.`;
-  } else if (plan === "membership") {
-    return `Your ${archetype.displayName} patterns respond well to AI coaching. The State Switch Coach will help you navigate the "${stuckLabel}" moments in your ${projectLabel}, with energy mapping to optimize when you work.`;
-  } else {
-    return `Start with our free tools to explore your ${archetype.displayName} patterns. You can always upgrade when you're ready for more support with your ${projectLabel}.`;
-  }
-}
-
-function generateProfileId(): string {
-  return `profile_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-}
-
 // ============================================
-// QUIZ ANALYTICS EVENTS
+// LOCAL STORAGE
 // ============================================
 
-export type QuizAnalyticsEvent = 
-  | { type: "quiz_started"; timestamp: Date }
-  | { type: "quiz_step_completed"; step: number; timestamp: Date }
-  | { type: "quiz_completed"; duration: number; timestamp: Date }
-  | { type: "profile_shown"; archetypeKey: ArchetypeKey; timestamp: Date }
-  | { type: "plan_selected"; plan: PlanType; timestamp: Date }
-  | { type: "plan_path_chosen"; path: "paid" | "free"; timestamp: Date };
-
-/**
- * Track quiz analytics events
- * This is a placeholder - integrate with your analytics provider
- */
-export function trackQuizEvent(event: QuizAnalyticsEvent): void {
-  // In production, send to your analytics service
-  console.log("[Quiz Analytics]", event);
-  
-  // Example: window.analytics?.track(event.type, event);
-}
-
-// ============================================
-// LOCAL STORAGE HELPERS
-// ============================================
-
-const QUIZ_STORAGE_KEY = "launchpod_quiz_progress";
-const PROFILE_STORAGE_KEY = "launchpod_profile";
+const QUIZ_PROGRESS_KEY = "dopalive_quiz_progress";
+const PROFILE_KEY = "dopalive_profile";
 
 export function saveQuizProgress(step: number, answers: Partial<QuizAnswers>): void {
   if (typeof window === "undefined") return;
-  
-  const data = { step, answers, savedAt: new Date().toISOString() };
-  localStorage.setItem(QUIZ_STORAGE_KEY, JSON.stringify(data));
+  localStorage.setItem(QUIZ_PROGRESS_KEY, JSON.stringify({ step, answers, savedAt: new Date().toISOString() }));
 }
 
 export function loadQuizProgress(): { step: number; answers: Partial<QuizAnswers> } | null {
   if (typeof window === "undefined") return null;
-  
-  const stored = localStorage.getItem(QUIZ_STORAGE_KEY);
+  const stored = localStorage.getItem(QUIZ_PROGRESS_KEY);
   if (!stored) return null;
-  
   try {
     return JSON.parse(stored);
   } catch {
@@ -595,20 +917,18 @@ export function loadQuizProgress(): { step: number; answers: Partial<QuizAnswers
 
 export function clearQuizProgress(): void {
   if (typeof window === "undefined") return;
-  localStorage.removeItem(QUIZ_STORAGE_KEY);
+  localStorage.removeItem(QUIZ_PROGRESS_KEY);
 }
 
-export function saveProfile(profile: CompletionProfile): void {
+export function saveProfile(profile: DopamineProfile): void {
   if (typeof window === "undefined") return;
-  localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile));
+  localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
 }
 
-export function loadProfile(): CompletionProfile | null {
+export function loadProfile(): DopamineProfile | null {
   if (typeof window === "undefined") return null;
-  
-  const stored = localStorage.getItem(PROFILE_STORAGE_KEY);
+  const stored = localStorage.getItem(PROFILE_KEY);
   if (!stored) return null;
-  
   try {
     return JSON.parse(stored);
   } catch {
@@ -617,14 +937,29 @@ export function loadProfile(): CompletionProfile | null {
 }
 
 // ============================================
-// PRICING CONFIG
+// ANALYTICS
+// ============================================
+
+export type QuizAnalyticsEvent = 
+  | { type: "quiz_started"; timestamp: Date }
+  | { type: "section_completed"; sectionId: string; timestamp: Date }
+  | { type: "quiz_completed"; duration: number; timestamp: Date }
+  | { type: "profile_shown"; archetypeKey: DopamineProfileType; timestamp: Date }
+  | { type: "plan_selected"; plan: string; timestamp: Date };
+
+export function trackQuizEvent(event: QuizAnalyticsEvent): void {
+  console.log("[DopaLive Quiz Analytics]", event);
+}
+
+// ============================================
+// PRICING TIERS
 // ============================================
 
 export interface PricingTier {
-  id: PlanType;
+  id: "free" | "basic" | "pro" | "coaching";
   name: string;
-  price: number; // monthly in USD
-  priceAnnual: number; // annual price per month
+  price: number;
+  priceAnnual: number;
   description: string;
   features: string[];
   highlighted?: boolean;
@@ -634,48 +969,64 @@ export interface PricingTier {
 export const PRICING_TIERS: PricingTier[] = [
   {
     id: "free",
-    name: "Free",
+    name: "Ücretsiz",
     price: 0,
     priceAnnual: 0,
-    description: "Get started with the basics",
+    description: "Keşfet ve başla",
     features: [
-      "ADHD Profile Quiz",
-      "Basic task breakdown",
-      "Energy tracking (7 days)",
-      "Community access"
+      "Dopamin profil testi",
+      "Temel içerikler",
+      "Topluluk erişimi",
+      "Haftalık newsletter"
     ],
-    ctaText: "Continue free →"
+    ctaText: "Ücretsiz Başla"
   },
   {
-    id: "membership",
-    name: "Membership",
-    price: 19,
-    priceAnnual: 15,
-    description: "Full ecosystem access",
+    id: "basic",
+    name: "Temel",
+    price: 99,
+    priceAnnual: 79,
+    description: "Günlük destek",
     features: [
-      "Everything in Free",
-      "AI State Switch Coach",
-      "Unlimited energy mapping",
-      "Focus timer + body doubling",
-      "Priority support"
+      "Tüm ücretsiz özellikler",
+      "AI odak asistanı",
+      "Günlük planlayıcı",
+      "Enerji takibi",
+      "Temel stratejiler"
+    ],
+    ctaText: "Temel Plan"
+  },
+  {
+    id: "pro",
+    name: "Pro",
+    price: 199,
+    priceAnnual: 159,
+    description: "Tam ekosistem",
+    features: [
+      "Tüm Temel özellikler",
+      "Gelişmiş AI koçluğu",
+      "Kişiselleştirilmiş stratejiler",
+      "Body doubling oturumları",
+      "Aylık grup koçluk",
+      "Öncelikli destek"
     ],
     highlighted: true,
-    ctaText: "Start Membership"
+    ctaText: "Pro Plan"
   },
   {
-    id: "membership_pod",
-    name: "Membership + Pod",
-    price: 39,
-    priceAnnual: 32,
-    description: "Maximum accountability",
+    id: "coaching",
+    name: "Koçluk",
+    price: 599,
+    priceAnnual: 499,
+    description: "Birebir destek",
     features: [
-      "Everything in Membership",
-      "Matched accountability pod",
-      "Weekly facilitated check-ins",
-      "Pod challenges & celebrations",
-      "Direct coach access"
+      "Tüm Pro özellikler",
+      "Haftalık 1:1 koçluk",
+      "Kişisel DEHB koçu",
+      "WhatsApp destek hattı",
+      "Aile/partner seansları",
+      "Yaşam alanı optimizasyonu"
     ],
-    ctaText: "Get matched with a Pod"
+    ctaText: "Koçluk Al"
   }
 ];
-

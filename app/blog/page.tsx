@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { ArrowLeft, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { 
   PostCard, 
   BlogSearch, 
@@ -19,7 +19,7 @@ import {
   BlogCategory,
   searchPosts 
 } from '@/lib/blog-data';
-import { cn } from '@/lib/utils';
+import { fadeInUp, staggerContainer, staggerItem } from '@/lib/motion';
 
 const POSTS_PER_PAGE = 6;
 
@@ -74,145 +74,102 @@ export default function BlogPage() {
   const showFeatured = !searchQuery && selectedCategory === 'all' && featuredPost;
 
   return (
-    <main className="min-h-screen relative overflow-hidden bg-[#0a0a0a]">
-      {/* Ambient Background */}
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0f0f0f] via-[#0a0a0a] to-[#050505]" />
-        
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 2 }}
-          className="absolute w-[600px] h-[300px] bg-[#f5d4a0] opacity-[0.03] top-[-100px] left-1/2 -translate-x-1/2 rounded-full blur-[120px]"
-        />
-        
-        <div className="absolute w-[400px] h-[400px] bg-[#4a3f2f] opacity-[0.02] top-[20%] left-[-150px] rounded-full blur-[100px]" />
-        <div className="absolute w-[400px] h-[400px] bg-[#3f4a4a] opacity-[0.02] top-[30%] right-[-150px] rounded-full blur-[100px]" />
-        
-        {/* Subtle grid */}
-        <div className="absolute inset-0 opacity-[0.02]" style={{
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
-          backgroundSize: '80px 80px'
-        }} />
-      </div>
-
-      {/* Navigation */}
-      <motion.nav
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed top-0 left-0 right-0 z-50 px-5 md:px-8 py-5 bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/[0.04]"
-      >
-        <div className="max-w-[1400px] mx-auto flex items-center justify-between">
-          <Link href="/hero" className="flex items-center gap-2 group">
-            <motion.div 
-              whileHover={{ scale: 1.05 }}
-              className="w-8 h-8 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center"
-            >
-              <div className="w-3 h-3 rounded-full border border-[#f5d4a0]/60" />
-            </motion.div>
-            <span className="text-white/80 text-base font-light tracking-tight">LaunchPod</span>
-          </Link>
-
-          <Link 
-            href="/hero"
-            className="flex items-center gap-2 text-white/50 text-sm hover:text-white/70 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to home
-          </Link>
-        </div>
-      </motion.nav>
-
-      {/* Hero Section */}
-      <section className="pt-32 pb-12 px-5 md:px-8">
-        <div className="max-w-[1400px] mx-auto">
+    <main className="min-h-screen bg-background text-foreground">
+      <section className="section-padding px-5 md:px-8">
+        <div className="container-default">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center max-w-3xl mx-auto mb-16"
+            variants={fadeInUp}
+            initial="hidden"
+            animate="visible"
+            className="text-center max-w-3xl mx-auto mb-12"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#f5d4a0]/10 border border-[#f5d4a0]/20 text-[#f5d4a0] text-xs font-medium mb-6">
-              <Sparkles className="w-3 h-3" />
-              ADHD Productivity Resources
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-body-sm font-semibold mb-4 focus-ring">
+              <Sparkles className="w-4 h-4" />
+              DEHB Odaklı İçerik Havuzu
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 font-syne tracking-tight">
-              LaunchPod Stories{' '}
-              <span className="text-[#f5d4a0]">&</span>{' '}
-              Resources
+            <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-4">
+              DopaLive <span className="text-gradient">DEHB & Body Doubling</span>
             </h1>
             
-            <p className="text-white/50 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-              Insights, strategies, and case studies for ADHD creators who want to finish what they start.
+            <p className="text-muted-foreground text-body-md max-w-2xl mx-auto leading-relaxed">
+              En kapsamlı, en güncel DEHB içerik havuzu: bilim, deneyim, içgörü ve odak araçları bir arada. Body doubling’ı günlük ritüele çevir.
             </p>
           </motion.div>
 
-          {/* Search & Filters */}
-          <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between mb-12">
-            <BlogSearch onSearch={handleSearch} />
-            <CategoryFilter 
-              selectedCategory={selectedCategory} 
-              onSelectCategory={handleCategoryChange} 
-            />
-          </div>
+          <motion.div
+            variants={staggerContainer(0.08)}
+            initial="hidden"
+            animate="visible"
+            className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between mb-12"
+          >
+            <motion.div variants={staggerItem}>
+              <BlogSearch onSearch={handleSearch} />
+            </motion.div>
+            <motion.div variants={staggerItem}>
+              <CategoryFilter 
+                selectedCategory={selectedCategory} 
+                onSelectCategory={handleCategoryChange} 
+              />
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Main Content */}
-      <section className="pb-24 px-5 md:px-8">
-        <div className="max-w-[1400px] mx-auto">
+      <section className="pb-20 px-5 md:px-8">
+        <div className="container-default">
           <div className="lg:grid lg:grid-cols-[1fr_320px] lg:gap-12">
-            {/* Posts Column */}
-            <div>
-              {/* Featured Post */}
+            <div className="space-y-8">
               {showFeatured && (
-                <div className="mb-12">
+                <motion.div variants={fadeInUp} initial="hidden" animate="visible">
                   <PostCard post={featuredPost} featured />
-                </div>
+                </motion.div>
               )}
 
-              {/* Results count */}
               {(searchQuery || selectedCategory !== 'all') && (
                 <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-white/40 text-sm mb-6"
+                  variants={fadeInUp}
+                  initial="hidden"
+                  animate="visible"
+                  className="text-muted-foreground text-body-sm"
                 >
-                  {filteredPosts.length} article{filteredPosts.length !== 1 ? 's' : ''} found
-                  {searchQuery && ` for "${searchQuery}"`}
-                  {selectedCategory !== 'all' && ` in ${selectedCategory.replace('-', ' ')}`}
+                  {filteredPosts.length} içerik bulundu
+                  {searchQuery && ` • arama: "${searchQuery}"`}
+                  {selectedCategory !== 'all' && ` • kategori: ${selectedCategory.replace('-', ' ')}`}
                 </motion.p>
               )}
 
-              {/* Post Grid */}
               {paginatedPosts.length > 0 ? (
-                <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 mb-12">
+                <motion.div
+                  variants={staggerContainer(0.08)}
+                  initial="hidden"
+                  animate="visible"
+                  className="grid md:grid-cols-2 xl:grid-cols-3 gap-6"
+                >
                   {paginatedPosts.map((post, index) => (
                     <PostCard key={post.slug} post={post} index={index} />
                   ))}
-                </div>
+                </motion.div>
               ) : (
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-center py-20"
+                  variants={fadeInUp}
+                  initial="hidden"
+                  animate="visible"
+                  className="text-center py-16"
                 >
-                  <p className="text-white/40 text-lg mb-4">No articles found</p>
+                  <p className="text-muted-foreground text-lg mb-4">İçerik bulunamadı</p>
                   <button
                     onClick={() => {
                       setSearchQuery('');
                       setSelectedCategory('all');
                     }}
-                    className="text-[#f5d4a0] text-sm font-medium hover:underline"
+                    className="text-primary text-sm font-semibold hover:underline focus-ring"
                   >
-                    Clear filters
+                    Filtreleri temizle
                   </button>
                 </motion.div>
               )}
 
-              {/* Pagination */}
               {totalPages > 1 && (
                 <Pagination
                   currentPage={currentPage}
@@ -222,39 +179,17 @@ export default function BlogPage() {
               )}
             </div>
 
-            {/* Sidebar */}
             <aside className="hidden lg:block space-y-8">
               <NewsletterSignup variant="sidebar" />
               <PopularPosts posts={popularPosts} />
             </aside>
           </div>
 
-          {/* Mobile Newsletter CTA */}
           <div className="lg:hidden mt-16">
             <NewsletterSignup variant="inline" />
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t border-white/[0.06] py-12 px-5 md:px-8">
-        <div className="max-w-[1400px] mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-white/30 text-sm">
-              © 2024 LaunchPod. Built for ADHD creators.
-            </p>
-            <div className="flex items-center gap-6">
-              <Link href="/hero" className="text-white/30 text-sm hover:text-white/50 transition-colors">
-                Home
-              </Link>
-              <Link href="/blog" className="text-white/30 text-sm hover:text-white/50 transition-colors">
-                Blog
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
     </main>
   );
 }
-
