@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { adminDb } from '@/lib/firebase/admin';
+import { getAdminDb } from '@/lib/firebase/admin';
 import { getAuth } from 'firebase-admin/auth';
 import { UserGoal } from '@/lib/auth/types';
 
@@ -37,7 +37,8 @@ export async function PATCH(request: NextRequest) {
     
     const idToken = authHeader.split('Bearer ')[1];
     
-    if (!adminDb) {
+    const db = getAdminDb();
+    if (!db) {
       return NextResponse.json(
         { error: 'Sunucu yapılandırma hatası' },
         { status: 500 }
@@ -106,7 +107,7 @@ export async function PATCH(request: NextRequest) {
     }
     
     if (notificationPreferences !== undefined) {
-      const currentDoc = await adminDb.collection('users').doc(decodedToken.uid).get();
+      const currentDoc = await db.collection('users').doc(decodedToken.uid).get();
       const currentPrefs = currentDoc.data()?.notificationPreferences || {};
       
       updateData.notificationPreferences = {
@@ -124,7 +125,7 @@ export async function PATCH(request: NextRequest) {
     }
     
     // Update user document
-    const userRef = adminDb.collection('users').doc(decodedToken.uid);
+    const userRef = db.collection('users').doc(decodedToken.uid);
     await userRef.update(updateData);
     
     // Get updated user data

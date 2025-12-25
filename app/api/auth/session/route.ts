@@ -8,7 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { adminDb } from '@/lib/firebase/admin';
+import { getAdminDb } from '@/lib/firebase/admin';
 import { getAuth } from 'firebase-admin/auth';
 
 // ============================================
@@ -28,7 +28,8 @@ export async function GET(request: NextRequest) {
     
     const idToken = authHeader.split('Bearer ')[1];
     
-    if (!adminDb) {
+    const db = getAdminDb();
+    if (!db) {
       return NextResponse.json(
         { error: 'Sunucu yapılandırma hatası' },
         { status: 500 }
@@ -40,7 +41,7 @@ export async function GET(request: NextRequest) {
     const decodedToken = await auth.verifyIdToken(idToken);
     
     // Get user data from Firestore
-    const userDoc = await adminDb.collection('users').doc(decodedToken.uid).get();
+    const userDoc = await db.collection('users').doc(decodedToken.uid).get();
     
     if (!userDoc.exists) {
       return NextResponse.json(
@@ -100,7 +101,8 @@ export async function POST(request: NextRequest) {
     
     const idToken = authHeader.split('Bearer ')[1];
     
-    if (!adminDb) {
+    const postDb = getAdminDb();
+    if (!postDb) {
       return NextResponse.json(
         { error: 'Sunucu yapılandırma hatası' },
         { status: 500 }
@@ -121,7 +123,7 @@ export async function POST(request: NextRequest) {
                'unknown';
     
     // Check if user exists
-    const userRef = adminDb.collection('users').doc(decodedToken.uid);
+    const userRef = postDb.collection('users').doc(decodedToken.uid);
     const userDoc = await userRef.get();
     
     const now = new Date();
@@ -258,20 +260,21 @@ export async function DELETE(request: NextRequest) {
     await auth.revokeRefreshTokens(decodedToken.uid);
     
     // Update user's session status in Firestore
-    if (adminDb) {
-      await adminDb.collection('users').doc(decodedToken.uid).update({
+    const db = getAdminDb();
+    if (db) {
+      await db.collection('users').doc(decodedToken.uid).update({
         lastLogoutAt: new Date(),
         updatedAt: new Date(),
       });
       
       // Mark all active sessions as revoked
-      const sessionsRef = adminDb
+      const sessionsRef = db
         .collection('sessions')
         .where('userId', '==', decodedToken.uid)
         .where('status', '==', 'active');
       
       const sessions = await sessionsRef.get();
-      const batch = adminDb.batch();
+      const batch = db.batch();
       
       sessions.docs.forEach(doc => {
         batch.update(doc.ref, {

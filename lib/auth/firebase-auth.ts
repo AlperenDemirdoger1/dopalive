@@ -18,6 +18,7 @@ import {
   signInWithRedirect,
   getRedirectResult,
   GoogleAuthProvider,
+  OAuthProvider,
   signInWithPhoneNumber,
   PhoneAuthProvider,
   RecaptchaVerifier,
@@ -171,6 +172,33 @@ export async function signInWithGoogle(): Promise<UserCredential> {
     // If popup blocked, try redirect
     if (authError.code === 'auth/popup-blocked') {
       await signInWithRedirect(auth, googleProvider);
+      // This will redirect, so we won't reach here
+      throw new Error('Redirecting...');
+    }
+    throw error;
+  }
+}
+
+// ============================================
+// APPLE SIGN IN
+// ============================================
+
+const appleProvider = new OAuthProvider('apple.com');
+appleProvider.addScope('email');
+appleProvider.addScope('name');
+
+export async function signInWithApple(): Promise<UserCredential> {
+  const auth = getFirebaseAuth();
+  
+  try {
+    // Try popup first (better UX)
+    const result = await signInWithPopup(auth, appleProvider);
+    return result;
+  } catch (error: unknown) {
+    const authError = error as { code?: string };
+    // If popup blocked, try redirect
+    if (authError.code === 'auth/popup-blocked') {
+      await signInWithRedirect(auth, appleProvider);
       // This will redirect, so we won't reach here
       throw new Error('Redirecting...');
     }

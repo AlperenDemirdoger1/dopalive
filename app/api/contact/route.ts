@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { adminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@/lib/firebase/admin";
 
 const contactSchema = z.object({
   email: z.string().email(),
@@ -9,7 +9,8 @@ const contactSchema = z.object({
 });
 
 export async function POST(req: Request) {
-  if (!adminDb) {
+  const db = getAdminDb();
+  if (!db) {
     return NextResponse.json(
       { error: "Admin SDK not configured" },
       { status: 500 },
@@ -30,7 +31,7 @@ export async function POST(req: Request) {
 
   try {
     // Save to Firestore
-    const docRef = adminDb.collection('contact_messages').doc();
+    const docRef = db.collection('contact_messages').doc();
     await docRef.set({
       email,
       subject,

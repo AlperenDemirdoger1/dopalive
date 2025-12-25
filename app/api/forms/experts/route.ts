@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { adminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@/lib/firebase/admin";
 
 const expertSchema = z.object({
   contact: z.object({
@@ -34,7 +34,8 @@ const expertSchema = z.object({
 });
 
 export async function POST(req: Request) {
-  if (!adminDb) {
+  const db = getAdminDb();
+  if (!db) {
     return NextResponse.json(
       { error: "Admin SDK not configured" },
       { status: 500 },
@@ -54,7 +55,7 @@ export async function POST(req: Request) {
   const data = parsed.data;
 
   try {
-    const docRef = adminDb.collection("expert_applications").doc();
+    const docRef = db.collection("expert_applications").doc();
     await docRef.set({
       ...data.contact,
       education: data.education,

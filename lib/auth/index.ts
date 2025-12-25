@@ -34,6 +34,7 @@ export {
   initRecaptcha,
   clearRecaptcha,
   isAuthAvailable,
+  handleRedirectResult,
 } from './firebase-auth';
 
 // Context & Hooks

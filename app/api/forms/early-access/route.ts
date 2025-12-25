@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { adminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@/lib/firebase/admin";
 
 const earlyAccessSchema = z.object({
   name: z.string().min(1),
@@ -19,7 +19,8 @@ const earlyAccessSchema = z.object({
 });
 
 export async function POST(req: Request) {
-  if (!adminDb) {
+  const db = getAdminDb();
+  if (!db) {
     return NextResponse.json(
       { error: "Admin SDK not configured" },
       { status: 500 },
@@ -39,7 +40,7 @@ export async function POST(req: Request) {
   const data = parsed.data;
 
   try {
-    const docRef = adminDb.collection("early_access_signups").doc();
+    const docRef = db.collection("early_access_signups").doc();
     await docRef.set({
       ...data,
       status: "pending",

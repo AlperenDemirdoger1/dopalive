@@ -10,7 +10,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { adminDb } from '@/lib/firebase/admin';
+import { getAdminDb } from '@/lib/firebase/admin';
 
 // Rate limit configurations
 const RATE_LIMITS = {
@@ -44,7 +44,8 @@ type RateLimitType = keyof typeof RATE_LIMITS;
 
 export async function POST(request: NextRequest) {
   try {
-    if (!adminDb) {
+    const db = getAdminDb();
+    if (!db) {
       // If no DB, allow (fail open for development)
       return NextResponse.json({ allowed: true });
     }
@@ -76,10 +77,10 @@ export async function POST(request: NextRequest) {
     
     // Create a unique key combining type, identifier, and optionally IP
     const rateLimitKey = `${type}:${identifier}`;
-    const rateLimitRef = adminDb.collection('rate_limits').doc(rateLimitKey);
+    const rateLimitRef = db.collection('rate_limits').doc(rateLimitKey);
     
     // Use transaction to atomically check and update
-    const result = await adminDb.runTransaction(async (transaction) => {
+    const result = await db.runTransaction(async (transaction) => {
       const doc = await transaction.get(rateLimitRef);
       
       if (!doc.exists) {
@@ -214,7 +215,8 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    if (!adminDb) {
+    const db = getAdminDb();
+    if (!db) {
       return NextResponse.json({ success: true });
     }
     
@@ -229,7 +231,7 @@ export async function DELETE(request: NextRequest) {
     }
     
     const rateLimitKey = `${type}:${identifier}`;
-    await adminDb.collection('rate_limits').doc(rateLimitKey).delete();
+    await db.collection('rate_limits').doc(rateLimitKey).delete();
     
     return NextResponse.json({ success: true });
   } catch (error) {
