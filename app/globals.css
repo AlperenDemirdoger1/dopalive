@@ -49,218 +49,8 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight text-foreground font-[var(--font-display,_inherit)];
-  }
-
-  h1 { @apply text-4xl md:text-5xl; }
-  h2 { @apply text-3xl md:text-4xl; }
-  h3 { @apply text-2xl md:text-3xl; }
-  h4 { @apply text-xl md:text-2xl; }
-
-  ::selection {
-    background: rgba(249, 115, 22, 0.2);
-    color: inherit;
-  }
-
-  :focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--primary) / 0.85);
-  }
-}
-
-/* ============================================
-   Custom Scrollbar
-   ============================================ */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.2);
-}
-
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
-}
-
-/* ============================================
-   Text Gradients
-   ============================================ */
-@layer utilities {
-  .text-gradient {
-    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .text-gradient-gold {
-    background: linear-gradient(135deg, hsl(var(--secondary)) 0%, #e8c87a 50%, #d4a855 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  /* Gradient backgrounds (Design System) */
-  .bg-gradient-warm {
-    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
-  }
-
-  .bg-gradient-focus {
-    background: linear-gradient(135deg, hsl(var(--accent)) 0%, rgba(91, 141, 239, 0.65) 100%);
-  }
-
-  .bg-gradient-reward {
-    background: linear-gradient(135deg, hsl(var(--success)) 0%, rgba(74, 222, 128, 0.7) 100%);
-  }
-}
-
-/* ============================================
-   Glass & Card Utilities
-   ============================================ */
-@layer utilities {
-  .glass {
-    @apply bg-card backdrop-blur-xl border border-border;
-  }
-
-  .card-base {
-    @apply bg-card rounded-2xl border border-border;
-  }
-
-  .card-interactive {
-    @apply bg-card rounded-2xl border border-border transition-all duration-200;
-  }
-
-  .card-interactive:hover {
-    @apply bg-muted border-border;
-  }
-
-  .focus-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background;
-  }
-}
-
-/* ============================================
-   Layout Utilities
-   ============================================ */
-@layer utilities {
-  .container-default {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-  }
-
-  .section-padding {
-    @apply py-16 md:py-24;
-  }
-
-  .container-wide {
-    @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
-  }
-
-  .container-tight {
-    @apply max-w-3xl mx-auto px-4 sm:px-6 lg:px-8;
-  }
-}
-
-/* ============================================
-   Typography Utilities
-   ============================================ */
-@layer utilities {
-  .font-display {
-    font-family: var(--font-display, 'Syne'), 'Inter', system-ui, sans-serif;
-  }
-
-  .font-body {
-    font-family: var(--font-body, 'DM Sans'), 'Inter', system-ui, sans-serif;
-  }
-}
-
-/* ============================================
-   Animation Keyframes
-   ============================================ */
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes accordion-down {
-  from {
-    height: 0;
-    opacity: 0;
-  }
-  to {
-    height: var(--radix-accordion-content-height);
-    opacity: 1;
-  }
-}
-
-@keyframes accordion-up {
-  from {
-    height: var(--radix-accordion-content-height);
-    opacity: 1;
-  }
-  to {
-    height: 0;
-    opacity: 0;
-  }
-}
-
-.animate-fade-up {
-  animation: fade-up 0.5s ease-out;
-}
-
-.animate-accordion-down {
-  animation: accordion-down 0.3s ease-out;
-}
-
-.animate-accordion-up {
-  animation: accordion-up 0.3s ease-out;
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .animate-fade-up,
-  .animate-accordion-down,
-  .animate-accordion-up {
-    animation: none;
-  }
-}
-
-/* ============================================
-   Base Styles
-   ============================================ */
-@layer base {
-  html {
-    scroll-behavior: smooth;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  body {
-    background-color: hsl(var(--background));
+    @apply font-semibold tracking-tight font-[var(--font-display,_inherit)];
     color: hsl(var(--foreground));
-    font-family: var(--font-body, 'Inter'), system-ui, -apple-system, 'Segoe UI', sans-serif;
-    text-rendering: optimizeLegibility;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight text-foreground font-[var(--font-display,_inherit)];
   }
 
   h1 { @apply text-4xl md:text-5xl; }
@@ -450,5 +240,19 @@
   .animate-accordion-down,
   .animate-accordion-up {
     animation: none;
+  }
+}
+
+/* ============================================
+   Scrollbar Utilities
+   ============================================ */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }

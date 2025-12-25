@@ -141,3 +141,6 @@ firebase deploy --only firestore:rules,firestore:indexes,storage:rules
 - Firebase Admin SDK environment variables'larını kontrol et
 - Vercel logs'u kontrol et (Dashboard > Deployments > Logs)
 
+
+
+

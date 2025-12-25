@@ -105,3 +105,6 @@ Deployment sonrası Vercel Dashboard > Project Settings > Environment Variables:
 - Firebase Admin SDK variables'larını kontrol et
 - Vercel function logs'u kontrol et
 
+
+
+

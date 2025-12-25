@@ -15,15 +15,15 @@ import { Variants, Transition } from "framer-motion";
  */
 export const easings = {
   /** Gentle deceleration - main easing for most animations */
-  gentle: [0.25, 0.8, 0.25, 1] as const,
+  gentle: [0.25, 0.8, 0.25, 1],
   /** Smooth deceleration - for enter animations */
-  easeOut: [0.22, 1, 0.36, 1] as const,
+  easeOut: [0.22, 1, 0.36, 1],
   /** Smooth acceleration - for exit animations */
-  easeIn: [0.4, 0, 1, 1] as const,
+  easeIn: [0.4, 0, 1, 1],
   /** Subtle bounce - for reward feedback */
-  bounce: [0.34, 1.56, 0.64, 1] as const,
+  bounce: [0.34, 1.56, 0.64, 1],
   /** Spring - for playful interactions */
-  spring: [0.175, 0.885, 0.32, 1.275] as const,
+  spring: [0.175, 0.885, 0.32, 1.275],
 };
 
 /**
@@ -53,7 +53,6 @@ export const fadeInUp: Variants = {
     y: 0,
     transition: {
       duration: durations.slow,
-      ease: easings.gentle,
     },
   },
 };
@@ -71,7 +70,6 @@ export const fadeInDown: Variants = {
     y: 0,
     transition: {
       duration: durations.slow,
-      ease: easings.gentle,
     },
   },
 };
@@ -85,7 +83,6 @@ export const fadeIn: Variants = {
     opacity: 1,
     transition: {
       duration: durations.normal,
-      ease: easings.gentle,
     },
   },
 };
@@ -103,7 +100,6 @@ export const scaleIn: Variants = {
     scale: 1,
     transition: {
       duration: durations.normal,
-      ease: easings.gentle,
     },
   },
 };
@@ -142,7 +138,6 @@ export const staggerItem: Variants = {
     y: 0,
     transition: {
       duration: durations.normal,
-      ease: easings.gentle,
     },
   },
 };
@@ -160,7 +155,6 @@ export const hoverScale: Variants = {
     scale: 1.02,
     transition: {
       duration: durations.quick,
-      ease: easings.gentle,
     },
   },
   tap: {
@@ -184,7 +178,6 @@ export const hoverLift: Variants = {
     boxShadow: "0 12px 32px rgba(0, 0, 0, 0.12)",
     transition: {
       duration: durations.normal,
-      ease: easings.gentle,
     },
   },
 };
@@ -195,7 +188,7 @@ export const hoverLift: Variants = {
 export const buttonPress = {
   whileHover: { scale: 1.02 },
   whileTap: { scale: 0.98 },
-  transition: { duration: durations.quick, ease: easings.gentle },
+  transition: { duration: durations.quick },
 };
 
 // ============================================
@@ -211,7 +204,6 @@ export const rewardPop: Variants = {
     scale: [1, 1.15, 1],
     transition: {
       duration: 0.4,
-      ease: easings.bounce,
     },
   },
 };
@@ -230,7 +222,6 @@ export const successCheck: Variants = {
     transition: {
       pathLength: {
         duration: 0.4,
-        ease: easings.easeOut,
       },
       opacity: {
         duration: 0.2,
@@ -256,7 +247,6 @@ export const confettiBurst = (index: number): Variants => ({
     y: Math.sin((index * 360) / 8 * Math.PI / 180) * 50,
     transition: {
       duration: 0.6,
-      ease: easings.easeOut,
     },
   },
 });
@@ -287,7 +277,6 @@ export const slideInRight: Variants = {
     opacity: 0,
     transition: {
       duration: durations.normal,
-      ease: easings.easeIn,
     },
   },
 };
@@ -348,7 +337,7 @@ export const accordionContent: Variants = {
     height: 0,
     opacity: 0,
     transition: {
-      height: { duration: durations.normal, ease: easings.gentle },
+      height: { duration: durations.normal, ease: "easeOut" },
       opacity: { duration: durations.quick },
     },
   },
@@ -356,7 +345,7 @@ export const accordionContent: Variants = {
     height: "auto",
     opacity: 1,
     transition: {
-      height: { duration: durations.normal, ease: easings.gentle },
+      height: { duration: durations.normal, ease: "easeOut" },
       opacity: { duration: durations.normal, delay: 0.1 },
     },
   },
@@ -369,7 +358,7 @@ export const rotate180: Variants = {
   collapsed: { rotate: 0 },
   expanded: {
     rotate: 180,
-    transition: { duration: durations.normal, ease: easings.gentle },
+    transition: { duration: durations.normal, ease: "easeOut" },
   },
 };
 
@@ -402,7 +391,6 @@ export const pulseRing: Variants = {
     transition: {
       duration: 1.5,
       repeat: Infinity,
-      ease: "easeOut",
     },
   },
 };
@@ -435,7 +423,6 @@ export const loadingDot = (index: number): Variants => ({
       duration: 0.5,
       repeat: Infinity,
       delay: index * 0.1,
-      ease: easings.gentle,
     },
   },
 });
@@ -458,7 +445,7 @@ export const springTransition: Transition = {
  */
 export const quickTransition: Transition = {
   duration: durations.quick,
-  ease: easings.gentle,
+  ease: "easeOut",
 };
 
 /**

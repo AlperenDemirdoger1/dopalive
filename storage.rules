@@ -8,6 +8,7 @@ service firebase.storage {
 }
 
 
+
 service firebase.storage {
   match /b/{bucket}/o {
     match /{allPaths=**} {
@@ -15,5 +16,8 @@ service firebase.storage {
     }
   }
 }
+
+
+
 
 

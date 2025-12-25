@@ -50,7 +50,7 @@ export async function POST(req: Request) {
           },
           body: JSON.stringify({
             from: 'DopaLive <noreply@dopalive.app>',
-            to: ['alperen.demirdoger@gmail.com'],
+            to: 'alperen.demirdoger@gmail.com',
             replyTo: email,
             subject: `İletişim Formu: ${subject}`,
             html: `

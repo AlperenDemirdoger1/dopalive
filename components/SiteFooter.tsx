@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Twitter, Instagram, Linkedin, Mail, Heart, Flame } from 'lucide-react';
+import { Heart, Flame } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const DopaLiveLogo = ({ className }: { className?: string }) => (
@@ -27,12 +27,7 @@ const footerLinks = {
   ],
 };
 
-const socialLinks = [
-  { icon: Twitter, href: 'https://twitter.com/dopalive', label: 'Twitter' },
-  { icon: Instagram, href: 'https://instagram.com/dopalive', label: 'Instagram' },
-  { icon: Linkedin, href: 'https://linkedin.com/company/dopalive', label: 'LinkedIn' },
-  { icon: Mail, href: 'mailto:merhaba@dopalive.app', label: 'E-posta' },
-];
+// Social links temporarily disabled
 
 const SiteFooter = () => {
   return (
@@ -54,20 +49,7 @@ const SiteFooter = () => {
             <p className="text-muted-foreground text-sm leading-relaxed mb-6 max-w-[260px]">
               DEHB nörobiliminde uzman danışmanlarla beynini anla, potansiyelini keşfet.
             </p>
-            <div className="flex items-center gap-2">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-xl bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/5 transition-all"
-                  aria-label={social.label}
-                >
-                  <social.icon className="w-4 h-4" />
-                </a>
-              ))}
-            </div>
+            {/* Social links temporarily disabled */}
           </div>
 
           {/* Product */}

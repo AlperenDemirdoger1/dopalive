@@ -49,6 +49,7 @@ Bu doküman, paralel çalışan ajanların çakışmadan ve tutarlı bir deneyim
 
 
 
+
 Bu doküman, paralel çalışan ajanların çakışmadan ve tutarlı bir deneyimle ilerlemesi için tek referanstır. Lütfen tüm ajanlar başında okusun, değişiklik gerektiğinde burada güncellensin.
 
 ## Sahiplik (Ownership)
@@ -95,5 +96,8 @@ Bu doküman, paralel çalışan ajanların çakışmadan ve tutarlı bir deneyim
 ## İletişim
 - Paylaşılan dosyalara dokunmanız gerekiyorsa önce Core UI agentı veya Lead ile sync alın.
 - Kurala uymayan değişiklikler geldiğinde, merge etmeden önce bu dokümana referans gösterin.
+
+
+
 
 

@@ -49,3 +49,6 @@ RESEND_API_KEY=your_resend_api_key_here
 
 Proje URL: https://vercel.com/alperen-demirdogers-projects/dopalive-adhd
 
+
+
+

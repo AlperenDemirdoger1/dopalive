@@ -144,3 +144,6 @@ firebase deploy --only firestore:rules,firestore:indexes,storage:rules
 
 Bu limitler küçük-orta ölçekli projeler için yeterli!
 
+
+
+
