@@ -1,13 +1,7 @@
-import { initializeApp, getApps, getApp } from "firebase/app";
-import {
-  getAuth,
-  GoogleAuthProvider,
-  GithubAuthProvider,
-  type Auth,
-} from "firebase/auth";
-import { getFirestore, type Firestore } from "firebase/firestore";
-import { getStorage, type FirebaseStorage } from "firebase/storage";
-import { getAnalytics, isSupported, type Analytics } from "firebase/analytics";
+'use client';
+
+import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
+import { getAnalytics, Analytics } from 'firebase/analytics';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -19,30 +13,45 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+let app: FirebaseApp | undefined;
+let analytics: Analytics | undefined;
 
-export const auth: Auth = getAuth(app);
-export const firestore: Firestore = getFirestore(app);
-export const storage: FirebaseStorage = getStorage(app);
+// Check if Firebase config is properly set
+const isFirebaseConfigured = Boolean(
+  firebaseConfig.apiKey && 
+  firebaseConfig.projectId && 
+  firebaseConfig.appId
+);
 
-export const googleProvider = new GoogleAuthProvider();
-export const githubProvider = new GithubAuthProvider();
+if (typeof window !== 'undefined' && isFirebaseConfigured) {
+  try {
+    if (!getApps().length) {
+      app = initializeApp(firebaseConfig);
+    } else {
+      app = getApps()[0];
+    }
 
-// Analytics - client-side only
-let analytics: Analytics | null = null;
-
-export const initAnalytics = async (): Promise<Analytics | null> => {
-  if (typeof window === "undefined") return null;
-  if (analytics) return analytics;
-  
-  const supported = await isSupported();
-  if (supported) {
-    analytics = getAnalytics(app);
+    if (app) {
+      try {
+        analytics = getAnalytics(app);
+      } catch (error) {
+        // Silently fail analytics - not critical for app functionality
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Firebase Analytics not available:', error);
+        }
+      }
+    }
+  } catch (error) {
+    // Silently fail Firebase initialization in development
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Firebase not configured - some features may be unavailable');
+    }
   }
+}
+
+export function initAnalytics() {
+  // Analytics already initialized above
   return analytics;
-};
+}
 
-export const getAnalyticsInstance = () => analytics;
-
-export { app as firebaseApp };
-
+export { app, analytics };

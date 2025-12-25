@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { Menu, X, ChevronRight, ArrowRight, Flame } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { AuthButton } from '@/components/auth';
 
 /**
  * DopaLive Logo Component - Flame icon with warm gradient background
@@ -92,7 +93,7 @@ const SiteHeader = () => {
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
             <Link
-              href="/experts"
+              href="https://www.dopa.live/experts"
               className={cn(
                 "px-4 py-2 rounded-full",
                 "border border-primary/30 bg-primary/5",
@@ -104,19 +105,7 @@ const SiteHeader = () => {
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               Uzman Ağına Katıl
             </Link>
-            <Link
-              href="/start"
-              className={cn(
-                "px-5 py-2.5 rounded-full",
-                "bg-gradient-warm shadow-warm-sm",
-                "text-white text-sm font-semibold",
-                "hover:opacity-90 transition-opacity",
-                "flex items-center gap-2"
-              )}
-            >
-              Ücretsiz Başla
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+            <AuthButton />
           </div>
 
           {/* Mobile Menu Button */}
@@ -142,7 +131,7 @@ const SiteHeader = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-40 bg-foreground/20 backdrop-blur-sm lg:hidden"
+              className="fixed inset-0 z-40 bg-foreground/60 backdrop-blur-md lg:hidden"
               onClick={() => setIsMobileMenuOpen(false)}
             />
 
@@ -151,22 +140,9 @@ const SiteHeader = () => {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 bottom-0 z-50 w-full max-w-sm bg-background border-l border-border lg:hidden"
+              className="fixed top-0 right-0 bottom-0 z-50 w-full max-w-sm bg-background/98 backdrop-blur-xl border-l border-border lg:hidden shadow-xl"
             >
-              <div className="flex items-center justify-between p-5 border-b border-border">
-                <Link 
-                  href="/" 
-                  className="flex items-center gap-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <DopaLiveLogo className="w-8 h-8" />
-                  <span className="font-bold text-lg text-foreground">
-                    Dopa
-                    <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-300">
-                      Live
-                    </span>
-                  </span>
-                </Link>
+              <div className="flex items-center justify-end p-5 border-b border-border">
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="w-10 h-10 rounded-xl bg-muted border border-border flex items-center justify-center"
@@ -198,20 +174,16 @@ const SiteHeader = () => {
 
                 <div className="mt-8 space-y-3">
                   <Link
-                    href="/experts"
+                    href="https://www.dopa.live/experts"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center justify-center gap-2 w-full px-4 py-3.5 rounded-xl text-center text-primary font-medium border border-primary/30 bg-primary/5"
+                    className="flex items-center justify-center gap-2 w-full px-4 py-3.5 rounded-xl text-center text-primary font-medium border-2 border-primary/60 bg-primary/5 hover:border-primary/80 transition-all"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                     Uzman Ağına Katıl
                   </Link>
-                  <Link
-                    href="/start"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block w-full px-4 py-3.5 rounded-xl text-center text-white font-semibold bg-gradient-warm shadow-warm-sm"
-                  >
-                    Ücretsiz Başla
-                  </Link>
+                  <div onClick={() => setIsMobileMenuOpen(false)}>
+                    <AuthButton variant="compact" className="w-full justify-center" />
+                  </div>
                 </div>
               </nav>
             </motion.div>

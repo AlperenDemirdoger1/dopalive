@@ -11,6 +11,7 @@ import {
   ToastIcon 
 } from "@/components/ui/toast";
 import { useToast } from "@/lib/use-toast";
+import { AuthProvider } from "@/lib/auth";
 
 /**
  * Toaster Component
@@ -47,8 +48,8 @@ function Toaster() {
  * Root Providers Component
  *
  * Wraps the application with necessary context providers:
+ * - Authentication (Firebase)
  * - Toast notifications
- * - Add more providers here as needed (Theme, Analytics, etc.)
  *
  * @example
  * ```tsx
@@ -58,14 +59,17 @@ function Toaster() {
  */
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <AuthProvider>
       {children}
       <Toaster />
-    </>
+    </AuthProvider>
   );
 }
 
 export { Toaster };
+
+
+
 
 
 

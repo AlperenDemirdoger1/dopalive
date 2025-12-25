@@ -1,35 +1,189 @@
 rules_version = '2';
+
+/**
+ * DopaLive Firestore Security Rules
+ * 
+ * Collections:
+ * - users: User profiles and settings
+ * - sessions: Auth sessions (server-managed)
+ * - rate_limits: Rate limiting entries (server-managed)
+ */
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Uzman başvuruları - sadece backend yazabilir
-    match /expert_applications/{docId} {
-      allow read: if false;
-      allow write: if false;
+    
+    // ============================================
+    // HELPER FUNCTIONS
+    // ============================================
+    
+    // Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
     }
-
-    // Erken erişim kayıtları - sadece backend yazabilir
-    match /early_access_signups/{docId} {
-      allow read: if false;
-      allow write: if false;
+    
+    // Check if user is accessing their own data
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
     }
-
-    // Quiz sonuçları - sadece backend yazabilir
-    match /quiz_profiles/{docId} {
-      allow read: if false;
-      allow write: if false;
+    
+    // Check if request is from admin SDK (server)
+    function isServer() {
+      return request.auth.token.admin == true;
     }
-
-    // Eşleşme istekleri - sadece backend yazabilir
-    match /matches/{docId} {
-      allow read: if false;
-      allow write: if false;
+    
+    // Validate email format
+    function isValidEmail(email) {
+      return email.matches('^[^@]+@[^@]+\\.[^@]+$');
     }
-
-    // Kullanıcı profilleri - auth ile erişim
+    
+    // Validate phone format (E.164)
+    function isValidPhone(phone) {
+      return phone.matches('^\\+[1-9]\\d{1,14}$');
+    }
+    
+    // Check if field exists and is a string
+    function isString(field) {
+      return field is string;
+    }
+    
+    // Check if field exists and is a list
+    function isList(field) {
+      return field is list;
+    }
+    
+    // ============================================
+    // USERS COLLECTION
+    // ============================================
+    
     match /users/{userId} {
-      allow read, update, delete: if request.auth != null && request.auth.uid == userId;
-      allow create: if request.auth != null && request.auth.uid == userId;
+      // Users can read their own profile
+      allow read: if isOwner(userId);
+      
+      // Users can create their own profile (during signup)
+      allow create: if isOwner(userId) &&
+        // Required fields
+        request.resource.data.keys().hasAll(['uid', 'createdAt', 'status']) &&
+        request.resource.data.uid == userId &&
+        request.resource.data.status == 'active';
+      
+      // Users can update their own profile with restrictions
+      allow update: if isOwner(userId) &&
+        // Cannot change immutable fields
+        request.resource.data.uid == resource.data.uid &&
+        request.resource.data.createdAt == resource.data.createdAt &&
+        request.resource.data.signupMethod == resource.data.signupMethod &&
+        // Cannot change status (only server can)
+        request.resource.data.status == resource.data.status &&
+        // Validate updatedAt is being set
+        request.resource.data.updatedAt is timestamp;
+      
+      // Users cannot delete their own profile (soft delete via status)
+      allow delete: if false;
+      
+      // ============================================
+      // USER SUB-COLLECTIONS
+      // ============================================
+      
+      // User's linked providers (read-only for user, server manages)
+      match /providers/{providerId} {
+        allow read: if isOwner(userId);
+        allow write: if false; // Server only
+      }
+      
+      // User's devices (for new device detection)
+      match /devices/{deviceId} {
+        allow read: if isOwner(userId);
+        allow write: if false; // Server only
+      }
+    }
+    
+    // ============================================
+    // SESSIONS COLLECTION (Server-managed)
+    // ============================================
+    
+    match /sessions/{sessionId} {
+      // Only the owner can read their sessions
+      allow read: if isAuthenticated() && 
+        resource.data.userId == request.auth.uid;
+      
+      // No client writes - server manages sessions
+      allow write: if false;
+    }
+    
+    // ============================================
+    // RATE LIMITS COLLECTION (Server-managed)
+    // ============================================
+    
+    match /rate_limits/{limitId} {
+      // No client access - server only
+      allow read, write: if false;
+    }
+    
+    // ============================================
+    // ANALYTICS COLLECTION (Write-only)
+    // ============================================
+    
+    match /analytics/{eventId} {
+      // Users can write analytics events
+      allow create: if isAuthenticated() &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.timestamp is timestamp;
+      
+      // No reads or updates from client
+      allow read, update, delete: if false;
+    }
+    
+    // ============================================
+    // WAITLIST COLLECTION (Public write)
+    // ============================================
+    
+    match /waitlist/{entryId} {
+      // Anyone can join waitlist
+      allow create: if 
+        request.resource.data.keys().hasAll(['email', 'createdAt']) &&
+        isValidEmail(request.resource.data.email);
+      
+      // No other operations
+      allow read, update, delete: if false;
+    }
+    
+    // ============================================
+    // EXPERT APPLICATIONS (Public write)
+    // ============================================
+    
+    match /expert_applications/{applicationId} {
+      // Anyone can apply
+      allow create: if 
+        request.resource.data.keys().hasAll(['email', 'name', 'createdAt']);
+      
+      // No other operations from client
+      allow read, update, delete: if false;
+    }
+    
+    // ============================================
+    // QUIZ SUBMISSIONS
+    // ============================================
+    
+    match /quiz_submissions/{submissionId} {
+      // Authenticated users can create submissions
+      allow create: if isAuthenticated() &&
+        request.resource.data.userId == request.auth.uid;
+      
+      // Users can read their own submissions
+      allow read: if isAuthenticated() && 
+        resource.data.userId == request.auth.uid;
+      
+      // No updates or deletes
+      allow update, delete: if false;
+    }
+    
+    // ============================================
+    // DEFAULT DENY
+    // ============================================
+    
+    // Deny all other access by default
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
-

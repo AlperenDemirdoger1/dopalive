@@ -26,7 +26,7 @@ const DialogOverlay = React.forwardRef<
     ref={ref}
     className={cn(
       "fixed inset-0 z-50",
-      "bg-black/60 backdrop-blur-sm",
+      "bg-black/95",
       // Animation
       "data-[state=open]:animate-in data-[state=closed]:animate-out",
       "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
@@ -54,7 +54,7 @@ const DialogContent = React.forwardRef<
       className={cn(
         "fixed left-[50%] top-[50%] z-50",
         "w-full max-w-lg translate-x-[-50%] translate-y-[-50%]",
-        "bg-[#111] border border-white/[0.08] rounded-2xl",
+        "bg-[#1a1a1a] border border-white/10 rounded-2xl",
         "shadow-2xl shadow-black/50",
         "p-6",
         "focus:outline-none",
@@ -194,7 +194,7 @@ const AnimatedDialog = ({
               className={cn(
                 "fixed left-[50%] top-[50%] z-50",
                 "w-full max-w-lg translate-x-[-50%] translate-y-[-50%]",
-                "bg-[#111] border border-white/[0.08] rounded-2xl",
+                "bg-[#1a1a1a] border border-white/10 rounded-2xl",
                 "shadow-2xl shadow-black/50",
                 "p-6"
               )}
@@ -221,6 +221,9 @@ export {
   DialogDescription,
   AnimatedDialog,
 };
+
+
+
 
 
 

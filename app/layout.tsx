@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Syne, DM_Sans, JetBrains_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
-import SiteHeader from "@/components/SiteHeader";
-import SiteFooter from "@/components/SiteFooter";
 import { AnalyticsProvider } from "@/components/AnalyticsProvider";
+import { Providers } from "@/components/Providers";
 
 const syne = Syne({
   subsets: ["latin"],
@@ -50,12 +50,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr" className={`${syne.variable} ${dmSans.variable} ${jetbrainsMono.variable}`}>
+      <head>
+        <Script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-3735BSRXQ7"
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-3735BSRXQ7');`}
+        </Script>
+      </head>
       <body className="min-h-screen bg-background text-foreground antialiased font-body">
-        <AnalyticsProvider>
-          <SiteHeader />
-          <main className="pt-20">{children}</main>
-          <SiteFooter />
-        </AnalyticsProvider>
+        <Providers>
+          <AnalyticsProvider>
+            {children}
+          </AnalyticsProvider>
+        </Providers>
       </body>
     </html>
   );
